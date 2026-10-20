@@ -142,7 +142,7 @@ def run_agent_turn(chat_id, prompt, is_new=False):
 💬 *任務*：`{safe_preview}`
 ⏳ _正在編寫程式碼、呼叫工具或分析資料，請稍候..._
 """.strip()
-    init_res = send_message(chat_id, init_msg)
+    init_res = send_message(chat_id, init_msg, reply_markup=get_main_keyboard())
     msg_id = init_res['result']['message_id'] if init_res and init_res.get('ok') else None
 
     stop_typing = threading.Event()

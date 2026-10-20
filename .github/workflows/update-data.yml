@@ -35,29 +35,31 @@ jobs:
       - name: Push Telegram Daily Closing Report
         run: |
           python3 -c "
-          import urllib.request, json
+          import urllib.request, json, os
           token = '8986464959:AAG6Hl26vSx2mygIHi3knYzsxA3xf_UJr9s'
           chat_id = '5709621345'
           try:
-              with open('data/0050.json') as f: d50 = json.load(f)
-              with open('data/0056.json') as f: d56 = json.load(f)
-              q50, q56 = d50['quote'], d56['quote']
-              i50, i56 = d50.get('institutional', {}), d56.get('institutional', {})
-              s50 = '+' if q50['change'] > 0 else ''
-              s56 = '+' if q56['change'] > 0 else ''
-              text = f'''📢 *0050 / 0056 今日盤後日報 ({i50.get(\"date\", \"最新\")})*
-          ━━━━━━━━━━━━━━━━━━
-          📊 *0050 元大台灣50*
-          • 收盤：`NT$ {q50[\"price\"]}` ({s50}{q50[\"change\"]} / {s50}{q50[\"change_percent\"]}%)
-          • 淨值：`NT$ {q50.get(\"nav\")}` (折溢價 {q50.get(\"discount_percent\")}%)
-          • 外資：`{i50.get(\"foreign_lots\", 0):,} 張` ｜ 投信：`{i50.get(\"trust_lots\", 0):,} 張`
-          • 法人合計：`{i50.get(\"total_lots\", 0):,} 張`
+              tracked = ['0050', '0056']
+              if os.path.exists('data/tracked_etfs.json'):
+                  with open('data/tracked_etfs.json') as f: tracked = json.load(f)
+              cards = []
+              report_date = '最新'
+              for sym in tracked:
+                  fpath = f'data/{sym}.json'
+                  if not os.path.exists(fpath): continue
+                  with open(fpath) as f: d = json.load(f)
+                  m, q, inst = d['metadata'], d['quote'], d.get('institutional', {})
+                  if 'date' in inst: report_date = inst['date']
+                  s = '+' if q['change'] > 0 else ''
+                  cards.append(f'''📊 *{sym} {m.get('short_name','')}*
+          • 收盤：\`NT$ {q['price']}\` ({s}{q['change']} / {s}{q['change_percent']}%)
+          • 淨值：\`NT$ {q.get('nav',0)}\` (折溢價 {q.get('discount_percent',0):+.2f}%)
+          • 外資：\`{inst.get('foreign_lots', 0):,} 張\` ｜ 投信：\`{inst.get('trust_lots', 0):,} 張\`
+          • 法人合計：\`{inst.get('total_lots', 0):,} 張\`''')
 
-          💰 *0056 元大高股息*
-          • 收盤：`NT$ {q56[\"price\"]}` ({s56}{q56[\"change\"]} / {s56}{q56[\"change_percent\"]}%)
-          • 淨值：`NT$ {q56.get(\"nav\")}` (折溢價 {q56.get(\"discount_percent\")}%)
-          • 外資：`{i56.get(\"foreign_lots\", 0):,} 張` ｜ 投信：`{i56.get(\"trust_lots\", 0):,} 張`
-          • 法人合計：`{i56.get(\"total_lots\", 0):,} 張`
+              text = f'''📢 *ETF 今日盤後日報 ({report_date})*
+          ━━━━━━━━━━━━━━━━━━
+          ''' + '\n\n'.join(cards) + '''
 
           🌐 [開啟手機專屬儀表板](https://rainbow0921li-afk.github.io/etf/)'''
               req = urllib.request.Request(

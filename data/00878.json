@@ -11,7 +11,7 @@
     "inception_date": "2020-07-20",
     "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)",
     "warning": null,
-    "updated_at": "2026-10-20 14:00:40",
+    "updated_at": "2026-10-20 16:06:16",
     "total_records": 1213
   },
   "quote": {
@@ -29,11 +29,11 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 34.81,
+    "nav": 34.8,
     "prev_nav": 35.16,
-    "discount_percent": 0.2,
-    "market_cap_billion_ntd": 6599.9,
-    "market_cap_display": "6,600 億",
+    "discount_percent": 0.23,
+    "market_cap_billion_ntd": 6598.01,
+    "market_cap_display": "6,598 億",
     "shares_units": 18959790000,
     "creation_redemption_shares": 44000000
   },

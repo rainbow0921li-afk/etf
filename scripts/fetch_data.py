@@ -134,6 +134,29 @@ KNOWN_ETF_PROFILES = {
             {"code": "2382", "name": "廣達", "sector": "電腦及週邊", "weight": 2.10},
             {"code": "2308", "name": "台達電", "sector": "電子零組件", "weight": 1.85}
         ]
+    },
+    "00922": {
+        "symbol": "00922",
+        "name": "國泰台灣領袖50ETF證券投資信託基金",
+        "short_name": "國泰台灣領袖50",
+        "category": "市值型 ETF",
+        "benchmark": "MSCI 臺灣領袖 50 精選指數",
+        "tracking_method": "完全複製法",
+        "expense_ratio": "0.22% (低內扣費用率)",
+        "inception_date": "2023-03-27",
+        "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
+        "constituents_base": [
+            {"code": "2330", "name": "台積電", "sector": "半導體業", "weight": 30.50},
+            {"code": "2317", "name": "鴻海", "sector": "其他電子業", "weight": 6.80},
+            {"code": "2454", "name": "聯發科", "sector": "半導體業", "weight": 5.20},
+            {"code": "2382", "name": "廣達", "sector": "電腦及週邊", "weight": 3.80},
+            {"code": "2308", "name": "台達電", "sector": "電子零組件", "weight": 3.20},
+            {"code": "2881", "name": "富邦金", "sector": "金融保險業", "weight": 2.90},
+            {"code": "2882", "name": "國泰金", "sector": "金融保險業", "weight": 2.80},
+            {"code": "2891", "name": "中信金", "sector": "金融保險業", "weight": 2.60},
+            {"code": "2412", "name": "中華電", "sector": "通信網路業", "weight": 2.20},
+            {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 2.10}
+        ]
     }
 }
 

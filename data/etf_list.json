@@ -43,5 +43,14 @@
     "dividend_frequency": "半年配 (通常每年 7 月及 11 月)",
     "has_warning": false,
     "warning_badge": null
+  },
+  {
+    "symbol": "00922",
+    "short_name": "國泰台灣領袖50",
+    "name": "國泰台灣領袖50ETF證券投資信託基金",
+    "category": "市值型 ETF",
+    "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
+    "has_warning": false,
+    "warning_badge": null
   }
 ]

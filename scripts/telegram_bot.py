@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
 """
-Telegram Bot for ETF Dashboard
-Supports Natural Language ChatOps:
-- "幫我加入00878", "新增00919", "我想看006208": Automatically crawls and pushes to GitHub
-- "0050", "0056", "00878", "00878 報價": Instantly shows price, NAV, discount, and institutional trading
-- /start, /help, /compare, /dca, /update
-Zero external dependencies: Uses only Python 3 standard library
+Telegram Bot for ETF Dashboard & Remote Antigravity Agent
+Pure Agent Mode (純代理模式):
+- Directly wraps Google Antigravity (agy) engine in the Docker container.
+- Turns Telegram into a 24/7 remote-control AI Coding Assistant.
+- Fast-path for ETF quotes, system status, and git triggers.
+- For all other requests, automatically executes `agy` with full tool capabilities.
 """
 
 import urllib.request
+import urllib.error
 import json
 import time
 import os
 import re
 import sys
 import datetime
+import threading
+import queue
+import subprocess
+import shutil
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8986464959:AAG6Hl26vSx2mygIHi3knYzsxA3xf_UJr9s")
 API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -22,19 +27,13 @@ GITHUB_OWNER = os.getenv("GITHUB_OWNER", "rainbow0921li-afk")
 GITHUB_REPO = os.getenv("GITHUB_REPO", "etf")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
 
-NAME_TO_CODE = {
-    "國泰永續高股息": "00878",
-    "群益台灣精選高息": "00919",
-    "富邦台50": "006208",
-    "富邦台灣50": "006208",
-    "元大台灣50": "0050",
-    "元大高股息": "0056",
-    "復華台灣科技優息": "00929",
-    "元大高息低波": "00713",
-    "元大台灣高息低波": "00713"
-}
+# Task Queue for Sequential Agent Execution
+task_queue = queue.Queue()
+
+# --- Telegram API Helpers ---
 
 def api_call(endpoint, payload=None):
     url = f"{API_BASE}/{endpoint}"
@@ -44,45 +43,239 @@ def api_call(endpoint, payload=None):
     try:
         with urllib.request.urlopen(req, timeout=30) as res:
             return json.loads(res.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        try:
+            return json.loads(e.read().decode('utf-8'))
+        except Exception:
+            return {"ok": False, "description": str(e)}
     except Exception as e:
         print(f"API Error ({endpoint}): {e}")
-        return None
+        return {"ok": False, "description": str(e)}
 
-def send_message(chat_id, text, reply_markup=None):
+def send_chat_action(chat_id, action="typing"):
+    return api_call("sendChatAction", {"chat_id": chat_id, "action": action})
+
+def send_message(chat_id, text, reply_markup=None, parse_mode="Markdown"):
     payload = {
         "chat_id": chat_id,
         "text": text,
-        "parse_mode": "Markdown",
         "disable_web_page_preview": True
     }
+    if parse_mode:
+        payload["parse_mode"] = parse_mode
     if reply_markup:
         payload["reply_markup"] = reply_markup
-    return api_call("sendMessage", payload)
+
+    res = api_call("sendMessage", payload)
+    # If markdown parsing fails, fallback to plain text
+    if not res or not res.get("ok"):
+        if parse_mode:
+            payload.pop("parse_mode", None)
+            res = api_call("sendMessage", payload)
+    return res
+
+def edit_message(chat_id, message_id, text, reply_markup=None, parse_mode="Markdown"):
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "text": text,
+        "disable_web_page_preview": True
+    }
+    if parse_mode:
+        payload["parse_mode"] = parse_mode
+    if reply_markup:
+        payload["reply_markup"] = reply_markup
+
+    res = api_call("editMessageText", payload)
+    if not res or not res.get("ok"):
+        if parse_mode:
+            payload.pop("parse_mode", None)
+            res = api_call("editMessageText", payload)
+    return res
+
+def send_or_edit_response(chat_id, message_id, text, reply_markup=None):
+    if not text or not text.strip():
+        text = "✅ 執行完成（無文字輸出）。"
+
+    max_len = 3900
+    chunks = []
+    while len(text) > max_len:
+        split_idx = text.rfind('\n', 0, max_len)
+        if split_idx == -1 or split_idx < 1500:
+            split_idx = max_len
+        chunks.append(text[:split_idx])
+        text = text[split_idx:].lstrip()
+    if text:
+        chunks.append(text)
+
+    # Edit the first chunk into the placeholder message
+    first_chunk = chunks[0]
+    res = edit_message(chat_id, message_id, first_chunk, reply_markup=(reply_markup if len(chunks) == 1 else None))
+    if not res or not res.get("ok"):
+        send_message(chat_id, first_chunk, reply_markup=(reply_markup if len(chunks) == 1 else None))
+
+    # Send remaining chunks
+    for i, chunk in enumerate(chunks[1:]):
+        is_last = (i == len(chunks[1:]) - 1)
+        send_message(chat_id, chunk, reply_markup=(reply_markup if is_last else None))
+
+# --- Typing Notification Thread ---
+
+def typing_indicator_loop(chat_id, stop_event):
+    while not stop_event.is_set():
+        try:
+            send_chat_action(chat_id, "typing")
+        except Exception:
+            pass
+        stop_event.wait(4.0)
+
+# --- Agent Worker Thread ---
+
+def run_agent_turn(chat_id, prompt, is_new=False):
+    short_prompt = prompt if len(prompt) < 70 else prompt[:67] + "..."
+    # Escape markdown special characters in prompt preview
+    safe_preview = short_prompt.replace('*', '').replace('_', '').replace('`', '')
+    
+    init_msg = f"""
+🤖 *Antigravity AI 正在執行中...*
+━━━━━━━━━━━━━━━━━━
+💬 *任務*：`{safe_preview}`
+⏳ _正在編寫程式碼、呼叫工具或分析資料，請稍候..._
+""".strip()
+    init_res = send_message(chat_id, init_msg)
+    msg_id = init_res['result']['message_id'] if init_res and init_res.get('ok') else None
+
+    stop_typing = threading.Event()
+    th = threading.Thread(target=typing_indicator_loop, args=(chat_id, stop_typing), daemon=True)
+    th.start()
+
+    if is_new:
+        cmd = ['agy', '-p', prompt, '--dangerously-skip-permissions']
+    else:
+        cmd = ['agy', '-c', '-p', prompt, '--dangerously-skip-permissions']
+
+    print(f"[Agent Task] Running for {chat_id}: {prompt[:50]}")
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=PROJECT_DIR,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+        stdout, _ = proc.communicate(timeout=240)
+        output = stdout.strip() if stdout else "✅ 任務完成（無額外輸出）。"
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        output = "⚠️ 任務執行逾時（超過 4 分鐘）。已自動終止行程。"
+    except Exception as e:
+        output = f"❌ 執行發生異常：{e}"
+    finally:
+        stop_typing.set()
+
+    print(f"[Agent Task] Completed for {chat_id}, output length: {len(output)}")
+    if msg_id:
+        send_or_edit_response(chat_id, msg_id, output, reply_markup=get_main_keyboard())
+    else:
+        send_message(chat_id, output, reply_markup=get_main_keyboard())
+
+def agent_worker_loop():
+    print("Agent Worker Thread started...")
+    while True:
+        try:
+            item = task_queue.get()
+            if item is None:
+                break
+            chat_id, prompt, is_new = item
+            run_agent_turn(chat_id, prompt, is_new)
+        except Exception as e:
+            print(f"Agent worker error: {e}")
+        finally:
+            task_queue.task_done()
+
+# --- System & Quick Features ---
 
 def get_main_keyboard():
-    # Dynamically build keyboard based on tracked ETFs
-    buttons = [
-        [{"text": "📊 0050 即時行情"}, {"text": "💰 0056 即時行情"}],
-        [{"text": "📈 雙標的速評比較"}, {"text": "🔄 觸發雲端更新"}],
-        [{"text": "🌐 開啟專屬看板網頁"}]
-    ]
+    tracked = ['0050', '0056']
     tracked_file = os.path.join(DATA_DIR, 'tracked_etfs.json')
     if os.path.exists(tracked_file):
         try:
             with open(tracked_file, 'r', encoding='utf-8') as f:
                 tracked = json.load(f)
-                extra = [t for t in tracked if t not in ['0050', '0056']]
-                if extra:
-                    extra_row = [{"text": f"📌 {code} 行情"} for code in extra[:2]]
-                    buttons.insert(1, extra_row)
         except Exception:
             pass
 
+    row1 = [{"text": f"📊 {code} 行情"} for code in tracked[:3]]
+    row2 = [{"text": "🖥️ 伺服器狀態"}, {"text": "🔄 開啟新對話 (/reset)"}]
+    row3 = [{"text": "📈 雙標的速評比較"}, {"text": "🌐 開啟專屬看板網頁"}]
+
     return {
-        "keyboard": buttons,
+        "keyboard": [row1, row2, row3],
         "resize_keyboard": True,
         "persistent": True
     }
+
+def format_system_status():
+    uptime_str = "--"
+    try:
+        with open("/proc/uptime", "r") as f:
+            seconds = float(f.readline().split()[0])
+            hours = int(seconds // 3600)
+            mins = int((seconds % 3600) // 60)
+            uptime_str = f"{hours} 小時 {mins} 分"
+    except Exception:
+        pass
+
+    mem_str = "--"
+    try:
+        with open("/proc/meminfo", "r") as f:
+            lines = f.readlines()
+            total = int([l for l in lines if "MemTotal" in l][0].split()[1]) // 1024
+            avail = int([l for l in lines if "MemAvailable" in l][0].split()[1]) // 1024
+            used = total - avail
+            mem_str = f"{used} MB / {total} MB"
+    except Exception:
+        pass
+
+    disk_str = "--"
+    try:
+        du = shutil.disk_usage("/home/developer")
+        disk_total_gb = du.total / (1024**3)
+        disk_used_gb = du.used / (1024**3)
+        disk_str = f"{disk_used_gb:.1f} GB / {disk_total_gb:.1f} GB ({du.used / du.total * 100:.1f}%)"
+    except Exception:
+        pass
+
+    git_str = "--"
+    try:
+        res = subprocess.run(["git", "log", "-1", "--oneline"], cwd=PROJECT_DIR, capture_output=True, text=True)
+        git_str = res.stdout.strip()
+    except Exception:
+        pass
+
+    tracked = []
+    tracked_file = os.path.join(DATA_DIR, 'tracked_etfs.json')
+    if os.path.exists(tracked_file):
+        try:
+            with open(tracked_file, 'r', encoding='utf-8') as f:
+                tracked = json.load(f)
+        except Exception:
+            pass
+
+    msg = f"""
+🖥️ *容器與 Agent 伺服器狀態*
+━━━━━━━━━━━━━━━━━━
+⚙️ *代理模式*：`純代理模式 (Antigravity Headless Agent)`
+⏱️ *容器運行時間*：`{uptime_str}`
+🧠 *記憶體使用*：`{mem_str}`
+💾 *硬碟容量*：`{disk_str}`
+📌 *目前追蹤標的*：`{', '.join(tracked) if tracked else '0050, 0056'}`
+🌿 *最新 Git 提交*：`{git_str}`
+🌐 *看板線上網址*：[點此開啟](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/)
+
+💡 _現在本機就是您的 24/7 AI 雲端工作站，您可以直接打任何文字交代任務！_
+""".strip()
+    return msg
 
 def get_etf_data(symbol):
     local_file = os.path.join(DATA_DIR, f"{symbol}.json")
@@ -117,8 +310,7 @@ def format_etf_card(symbol):
     disc_tag = "溢價" if disc > 0 else ("折價" if disc < 0 else "平價")
 
     def fmt_lots(lots):
-        if lots is None:
-            return "--"
+        if lots is None: return "--"
         s = "+" if lots > 0 else ""
         return f"{s}{lots:,} 張"
 
@@ -193,154 +385,72 @@ def trigger_github_update():
         return f"❌ 觸發更新失敗: {e}"
     return "⚠️ 觸發更新未收到確認。"
 
-def add_new_etf_and_push(symbol, chat_id):
-    """ChatOps: Add new ETF dynamically, fetch, commit & push to GitHub"""
-    send_message(chat_id, f"⏳ 收到指令！正在為您向臺灣證券交易所與 Yahoo 抓取【{symbol}】的即時報價、淨值、法人籌碼與配息資料...")
-    
-    fetch_script = os.path.join(BASE_DIR, 'fetch_data.py')
-    cmd = f"{sys.executable} {fetch_script} add {symbol}"
-    ret = os.system(cmd)
-    if ret != 0:
-        send_message(chat_id, f"❌ 抓取【{symbol}】失敗，請確認代號是否為臺灣證交所合法上市 ETF。")
-        return
-
-    data = get_etf_data(symbol)
-    if not data:
-        send_message(chat_id, f"❌ 未能生成【{symbol}】資料集。")
-        return
-
-    # Commit and push
-    send_message(chat_id, f"📦 資料抓取成功！正在自動同步推送至您的雲端 GitHub Pages...")
-    repo_dir = os.path.abspath(os.path.join(BASE_DIR, '..'))
-    token = GITHUB_TOKEN or os.getenv("GITHUB_TOKEN", "")
-    if token:
-        remote_url = f"https://{token}@github.com/{GITHUB_OWNER}/{GITHUB_REPO}.git"
-        push_cmd = f"cd {repo_dir} && git add data/ && git commit -m 'feat(etf): auto-add {symbol} via Telegram ChatOps' && git remote set-url origin {remote_url} && git push origin main && git remote set-url origin https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}.git"
-        os.system(push_cmd)
-
-    m = data['metadata']
-    q = data['quote']
-    disc = q.get('discount_percent', 0.0)
-    disc_tag = "溢價" if disc > 0 else "折價"
-
-    success_msg = f"""
-🎉 *成功將【{symbol} {m.get('short_name', '')}】上架至您的雲端看板！*
-━━━━━━━━━━━━━━━━━━
-💰 *現價*：`NT$ {q['price']:.2f}`
-⚖️ *即時淨值*：`NT$ {q.get('nav', 0):.2f}` ({disc_tag} `{disc:+.2f}%`)
-🏢 *基金總規模*：`NT$ {q.get('market_cap_display', '--')}`
-📅 *配息週期*：`{m.get('dividend_frequency', '--')}`
-
-🌐 [點此在手機開啟 {symbol} 看板](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/#{symbol})
-_(手機重新整理後，頂部標籤頁已自動新增 [{symbol}] 按鈕！)_
-""".strip()
-    send_message(chat_id, success_msg, reply_markup=get_main_keyboard())
-
-def calculate_dca(symbol, monthly_amt, years):
-    data = get_etf_data(symbol)
-    if not data or not data.get('prices'):
-        return "⚠️ 查無歷史價格，無法試算。"
-    
-    all_prices = data['prices']
-    trading_days = min(len(all_prices), years * 252)
-    sub = all_prices[-trading_days:]
-
-    last_month = ''
-    total_shares = 0
-    total_invested = 0
-
-    for p in sub:
-        m = p['date'][:7]
-        if m != last_month:
-            last_month = m
-            buy_price = p.get('adj_close') or p['close']
-            shares = monthly_amt / buy_price
-            total_shares += shares
-            total_invested += monthly_amt
-
-    latest_price = sub[-1]['close']
-    current_val = round(total_shares * latest_price)
-    profit = current_val - total_invested
-    ret_pct = round((profit / total_invested) * 100, 1) if total_invested > 0 else 0
-    sign = "+" if profit >= 0 else ""
-
-    return f"""
-💰 *{symbol} 定期定額歷史回測試算*
-━━━━━━━━━━━━━━━━━━
-• 每月扣款：`NT$ {monthly_amt:,} 元`
-• 投資時間：`近 {years} 年`
-• 累積投入本金：`NT$ {total_invested:,} 元`
-• 目前累積市值：`NT$ {current_val:,} 元`
-• 累積獲利金額：`{sign}NT$ {profit:,} 元`
-• *總投資報酬率*：`{sign}{ret_pct}%`
-• 累積持有股數：`{round(total_shares):,} 股`
-_(以還原收盤價模擬每月首日扣款，含股息再投資)_
-""".strip()
+# --- Main Message Handler ---
 
 def handle_message(msg):
     chat_id = msg['chat']['id']
     text = (msg.get('text') or '').strip()
 
+    if not text:
+        return
+
     print(f"Received from {chat_id}: {text}")
 
-    # 1. 快捷選單指令
+    # 1. 說明與選單
     if text in ['/start', '/help', '選單', 'help', 'menu']:
         welcome_text = """
-👋 您好！我是您的 *ETF 智慧投資助理*！
+👋 您好！我是您的 *Antigravity AI 全能助理（純代理模式）*！
 
-您可以直接用大白話跟我說話，例如：
-▫️ 「*幫我加入 00878*」或「*加入 00919*」
-▫️ 「*查 0050*」或「*0056 淨值*」
-▫️ 「*比較*」看 0050 與 0056 的差別
-▫️ 「*試算 0050 5000 3年*」
+這個機器人直接連結此 Docker 容器內的 **Google Antigravity 核心引擎**。即使您關閉電腦終端機，隨時拿起手機在 Telegram 交代任務，我都可以在此容器內全自動完成！
 
-或是直接點擊下方快速按鈕！
+💡 *您可以要我做什麼？（任何事情都可以！）*
+▫️ 「*幫我寫一個 Python 腳本抓每天天氣*」
+▫️ 「*修改看板首頁，把標題加上今日日期*」
+▫️ 「*幫我加入 00919 並推送到 GitHub Pages*」
+▫️ 「*檢查容器目前的 git status 與檔案改動*」
+▫️ 「*幫我分析 0050 與 00878 的配息優缺點*」
+
+🛠️ *快捷控制指令*：
+▫️ `/status` - 查看容器運算資源與伺服器狀態
+▫️ `/reset` - 開啟全新的 AI 對話工作階段
+▫️ `/compare` - 市值型 vs 高股息速評
+▫️ 點選下方按鈕直接查詢 ETF 行情！
+
+現在，請直接傳送任何一句話或開發任務給我試試看吧！🚀
 """.strip()
         send_message(chat_id, welcome_text, reply_markup=get_main_keyboard())
         return
 
-    # 2. 自然語言識別：加入 / 新增標的
-    is_add_action = any(k in text for k in ['加', '加入', '新增', '追蹤', '放進', '加進', '要看', '上架', '能不能加', '幫我加'])
-    extracted_code = None
-    
-    code_match = re.search(r'(00\d{2,3}[A-Za-z]?)', text)
-    if code_match:
-        extracted_code = code_match.group(1)
-    else:
-        for name, code in NAME_TO_CODE.items():
-            if name in text:
-                extracted_code = code
-                break
-
-    if is_add_action and extracted_code:
-        add_new_etf_and_push(extracted_code, chat_id)
+    # 2. 伺服器狀態
+    if text in ['/status', 'status', '🖥️ 伺服器狀態', '狀態', '系統狀態']:
+        send_message(chat_id, format_system_status(), reply_markup=get_main_keyboard())
         return
 
-    # 3. 自然語言識別：查詢某檔 ETF（例如「0050」、「查0056」、「00878報價」）
-    if extracted_code and not is_add_action:
-        # Check if we already have it
-        local_path = os.path.join(DATA_DIR, f"{extracted_code}.json")
-        if os.path.exists(local_path):
-            send_message(chat_id, format_etf_card(extracted_code), reply_markup=get_main_keyboard())
-            return
-        else:
-            # 尚未收錄，主動詢問是否加入
-            prompt = f"💡 站台目前尚未收錄【{extracted_code}】。\n\n您可以直接跟我說：\n👉「*幫我加入 {extracted_code}*」\n我就會立刻為您自動抓取並上架到手機網頁中！"
-            send_message(chat_id, prompt, reply_markup=get_main_keyboard())
+    # 3. 開啟新對話 Session
+    if text in ['/reset', '/new', '重置', '開啟新對話', '🔄 開啟新對話 (/reset)']:
+        task_queue.put((chat_id, "已開啟全新對話工作階段。請簡短問候使用者，說明你已準備好協助任何程式與開發工作。", True))
+        return
+
+    # 4. 快速行情按鈕 (0.1秒秒回)
+    etf_match = re.match(r'^(?:📊|💰|📌)?\s*(00\d{2,3}[A-Za-z]?)\s*(?:行情|即時行情|報價)?$', text)
+    if etf_match:
+        code = etf_match.group(1)
+        card = format_etf_card(code)
+        if "⚠️ 暫時無法讀取" not in card:
+            send_message(chat_id, card, reply_markup=get_main_keyboard())
             return
 
-    # 4. 固定按鈕對應
-    if text in ['/0050', '📊 0050 即時行情']:
-        send_message(chat_id, format_etf_card('0050'), reply_markup=get_main_keyboard())
-    elif text in ['/0056', '💰 0056 即時行情']:
-        send_message(chat_id, format_etf_card('0056'), reply_markup=get_main_keyboard())
-    elif text in ['/compare', '比較', '📈 雙標的速評比較']:
+    if text in ['/compare', '比較', '📈 雙標的速評比較']:
         send_message(chat_id, format_comparison(), reply_markup=get_main_keyboard())
-    elif text in ['/update', '更新', '🔄 觸發雲端更新']:
+        return
+
+    if text in ['/update', '更新', '🔄 觸發雲端更新']:
         send_message(chat_id, "⏳ 正在聯絡 GitHub 雲端觸發重新爬蟲...", reply_markup=get_main_keyboard())
         res = trigger_github_update()
         send_message(chat_id, res, reply_markup=get_main_keyboard())
-    elif text in ['/web', '/site', '網頁', '🌐 開啟專屬看板網頁']:
+        return
+
+    if text in ['/web', '/site', '網頁', '🌐 開啟專屬看板網頁']:
         link_msg = f"""
 📱 *您的專屬 ETF 看板網站：*
 👉 [點此開啟手機儀表板](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/)
@@ -348,31 +458,17 @@ def handle_message(msg):
 支援手機加入主畫面、自選 ETF 切換、即時淨值折溢價、互動走勢圖與法人籌碼動向！
 """.strip()
         send_message(chat_id, link_msg, reply_markup=get_main_keyboard())
-    elif text.startswith('/dca') or '定期定額' in text or '試算' in text:
-        parts = text.split()
-        symbol = '0050'
-        amt = 5000
-        years = 3
-        nums = re.findall(r'\d+', text)
-        if len(nums) >= 1 and nums[0].startswith('00'):
-            symbol = nums[0]
-            if len(nums) >= 2: amt = int(nums[1])
-            if len(nums) >= 3: years = int(nums[2])
-        send_message(chat_id, calculate_dca(symbol, amt, years), reply_markup=get_main_keyboard())
-    else:
-        fallback_msg = f"""
-💡 收到您的訊息：「{text}」
+        return
 
-您可以直接用大白話跟我說：
-▫️ 「*幫我加入 00878*」或「*加入 00919*」自動上架新標的
-▫️ 「*0050*」或「*0056*」查最新市價、淨值與外資籌碼
-▫️ 「*比較*」看市值型與高股息型差在哪
-▫️ 點選下方快速按鈕！
-""".strip()
-        send_message(chat_id, fallback_msg, reply_markup=get_main_keyboard())
+    # 5. 【純代理模式核心】：任何自然語言指令與對話全部委託給 Antigravity Agent (agy) 執行！
+    task_queue.put((chat_id, text, False))
 
 def run_polling():
-    print("Telegram Bot Polling started with Natural Language ChatOps...")
+    print("Telegram Bot Polling started with Pure Agent Mode...")
+    # Start Agent background worker
+    worker_th = threading.Thread(target=agent_worker_loop, daemon=True)
+    worker_th.start()
+
     last_update_id = 0
     while True:
         try:

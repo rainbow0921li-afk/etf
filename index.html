@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>0050 元大台灣50 ETF 投資看板</title>
-  <meta name="description" content="0050 元大台灣50 ETF 專屬投資平台，提供即時行情、折溢價、成分股透視、歷年配息填息天數與定期定額回測試算。">
+  <title>台灣熱門 ETF 投資看板 (0050 / 0056)</title>
+  <meta name="description" content="台灣熱門 ETF 投資平台，提供 0050 元大台灣50 與 0056 元大高股息即時行情、走勢圖、歷年配息填息紀錄、成分股透視與定期定額回測試算。">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="0050看板">
+  <meta name="apple-mobile-web-app-title" content="ETF看板">
   <!-- Tailwind CSS & Lucide Icons & Chart.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -47,11 +47,11 @@
   <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-2">
-        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">50</div>
+        <div id="etf-badge-icon" class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20 text-xs">50</div>
         <div>
           <div class="flex items-center space-x-1.5">
-            <h1 class="text-base font-bold text-white tracking-wide">0050 元大台灣50</h1>
-            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">ETF</span>
+            <h1 class="text-base font-bold text-white tracking-wide" id="header-etf-title">0050 元大台灣50</h1>
+            <span id="header-category-badge" class="text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">市值型</span>
           </div>
           <p class="text-[11px] text-slate-400" id="update-time-text">載入中...</p>
         </div>
@@ -64,13 +64,29 @@
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-4 space-y-4">
+  <!-- ETF 切換 Tabs (手機觸控友善) -->
+  <div class="max-w-4xl mx-auto px-4 pt-3 pb-1">
+    <div class="grid grid-cols-2 gap-2 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 shadow-inner">
+      <button id="tab-0050" onclick="switchETF('0050')" class="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-blue-600 text-white">
+        <span class="mr-1.5 font-black text-sm">0050</span>
+        <span>元大台灣50</span>
+        <span class="ml-1 text-[10px] opacity-80">(市值型)</span>
+      </button>
+      <button id="tab-0056" onclick="switchETF('0056')" class="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">
+        <span class="mr-1.5 font-black text-sm">0056</span>
+        <span>元大高股息</span>
+        <span class="ml-1 text-[10px] opacity-80">(季配息)</span>
+      </button>
+    </div>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 py-3 space-y-4">
 
     <!-- 1. 核心即時行情卡片 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
       <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">現價 (TWD)</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mb-1" id="etf-code-subtitle">0050 現價 (TWD)</div>
           <div class="flex items-baseline space-x-3">
             <span id="price-display" class="text-4xl sm:text-5xl font-black text-white tracking-tight">--</span>
             <div id="price-change-pill" class="flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-slate-800 text-slate-400">
@@ -79,8 +95,8 @@
           </div>
         </div>
         <div class="text-xs text-slate-400 sm:text-right">
-          <div>臺灣50指數完全複製</div>
-          <div class="text-slate-500 mt-0.5">每股面額分割後市場報價</div>
+          <div id="benchmark-desc-text">臺灣50指數完全複製</div>
+          <div class="text-slate-500 mt-0.5" id="frequency-desc-text">每半年配息一次 (通常 1 月 / 7 月)</div>
         </div>
       </div>
 
@@ -137,9 +153,9 @@
         <div>
           <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
             <i data-lucide="line-chart" class="w-4 h-4 text-blue-400"></i>
-            價格走勢圖
+            <span id="chart-title">價格走勢圖</span>
           </h2>
-          <div id="chart-hover-info" class="text-[11px] text-slate-400 mt-0.5">點選或拖曳圖表檢視詳細歷史數值</div>
+          <div id="chart-hover-info" class="text-[11px] text-slate-400 mt-0.5">點選或拖曳圖表檢視歷史數值</div>
         </div>
         <!-- 週期切換按鈕 (適合手機觸控) -->
         <div class="flex bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-xs font-semibold" id="range-buttons">
@@ -155,16 +171,16 @@
       </div>
     </section>
 
-    <!-- 4. 定期定額回測試算機 (投資人核心功能) -->
+    <!-- 4. 定期定額回測試算機 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
           <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
-          定期定額 (DCA) 歷史回測試算
+          <span id="dca-calc-title">定期定額 (DCA) 歷史回測試算</span>
         </h2>
         <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">真實歷史價格</span>
       </div>
-      <p class="text-xs text-slate-400 mb-4">模擬自過去特定時間起，於每月第一個交易日固定扣款買入 0050 的複利成效：</p>
+      <p class="text-xs text-slate-400 mb-4" id="dca-calc-desc">模擬自過去特定時間起，於每月第一個交易日固定扣款買入的複利成效：</p>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- 左側：輸入選項 -->
@@ -234,9 +250,9 @@
         <div>
           <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
             <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
-            成分股與產業權重透視
+            <span id="constituents-section-title">成分股與產業權重透視</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">追蹤臺灣市值前 50 大頂尖上市公司</p>
+          <p class="text-xs text-slate-400 mt-0.5" id="constituents-section-desc">持股權重與即時估值指標</p>
         </div>
       </div>
 
@@ -251,8 +267,8 @@
       <!-- 前十大重倉股卡片清單 -->
       <div class="pt-3 border-t border-slate-800">
         <div class="flex items-center justify-between mb-2.5">
-          <span class="text-xs font-bold text-slate-300">前十大重倉成分股</span>
-          <span class="text-[11px] text-slate-500">權重總計 > 75%</span>
+          <span class="text-xs font-bold text-slate-300">前十大成分股</span>
+          <span class="text-[11px] text-slate-500" id="top-holdings-weight-sum">權重占比明細</span>
         </div>
         <div class="space-y-2" id="top-holdings-container">
           <!-- JS 動態生成 -->
@@ -283,9 +299,9 @@
         <div>
           <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
             <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
-            歷年配息與填息天數紀錄
+            <span id="dividend-title">歷年配息與填息天數紀錄</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">半年配發一次，連續 100% 填息成功紀錄</p>
+          <p class="text-xs text-slate-400 mt-0.5" id="dividend-freq-desc">配息歷史與填息天數統計</p>
         </div>
       </div>
 
@@ -311,15 +327,15 @@
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 text-xs">
       <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
         <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
-        0050 基金基本檔案
+        <span id="profile-title">基金基本檔案</span>
       </h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-slate-400">
         <div>發行公司: <span class="text-slate-200 font-medium">元大證券投資信託</span></div>
-        <div>成立日期: <span class="text-slate-200 font-medium" id="meta-inception">2003-06-25</span></div>
-        <div>配息週期: <span class="text-slate-200 font-medium">半年配 (1月/7月)</span></div>
-        <div>總費用率: <span class="text-slate-200 font-medium">約 0.43% / 年</span></div>
-        <div>經理費 / 保管費: <span class="text-slate-200 font-medium">0.32% / 0.035%</span></div>
-        <div>追蹤指數: <span class="text-slate-200 font-medium">臺灣50指數 (完全複製)</span></div>
+        <div>成立日期: <span class="text-slate-200 font-medium" id="meta-inception">--</span></div>
+        <div>配息週期: <span class="text-slate-200 font-medium" id="meta-dividend-freq">--</span></div>
+        <div>總費用率: <span class="text-slate-200 font-medium" id="meta-expense">--</span></div>
+        <div>ETF 類型: <span class="text-slate-200 font-medium" id="meta-category">--</span></div>
+        <div>追蹤指數: <span class="text-slate-200 font-medium" id="meta-benchmark">--</span></div>
       </div>
     </section>
 
@@ -333,34 +349,67 @@
 
   <!-- 應用主邏輯 -->
   <script>
+    let currentETF = '0050';
     let etfData = null;
     let priceChartInstance = null;
     let currentRange = '1Y';
     let dcaYears = 3;
 
-    // 啟動載入
+    // 啟動載入：檢查網址 Hash (如 #0056)
     document.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash === '0056' || hash === '0050') {
+        currentETF = hash;
+      }
+      updateTabUI();
       loadData();
     });
+
+    function switchETF(symbol) {
+      if (currentETF === symbol) return;
+      currentETF = symbol;
+      window.location.hash = symbol;
+      updateTabUI();
+      loadData();
+    }
+
+    function updateTabUI() {
+      const tab50 = document.getElementById('tab-0050');
+      const tab56 = document.getElementById('tab-0056');
+      const badgeIcon = document.getElementById('etf-badge-icon');
+
+      if (currentETF === '0050') {
+        tab50.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-blue-600 text-white';
+        tab56.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white';
+        badgeIcon.className = 'w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20 text-xs';
+        badgeIcon.innerText = '50';
+      } else {
+        tab50.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white';
+        tab56.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-emerald-600 text-white';
+        badgeIcon.className = 'w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20 text-xs';
+        badgeIcon.innerText = '56';
+      }
+    }
 
     async function loadData(forceReload = false) {
       const updateText = document.getElementById('update-time-text');
       updateText.innerText = '讀取最新行情中...';
       try {
         const cacheBuster = forceReload ? `?t=${Date.now()}` : '';
-        const res = await fetch(`./data/0050.json${cacheBuster}`);
-        if (!res.ok) throw new Error('無法讀取 0050.json');
+        const res = await fetch(`./data/${currentETF}.json${cacheBuster}`);
+        if (!res.ok) throw new Error(`無法讀取 ${currentETF}.json`);
         etfData = await res.json();
         renderAll();
         updateText.innerText = `最後更新: ${etfData.metadata.updated_at} (台灣時間)`;
       } catch (err) {
         console.error('Fetch error:', err);
-        updateText.innerText = '載入失敗，請確認 data/0050.json 是否存在';
+        updateText.innerText = `載入失敗，請確認 data/${currentETF}.json 是否存在`;
       }
     }
 
     function renderAll() {
       if (!etfData) return;
+      renderHeaderAndMetadata();
       renderQuote();
       renderReturns();
       renderChart(currentRange);
@@ -371,10 +420,41 @@
       lucide.createIcons();
     }
 
+    function renderHeaderAndMetadata() {
+      const m = etfData.metadata;
+      document.title = `${m.symbol} ${m.short_name} ETF 投資看板`;
+      document.getElementById('header-etf-title').innerText = `${m.symbol} ${m.short_name}`;
+      
+      const catBadge = document.getElementById('header-category-badge');
+      catBadge.innerText = m.category || 'ETF';
+      if (m.symbol === '0050') {
+        catBadge.className = 'text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800';
+      } else {
+        catBadge.className = 'text-xs px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+      }
+
+      document.getElementById('etf-code-subtitle').innerText = `${m.symbol} 現價 (TWD)`;
+      document.getElementById('benchmark-desc-text').innerText = m.benchmark;
+      document.getElementById('frequency-desc-text').innerText = m.dividend_frequency;
+
+      document.getElementById('chart-title').innerText = `${m.symbol} 價格走勢圖`;
+      document.getElementById('dca-calc-title').innerText = `${m.symbol} 定期定額 (DCA) 歷史回測試算`;
+      document.getElementById('constituents-section-title').innerText = `${m.symbol} 成分股與產業權重透視`;
+      document.getElementById('constituents-section-desc').innerText = `追蹤 ${m.benchmark} 指數成分股`;
+      document.getElementById('dividend-title').innerText = `${m.symbol} 歷年配息與填息天數紀錄`;
+      document.getElementById('dividend-freq-desc').innerText = `${m.dividend_frequency} · 歷史填息紀錄`;
+      document.getElementById('profile-title').innerText = `${m.symbol} 基金基本檔案`;
+
+      document.getElementById('meta-inception').innerText = m.inception_date;
+      document.getElementById('meta-dividend-freq').innerText = m.dividend_frequency;
+      document.getElementById('meta-expense').innerText = m.expense_ratio;
+      document.getElementById('meta-category').innerText = m.category;
+      document.getElementById('meta-benchmark').innerText = m.benchmark;
+    }
+
     // 1. 渲染即時報價
     function renderQuote() {
       const q = etfData.quote;
-      const m = etfData.metadata;
 
       document.getElementById('price-display').innerText = q.price.toFixed(2);
       
@@ -404,7 +484,13 @@
       const span52 = q.high_52w - q.low_52w;
       if (span52 > 0) {
         const pct = Math.min(100, Math.max(0, ((q.price - q.low_52w) / span52) * 100));
-        document.getElementById('range-52w-bar').style.width = `${pct}%`;
+        const bar = document.getElementById('range-52w-bar');
+        bar.style.width = `${pct}%`;
+        if (currentETF === '0056') {
+          bar.className = 'bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-700';
+        } else {
+          bar.className = 'bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-700';
+        }
       }
     }
 
@@ -471,10 +557,18 @@
         priceChartInstance.destroy();
       }
 
-      // 漸層背景
+      const is0056 = currentETF === '0056';
+      const lineColor = is0056 ? '#10b981' : '#3b82f6';
+      const hoverColor = is0056 ? '#34d399' : '#60a5fa';
+
       const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-      gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
-      gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+      if (is0056) {
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+      } else {
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+      }
 
       priceChartInstance = new Chart(ctx, {
         type: 'line',
@@ -483,14 +577,14 @@
           datasets: [{
             label: '收盤價',
             data: dataPoints,
-            borderColor: '#3b82f6',
+            borderColor: lineColor,
             borderWidth: 2,
             backgroundColor: gradient,
             fill: true,
             tension: 0.15,
             pointRadius: slicePrices.length > 60 ? 0 : 2,
             pointHoverRadius: 5,
-            pointHoverBackgroundColor: '#60a5fa',
+            pointHoverBackgroundColor: hoverColor,
             pointHoverBorderColor: '#ffffff'
           }]
         },
@@ -561,18 +655,16 @@
       const amountPerMonth = parseFloat(document.getElementById('dca-amount').value) || 5000;
       const allPrices = etfData.prices;
 
-      // 每年大約 252 交易日，取對應長度
       const tradingDays = Math.min(allPrices.length, dcaYears * 252);
       const subPrices = allPrices.slice(-tradingDays);
       if (subPrices.length === 0) return;
 
-      // 篩選出每月第一個交易日買入
       let lastMonth = '';
       let totalShares = 0;
       let totalInvested = 0;
 
       subPrices.forEach(p => {
-        const month = p.date.substring(0, 7); // 'YYYY-MM'
+        const month = p.date.substring(0, 7);
         if (month !== lastMonth) {
           lastMonth = month;
           const buyPrice = p.adj_close || p.close;
@@ -608,8 +700,10 @@
     function renderSectors() {
       const container = document.getElementById('sectors-bar-container');
       container.innerHTML = '';
-      const sectors = etfData.sectors.slice(0, 5); // 取前五大
-      const colors = ['bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+      const sectors = etfData.sectors.slice(0, 5);
+      const colors = currentETF === '0056' 
+        ? ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-sky-500', 'bg-indigo-500']
+        : ['bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
 
       sectors.forEach((s, idx) => {
         const color = colors[idx % colors.length];
@@ -631,9 +725,12 @@
     function renderHoldings() {
       const topContainer = document.getElementById('top-holdings-container');
       topContainer.innerHTML = '';
+      let topWeight = 0;
       etfData.top_holdings.forEach((h, idx) => {
+        topWeight += h.weight;
         topContainer.appendChild(createHoldingCard(h, idx + 1));
       });
+      document.getElementById('top-holdings-weight-sum').innerText = `前十大權重合計 ${topWeight.toFixed(1)}%`;
 
       renderAllConstituentsList(etfData.all_constituents);
     }
@@ -653,7 +750,7 @@
           </div>
         </div>
         <div class="text-right">
-          <div class="text-xs font-bold text-blue-400">${h.weight.toFixed(2)}%</div>
+          <div class="text-xs font-bold ${currentETF === '0056' ? 'text-emerald-400' : 'text-blue-400'}">${h.weight.toFixed(2)}%</div>
           <div class="text-[10px] text-slate-400">$${h.close || '--'}</div>
         </div>
       `;
@@ -699,7 +796,7 @@
     function renderDividends() {
       const tbody = document.getElementById('dividends-tbody');
       tbody.innerHTML = '';
-      etfData.dividends.slice(0, 8).forEach(d => {
+      etfData.dividends.slice(0, 10).forEach(d => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-800/40 transition-colors';
         const fillText = d.is_filled ? `${d.fill_days} 天` : '未填息';

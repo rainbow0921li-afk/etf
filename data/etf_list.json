@@ -19,5 +19,12 @@
     "name": "國泰台灣ESG永續高股息ETF證券投資信託基金",
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)"
+  },
+  {
+    "symbol": "00919",
+    "short_name": "群益台灣精選高息",
+    "name": "群益台灣精選高息ETF證券投資信託基金",
+    "category": "高股息型 ETF",
+    "dividend_frequency": "季配息 (每年 3, 6, 9, 12 月)"
   }
 ]

@@ -311,6 +311,70 @@ def get_or_create_etf_profile(symbol, twse_stocks, nav_info):
         ]
     }
 
+def evaluate_etf_warning(symbol, profile, constituents, quote_data=None):
+    """
+    Evaluates whether an ETF exhibits High-Dividend Risk Warning characteristics:
+    1. Is a High-Dividend ETF (高股息型 ETF)
+    2. Has high exposure to cyclical/shipping stocks (航運業 >= 8% or single cyclical industry >= 12%)
+    3. Known high-yield marketing controversy / aggressive capital-gain / equalization reserve dependency (e.g., 00919, 00929, 00940, 00939)
+    4. Or abnormal dividend yield marketing (> 9%)
+    """
+    cat = profile.get("category", "")
+    name = profile.get("name", "")
+    short_name = profile.get("short_name", "")
+    
+    is_high_dividend = any(k in cat for k in ['高股息', '高息', '優息']) or any(k in name for k in ['高息', '優息', '高股息']) or any(k in short_name for k in ['高息', '優息', '高股息'])
+    if not is_high_dividend:
+        return None
+
+    shipping_weight = 0.0
+    cyclical_sectors = ['航運業', '鋼鐵工業', '塑膠工業', '建材營造']
+    cyclical_weight = 0.0
+    for c in constituents:
+        sector = c.get('sector', '')
+        w = float(c.get('weight', 0.0))
+        if sector == '航運業':
+            shipping_weight += w
+        if sector in cyclical_sectors:
+            cyclical_weight += w
+
+    reasons = []
+    # Trigger 1: High shipping / cyclical exposure
+    if shipping_weight >= 8.0:
+        reasons.append(f"成分股重押航運等暴起暴落之景氣循環股（航運佔比達 {shipping_weight:.1f}%），週期反轉時本金回檔跌幅風險高。")
+    elif cyclical_weight >= 15.0:
+        reasons.append(f"成分股景氣循環類股佔比偏高（合計達 {cyclical_weight:.1f}%），受景氣週期反轉衝擊之本金風險大。")
+
+    # Trigger 2: Known aggressive dividend / capital gain dependency list
+    known_aggressive_yield = {
+        "00919": "主打年化 10%～12% 超高殖利率宣傳，實質自然股利 (54C) 佔比有限，大量動用資本利得 (76W) 與平準金墊高，面臨降息與長期貼息風險。",
+        "00929": "主打科技高股息月月配，科技股估值波動大，成分股缺乏傳統防禦力，曾面臨配息大幅腰斬之波動陷阱。",
+        "00940": "主打 10 元巴菲特與高殖利率行銷狂吸千億，上市即破發，實質配息與資本成長嚴重不如預期。",
+        "00939": "高股息月月配行銷，動態高周轉率產生大量內扣手續費與摩擦成本，長期恐侵蝕本金淨值。"
+    }
+
+    if symbol in known_aggressive_yield:
+        item_reason = known_aggressive_yield[symbol]
+        if not any(item_reason in r for r in reasons):
+            reasons.append(item_reason)
+
+    # Trigger 3: Yield marketing check (> 9%)
+    if quote_data:
+        annual_yield = quote_data.get('dividend_yield', 0)
+        if annual_yield and annual_yield >= 9.0:
+            reasons.append(f"公告之歷史殖利率高達 {annual_yield:.1f}%，遠高於台股自然水準 (4%～5%)，高機率包含資本利得與平準金調節，非永續自然股息。")
+
+    if reasons:
+        reasons.append("提醒：切勿落入「只看高配息、忽視淨值虧損」的陷阱，請以『含息總報酬率』與『實質填息力』為核心評估指標！")
+        return {
+            "has_warning": True,
+            "badge": "⚠️ 高配息風險警示",
+            "title": "高殖利率行銷與景氣循環風險警示",
+            "short_reason": reasons[0],
+            "details": reasons
+        }
+    return None
+
 def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw):
     nav_info = nav_map.get(symbol, {})
     cfg = get_or_create_etf_profile(symbol, twse_stocks, nav_info)
@@ -449,6 +513,7 @@ def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "expense_ratio": cfg["expense_ratio"],
             "inception_date": cfg["inception_date"],
             "dividend_frequency": cfg["dividend_frequency"],
+            "warning": evaluate_etf_warning(symbol, cfg, enriched_constituents, {"dividend_yield": twse_val.get('yield', 0)}),
             "updated_at": now_tw.strftime('%Y-%m-%d %H:%M:%S'),
             "total_records": len(price_records)
         },
@@ -534,12 +599,15 @@ def main():
             print(f"[{symbol}] Generated {output_file} ({os.path.getsize(output_file) / 1024:.1f} KB)")
             
             m = dataset['metadata']
+            w = m.get('warning')
             summary_list.append({
                 "symbol": m["symbol"],
                 "short_name": m["short_name"],
                 "name": m["name"],
                 "category": m["category"],
-                "dividend_frequency": m["dividend_frequency"]
+                "dividend_frequency": m["dividend_frequency"],
+                "has_warning": bool(w and w.get("has_warning")),
+                "warning_badge": w.get("badge") if w else None
             })
 
     list_file = os.path.join(DATA_DIR, "etf_list.json")

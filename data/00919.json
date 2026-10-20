@@ -10,13 +10,24 @@
     "expense_ratio": "0.40%",
     "inception_date": "2022-10-20",
     "dividend_frequency": "季配息 (每年 3, 6, 9, 12 月)",
-    "updated_at": "2026-10-20 13:29:02",
+    "warning": {
+      "has_warning": true,
+      "badge": "⚠️ 高配息風險警示",
+      "title": "高殖利率行銷與景氣循環風險警示",
+      "short_reason": "成分股重押航運等暴起暴落之景氣循環股（航運佔比達 18.0%），週期反轉時本金回檔跌幅風險高。",
+      "details": [
+        "成分股重押航運等暴起暴落之景氣循環股（航運佔比達 18.0%），週期反轉時本金回檔跌幅風險高。",
+        "主打年化 10%～12% 超高殖利率宣傳，實質自然股利 (54C) 佔比有限，大量動用資本利得 (76W) 與平準金墊高，面臨降息與長期貼息風險。",
+        "提醒：切勿落入「只看高配息、忽視淨值虧損」的陷阱，請以『含息總報酬率』與『實質填息力』為核心評估指標！"
+      ]
+    },
+    "updated_at": "2026-10-20 14:00:40",
     "total_records": 973
   },
   "quote": {
-    "price": 32.1,
-    "change": -0.35,
-    "change_percent": -1.08,
+    "price": 32.09,
+    "change": -0.36,
+    "change_percent": -1.11,
     "prev_close": 32.45,
     "open": 32.26,
     "high": 32.34,
@@ -28,11 +39,11 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 32.02,
+    "nav": 31.96,
     "prev_nav": 32.48,
-    "discount_percent": 0.25,
-    "market_cap_billion_ntd": 6210.64,
-    "market_cap_display": "6,211 億",
+    "discount_percent": 0.41,
+    "market_cap_billion_ntd": 6199.0,
+    "market_cap_display": "6,199 億",
     "shares_units": 19396135000,
     "creation_redemption_shares": 0
   },
@@ -50,12 +61,12 @@
     "total_shares": -24146946
   },
   "returns": {
-    "1M": -0.25,
-    "3M": 14.27,
-    "6M": 44.74,
-    "1Y": 71.65,
-    "3Y": 119.99,
-    "5Y": 219.34
+    "1M": -0.06,
+    "3M": 14.48,
+    "6M": 45.01,
+    "1Y": 71.97,
+    "3Y": 120.4,
+    "5Y": 219.94
   },
   "dividends": [
     {
@@ -7192,9 +7203,9 @@
       "open": 32.26,
       "high": 32.34,
       "low": 32.01,
-      "close": 32.03,
-      "adj_close": 32.03,
-      "volume": 71676978
+      "close": 32.09,
+      "adj_close": 32.09,
+      "volume": 76169298
     }
   ]
 }

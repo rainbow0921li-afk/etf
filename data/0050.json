@@ -10,13 +10,14 @@
     "expense_ratio": "0.43%",
     "inception_date": "2003-06-25",
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
-    "updated_at": "2026-10-20 13:29:02",
+    "warning": null,
+    "updated_at": "2026-10-20 14:00:40",
     "total_records": 1214
   },
   "quote": {
-    "price": 107.1,
-    "change": -1.05,
-    "change_percent": -0.97,
+    "price": 107.25,
+    "change": -0.9,
+    "change_percent": -0.83,
     "prev_close": 108.15,
     "open": 107.65,
     "high": 108.3,
@@ -28,10 +29,10 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 106.8,
+    "nav": 107.11,
     "prev_nav": 108.24,
-    "discount_percent": 0.28,
-    "market_cap_billion_ntd": 24578.42,
+    "discount_percent": 0.13,
+    "market_cap_billion_ntd": 24649.76,
     "market_cap_display": "2.46 兆",
     "shares_units": 23013500000,
     "creation_redemption_shares": 132500000
@@ -50,12 +51,12 @@
     "total_shares": -93171472
   },
   "returns": {
-    "1M": -0.88,
-    "3M": 4.49,
-    "6M": 27.44,
-    "1Y": 81.96,
-    "3Y": 267.66,
-    "5Y": 262.56
+    "1M": -0.74,
+    "3M": 4.63,
+    "6M": 27.62,
+    "1Y": 82.21,
+    "3Y": 268.18,
+    "5Y": 263.07
   },
   "dividends": [
     {
@@ -7167,9 +7168,9 @@
       "open": 107.65,
       "high": 108.3,
       "low": 107.05,
-      "close": 107.1,
-      "adj_close": 107.1,
-      "volume": 108236830
+      "close": 107.25,
+      "adj_close": 107.25,
+      "volume": 122898485
     }
   ]
 }

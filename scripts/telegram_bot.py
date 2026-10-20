@@ -319,8 +319,18 @@ def format_etf_card(symbol):
         s = "+" if lots > 0 else ""
         return f"{s}{lots:,} 張"
 
+    w = m.get('warning')
+    warning_badge = " ⚠️ [風險警示]" if (w and w.get('has_warning')) else ""
+    warning_block = ""
+    if w and w.get('has_warning'):
+        warning_block = f"""
+⚠️ *【{w.get('title', '高配息與景氣循環風險警示')}】*
+• {w.get('short_reason', '')}
+• 提醒：切勿落入高殖利率陷阱，請以「含息總報酬率」為核心評估指標！
+"""
+
     msg = f"""
-*{m['symbol']} {m['short_name']}* ({m.get('category', 'ETF')})
+*{m['symbol']} {m['short_name']}*{warning_badge} ({m.get('category', 'ETF')})
 ━━━━━━━━━━━━━━━━━━
 💰 *現價*：`NT$ {q['price']:.2f}` {trend_emoji} `{sign}{q['change']:.2f} ({sign}{q['change_percent']:.2f}%)`
 ⚖️ *即時淨值*：`NT$ {q.get('nav', 0):.2f}` ({disc_tag} `{disc_sign}{disc:.2f}%`)
@@ -337,7 +347,7 @@ def format_etf_card(symbol):
 
 📈 *累積報酬率 (含息)*：
 近1月 `{data.get('returns', {}).get('1M', '--')}%` ｜ 近1年 `{data.get('returns', {}).get('1Y', '--')}%` ｜ 近3年 `{data.get('returns', {}).get('3Y', '--')}%`
-
+{warning_block}
 🕒 *最後更新*：`{m.get('updated_at', '')}`
 """.strip()
     return msg

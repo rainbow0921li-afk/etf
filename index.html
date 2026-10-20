@@ -49,9 +49,10 @@
       <div class="flex items-center space-x-2">
         <div id="etf-badge-icon" class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20 text-xs">50</div>
         <div>
-          <div class="flex items-center space-x-1.5">
+          <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
             <h1 class="text-base font-bold text-white tracking-wide" id="header-etf-title">0050 元大台灣50</h1>
             <span id="header-category-badge" class="text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">市值型</span>
+            <span id="header-warning-badge" class="hidden text-xs px-1.5 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-700 font-semibold items-center gap-1">⚠️ 高配息風險警示</span>
           </div>
           <p class="text-[11px] text-slate-400" id="update-time-text">載入中...</p>
         </div>
@@ -72,6 +73,20 @@
   </div>
 
   <main class="max-w-4xl mx-auto px-4 py-3 space-y-4">
+
+    <!-- 投資風險警示橫幅 (高配息/景氣循環陷阱動態提示) -->
+    <section id="etf-warning-banner" class="hidden bg-rose-950/40 border border-rose-500/50 rounded-2xl p-4 text-xs text-rose-200 space-y-2.5 shadow-xl backdrop-blur-sm transition-all">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2 text-rose-400 font-bold text-sm">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
+          <span id="warning-banner-title">高殖利率行銷與景氣循環風險警示</span>
+        </div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-900/60 text-rose-300 border border-rose-700/60 font-semibold tracking-wide">風險留意</span>
+      </div>
+      <div id="warning-banner-content" class="space-y-1.5 text-slate-300 text-xs leading-relaxed">
+        <!-- 動態由 JavaScript 生成 -->
+      </div>
+    </section>
 
     <!-- 1. 核心即時行情與淨值折溢價卡片 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
@@ -479,9 +494,14 @@
           ? `flex-shrink-0 flex items-center justify-center py-2 px-3.5 rounded-xl text-xs font-bold transition-all ${activeBg}`
           : 'flex-shrink-0 flex items-center justify-center py-2 px-3.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800/40 border border-slate-800/60';
 
+        const warningBadgeHtml = item.has_warning 
+          ? `<span class="ml-1 text-[10px] px-1 py-0.2 rounded font-bold ${isActive ? 'bg-black/30 text-rose-200 border border-rose-300/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'}" title="高配息與景氣循環風險警示">⚠️警示</span>` 
+          : '';
+
         btn.innerHTML = `
           <span class="mr-1.5 font-black text-sm">${item.symbol}</span>
           <span>${item.short_name}</span>
+          ${warningBadgeHtml}
         `;
         container.appendChild(btn);
       });
@@ -528,6 +548,40 @@
         catBadge.className = 'text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800';
       } else {
         catBadge.className = 'text-xs px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+      }
+
+      const warningBadge = document.getElementById('header-warning-badge');
+      const warningBanner = document.getElementById('etf-warning-banner');
+      const warningContent = document.getElementById('warning-banner-content');
+      const warningTitle = document.getElementById('warning-banner-title');
+
+      if (m.warning && m.warning.has_warning) {
+        if (warningBadge) {
+          warningBadge.classList.remove('hidden');
+          warningBadge.classList.add('inline-flex');
+          warningBadge.innerText = m.warning.badge || '⚠️ 高配息風險警示';
+        }
+        if (warningBanner) {
+          warningBanner.classList.remove('hidden');
+          if (warningTitle) warningTitle.innerText = m.warning.title || '高殖利率行銷與景氣循環風險警示';
+          if (warningContent) {
+            const list = m.warning.details || [m.warning.short_reason];
+            warningContent.innerHTML = list.map(d => `
+              <div class="flex items-start space-x-2">
+                <span class="text-rose-400 font-bold mt-0.5">•</span>
+                <span class="text-slate-200 text-xs leading-relaxed">${d}</span>
+              </div>
+            `).join('');
+          }
+        }
+      } else {
+        if (warningBadge) {
+          warningBadge.classList.add('hidden');
+          warningBadge.classList.remove('inline-flex');
+        }
+        if (warningBanner) {
+          warningBanner.classList.add('hidden');
+        }
       }
 
       document.getElementById('etf-code-subtitle').innerText = `${m.symbol} 現價 (TWD)`;

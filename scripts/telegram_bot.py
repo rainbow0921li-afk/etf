@@ -196,21 +196,8 @@ def agent_worker_loop():
 # --- System & Quick Features ---
 
 def get_main_keyboard():
-    tracked = ['0050', '0056']
-    tracked_file = os.path.join(DATA_DIR, 'tracked_etfs.json')
-    if os.path.exists(tracked_file):
-        try:
-            with open(tracked_file, 'r', encoding='utf-8') as f:
-                tracked = json.load(f)
-        except Exception:
-            pass
-
-    row1 = [{"text": f"📊 {code} 行情"} for code in tracked[:3]]
-    row2 = [{"text": "🖥️ 伺服器狀態"}, {"text": "🔄 開啟新對話 (/reset)"}]
-    row3 = [{"text": "📈 雙標的速評比較"}, {"text": "🌐 開啟專屬看板網頁"}]
-
     return {
-        "keyboard": [row1, row2, row3],
+        "keyboard": [[{"text": "🖥️ 伺服器狀態"}]],
         "resize_keyboard": True,
         "persistent": True
     }
@@ -414,7 +401,7 @@ def handle_message(msg):
 ▫️ `/status` - 查看容器運算資源與伺服器狀態
 ▫️ `/reset` - 開啟全新的 AI 對話工作階段
 ▫️ `/compare` - 市值型 vs 高股息速評
-▫️ 點選下方按鈕直接查詢 ETF 行情！
+▫️ 點選下方快速選單可即時查看伺服器狀態！
 
 現在，請直接傳送任何一句話或開發任務給我試試看吧！🚀
 """.strip()

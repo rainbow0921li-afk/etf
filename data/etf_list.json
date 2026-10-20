@@ -12,5 +12,12 @@
     "name": "元大台灣高股息證券投資信託基金",
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 1, 4, 7, 10 月)"
+  },
+  {
+    "symbol": "00878",
+    "short_name": "國泰永續高股息",
+    "name": "國泰台灣ESG永續高股息ETF證券投資信託基金",
+    "category": "高股息型 ETF",
+    "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)"
   }
 ]

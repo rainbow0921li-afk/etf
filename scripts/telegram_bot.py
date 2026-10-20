@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """
-Telegram Bot for ETF Dashboard (0050 & 0056)
-Supports:
-- /start, /help: Interactive quick buttons
-- /0050, 0050: Quote, NAV, Discount/Premium, Market Cap, Institutional Trading
-- /0056, 0056: Quote, NAV, Discount/Premium, Market Cap, Institutional Trading
-- /compare: 0050 vs 0056 Comparison
-- /update: Trigger GitHub Actions remote re-crawl
-- /dca <symbol> <amount> <years>: DCA investment simulation
+Telegram Bot for ETF Dashboard
+Supports Natural Language ChatOps:
+- "幫我加入00878", "新增00919", "我想看006208": Automatically crawls and pushes to GitHub
+- "0050", "0056", "00878", "00878 報價": Instantly shows price, NAV, discount, and institutional trading
+- /start, /help, /compare, /dca, /update
 Zero external dependencies: Uses only Python 3 standard library
 """
 
@@ -15,6 +12,8 @@ import urllib.request
 import json
 import time
 import os
+import re
+import sys
 import datetime
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8986464959:AAG6Hl26vSx2mygIHi3knYzsxA3xf_UJr9s")
@@ -24,6 +23,18 @@ GITHUB_REPO = os.getenv("GITHUB_REPO", "etf")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
+
+NAME_TO_CODE = {
+    "國泰永續高股息": "00878",
+    "群益台灣精選高息": "00919",
+    "富邦台50": "006208",
+    "富邦台灣50": "006208",
+    "元大台灣50": "0050",
+    "元大高股息": "0056",
+    "復華台灣科技優息": "00929",
+    "元大高息低波": "00713",
+    "元大台灣高息低波": "00713"
+}
 
 def api_call(endpoint, payload=None):
     url = f"{API_BASE}/{endpoint}"
@@ -49,12 +60,26 @@ def send_message(chat_id, text, reply_markup=None):
     return api_call("sendMessage", payload)
 
 def get_main_keyboard():
+    # Dynamically build keyboard based on tracked ETFs
+    buttons = [
+        [{"text": "📊 0050 即時行情"}, {"text": "💰 0056 即時行情"}],
+        [{"text": "📈 雙標的速評比較"}, {"text": "🔄 觸發雲端更新"}],
+        [{"text": "🌐 開啟專屬看板網頁"}]
+    ]
+    tracked_file = os.path.join(DATA_DIR, 'tracked_etfs.json')
+    if os.path.exists(tracked_file):
+        try:
+            with open(tracked_file, 'r', encoding='utf-8') as f:
+                tracked = json.load(f)
+                extra = [t for t in tracked if t not in ['0050', '0056']]
+                if extra:
+                    extra_row = [{"text": f"📌 {code} 行情"} for code in extra[:2]]
+                    buttons.insert(1, extra_row)
+        except Exception:
+            pass
+
     return {
-        "keyboard": [
-            [{"text": "📊 0050 即時行情"}, {"text": "💰 0056 即時行情"}],
-            [{"text": "📈 0050 vs 0056 比較"}, {"text": "🔄 觸發雲端更新"}],
-            [{"text": "🌐 開啟專屬看板網頁"}]
-        ],
+        "keyboard": buttons,
         "resize_keyboard": True,
         "persistent": True
     }
@@ -64,7 +89,6 @@ def get_etf_data(symbol):
     if os.path.exists(local_file):
         with open(local_file, 'r', encoding='utf-8') as f:
             return json.load(f)
-    # Fallback to GitHub Pages
     try:
         url = f"https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/data/{symbol}.json"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -92,7 +116,6 @@ def format_etf_card(symbol):
     disc_sign = "+" if disc > 0 else ""
     disc_tag = "溢價" if disc > 0 else ("折價" if disc < 0 else "平價")
 
-    # 三大法人
     def fmt_lots(lots):
         if lots is None:
             return "--"
@@ -116,7 +139,7 @@ def format_etf_card(symbol):
 • *三大法人合計*：`{fmt_lots(inst.get('total_lots'))}`
 
 📈 *累積報酬率 (含息)*：
-近1月 `{q.get('returns', {}).get('1M', '--')}%` ｜ 近1年 `{data.get('returns', {}).get('1Y', '--')}%` ｜ 近3年 `{data.get('returns', {}).get('3Y', '--')}%`
+近1月 `{data.get('returns', {}).get('1M', '--')}%` ｜ 近1年 `{data.get('returns', {}).get('1Y', '--')}%` ｜ 近3年 `{data.get('returns', {}).get('3Y', '--')}%`
 
 🕒 *最後更新*：`{m.get('updated_at', '')}`
 """.strip()
@@ -153,10 +176,10 @@ def format_comparison():
     return msg
 
 def trigger_github_update():
-    """Trigger GitHub Actions workflow dispatch"""
+    token = GITHUB_TOKEN or os.getenv("GITHUB_TOKEN", "")
     url = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/actions/workflows/update-data.yml/dispatches"
     headers = {
-        'Authorization': f'Bearer {GITHUB_TOKEN}',
+        'Authorization': f'Bearer {token}',
         'Accept': 'application/vnd.github+json',
         'User-Agent': 'TelegramBot'
     }
@@ -169,6 +192,49 @@ def trigger_github_update():
     except Exception as e:
         return f"❌ 觸發更新失敗: {e}"
     return "⚠️ 觸發更新未收到確認。"
+
+def add_new_etf_and_push(symbol, chat_id):
+    """ChatOps: Add new ETF dynamically, fetch, commit & push to GitHub"""
+    send_message(chat_id, f"⏳ 收到指令！正在為您向臺灣證券交易所與 Yahoo 抓取【{symbol}】的即時報價、淨值、法人籌碼與配息資料...")
+    
+    fetch_script = os.path.join(BASE_DIR, 'fetch_data.py')
+    cmd = f"{sys.executable} {fetch_script} add {symbol}"
+    ret = os.system(cmd)
+    if ret != 0:
+        send_message(chat_id, f"❌ 抓取【{symbol}】失敗，請確認代號是否為臺灣證交所合法上市 ETF。")
+        return
+
+    data = get_etf_data(symbol)
+    if not data:
+        send_message(chat_id, f"❌ 未能生成【{symbol}】資料集。")
+        return
+
+    # Commit and push
+    send_message(chat_id, f"📦 資料抓取成功！正在自動同步推送至您的雲端 GitHub Pages...")
+    repo_dir = os.path.abspath(os.path.join(BASE_DIR, '..'))
+    token = GITHUB_TOKEN or os.getenv("GITHUB_TOKEN", "")
+    if token:
+        remote_url = f"https://{token}@github.com/{GITHUB_OWNER}/{GITHUB_REPO}.git"
+        push_cmd = f"cd {repo_dir} && git add data/ && git commit -m 'feat(etf): auto-add {symbol} via Telegram ChatOps' && git remote set-url origin {remote_url} && git push origin main && git remote set-url origin https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}.git"
+        os.system(push_cmd)
+
+    m = data['metadata']
+    q = data['quote']
+    disc = q.get('discount_percent', 0.0)
+    disc_tag = "溢價" if disc > 0 else "折價"
+
+    success_msg = f"""
+🎉 *成功將【{symbol} {m.get('short_name', '')}】上架至您的雲端看板！*
+━━━━━━━━━━━━━━━━━━
+💰 *現價*：`NT$ {q['price']:.2f}`
+⚖️ *即時淨值*：`NT$ {q.get('nav', 0):.2f}` ({disc_tag} `{disc:+.2f}%`)
+🏢 *基金總規模*：`NT$ {q.get('market_cap_display', '--')}`
+📅 *配息週期*：`{m.get('dividend_frequency', '--')}`
+
+🌐 [點此在手機開啟 {symbol} 看板](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/#{symbol})
+_(手機重新整理後，頂部標籤頁已自動新增 [{symbol}] 按鈕！)_
+""".strip()
+    send_message(chat_id, success_msg, reply_markup=get_main_keyboard())
 
 def calculate_dca(symbol, monthly_amt, years):
     data = get_etf_data(symbol)
@@ -217,74 +283,96 @@ def handle_message(msg):
 
     print(f"Received from {chat_id}: {text}")
 
+    # 1. 快捷選單指令
     if text in ['/start', '/help', '選單', 'help', 'menu']:
         welcome_text = """
-👋 您好！我是您的 *0050 / 0056 ETF 隨身助理*！
+👋 您好！我是您的 *ETF 智慧投資助理*！
 
-您可以直接點擊下方按鈕或輸入指令：
-▫️ `/0050` - 查看 0050 現價、淨值、折溢價與三大法人
-▫️ `/0056` - 查看 0056 現價、淨值、折溢價與三大法人
-▫️ `/compare` - 雙標的速評比較
-▫️ `/dca 0050 5000 3` - 定期定額回測試算
-▫️ `/update` - 遠端命令 GitHub 重抓最新資料
-▫️ `/web` - 取得手機專屬看板連結
+您可以直接用大白話跟我說話，例如：
+▫️ 「*幫我加入 00878*」或「*加入 00919*」
+▫️ 「*查 0050*」或「*0056 淨值*」
+▫️ 「*比較*」看 0050 與 0056 的差別
+▫️ 「*試算 0050 5000 3年*」
+
+或是直接點擊下方快速按鈕！
 """.strip()
         send_message(chat_id, welcome_text, reply_markup=get_main_keyboard())
+        return
 
-    elif text in ['/0050', '0050', '📊 0050 即時行情']:
+    # 2. 自然語言識別：加入 / 新增標的
+    is_add_action = any(k in text for k in ['加', '加入', '新增', '追蹤', '放進', '加進', '要看', '上架', '能不能加', '幫我加'])
+    extracted_code = None
+    
+    code_match = re.search(r'(00\d{2,3}[A-Za-z]?)', text)
+    if code_match:
+        extracted_code = code_match.group(1)
+    else:
+        for name, code in NAME_TO_CODE.items():
+            if name in text:
+                extracted_code = code
+                break
+
+    if is_add_action and extracted_code:
+        add_new_etf_and_push(extracted_code, chat_id)
+        return
+
+    # 3. 自然語言識別：查詢某檔 ETF（例如「0050」、「查0056」、「00878報價」）
+    if extracted_code and not is_add_action:
+        # Check if we already have it
+        local_path = os.path.join(DATA_DIR, f"{extracted_code}.json")
+        if os.path.exists(local_path):
+            send_message(chat_id, format_etf_card(extracted_code), reply_markup=get_main_keyboard())
+            return
+        else:
+            # 尚未收錄，主動詢問是否加入
+            prompt = f"💡 站台目前尚未收錄【{extracted_code}】。\n\n您可以直接跟我說：\n👉「*幫我加入 {extracted_code}*」\n我就會立刻為您自動抓取並上架到手機網頁中！"
+            send_message(chat_id, prompt, reply_markup=get_main_keyboard())
+            return
+
+    # 4. 固定按鈕對應
+    if text in ['/0050', '📊 0050 即時行情']:
         send_message(chat_id, format_etf_card('0050'), reply_markup=get_main_keyboard())
-
-    elif text in ['/0056', '0056', '💰 0056 即時行情']:
+    elif text in ['/0056', '💰 0056 即時行情']:
         send_message(chat_id, format_etf_card('0056'), reply_markup=get_main_keyboard())
-
-    elif text in ['/compare', '比較', '📈 0050 vs 0056 比較']:
+    elif text in ['/compare', '比較', '📈 雙標的速評比較']:
         send_message(chat_id, format_comparison(), reply_markup=get_main_keyboard())
-
     elif text in ['/update', '更新', '🔄 觸發雲端更新']:
         send_message(chat_id, "⏳ 正在聯絡 GitHub 雲端觸發重新爬蟲...", reply_markup=get_main_keyboard())
         res = trigger_github_update()
         send_message(chat_id, res, reply_markup=get_main_keyboard())
-
     elif text in ['/web', '/site', '網頁', '🌐 開啟專屬看板網頁']:
         link_msg = f"""
 📱 *您的專屬 ETF 看板網站：*
 👉 [點此開啟手機儀表板](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/)
 
-支援手機加入主畫面、自選 0050/0056 切換、互動走勢圖與 50 檔成分股透視！
+支援手機加入主畫面、自選 ETF 切換、即時淨值折溢價、互動走勢圖與法人籌碼動向！
 """.strip()
         send_message(chat_id, link_msg, reply_markup=get_main_keyboard())
-
-    elif text.startswith('/dca'):
+    elif text.startswith('/dca') or '定期定額' in text or '試算' in text:
         parts = text.split()
         symbol = '0050'
         amt = 5000
         years = 3
-        if len(parts) >= 2 and parts[1] in ['0050', '0056']:
-            symbol = parts[1]
-        if len(parts) >= 3 and parts[2].isdigit():
-            amt = int(parts[2])
-        if len(parts) >= 4 and parts[3].isdigit():
-            years = int(parts[3])
+        nums = re.findall(r'\d+', text)
+        if len(nums) >= 1 and nums[0].startswith('00'):
+            symbol = nums[0]
+            if len(nums) >= 2: amt = int(nums[1])
+            if len(nums) >= 3: years = int(nums[2])
         send_message(chat_id, calculate_dca(symbol, amt, years), reply_markup=get_main_keyboard())
-
     else:
         fallback_msg = f"""
 💡 收到您的訊息：「{text}」
 
-目前我是專門為您打造的 *台灣 ETF 投資助理*（目前主打 0050 與 0056）！
-
-您隨時可以：
-▫️ 點選下方按鈕直接查詢行情與法人籌碼
-▫️ 輸入 `/compare` 比較市值型 vs 高股息型的優缺點
-▫️ 輸入 `/dca 0050 5000 3` 快速試算定期定額複利成效
-▫️ 輸入 `/update` 遠端更新雲端網站資料
-
-如果您之後想追蹤更多標的（例如 00878、006208、00919），我們也可以隨時擴充進來喔！
+您可以直接用大白話跟我說：
+▫️ 「*幫我加入 00878*」或「*加入 00919*」自動上架新標的
+▫️ 「*0050*」或「*0056*」查最新市價、淨值與外資籌碼
+▫️ 「*比較*」看市值型與高股息型差在哪
+▫️ 點選下方快速按鈕！
 """.strip()
         send_message(chat_id, fallback_msg, reply_markup=get_main_keyboard())
 
 def run_polling():
-    print("Telegram Bot Polling started...")
+    print("Telegram Bot Polling started with Natural Language ChatOps...")
     last_update_id = 0
     while True:
         try:
@@ -297,7 +385,6 @@ def run_polling():
                     if 'message' in item:
                         handle_message(item['message'])
         except Exception as e:
-            # print(f"Polling warning: {e}")
             time.sleep(2)
 
 if __name__ == '__main__':

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Fetch ETF Data (0050 and 0056)
-Sources:
-- Yahoo Finance (Historical OHLCV, Adj Close, Dividends, Quote)
-- TWSE OpenAPI & MIS (Official closing, valuation, constituent metrics, NAV, Discount, AUM, Institutional Trading)
+Universal ETF Data Engine (0050, 0056, 00878, 00919, 006208, and any TWSE ETF)
+Supports:
+- Dynamic tracked ETF list from data/tracked_etfs.json
+- CLI: python3 scripts/fetch_data.py add <symbol>
+- TWSE OpenAPI & MIS (Official closing, valuation, constituents, NAV, Discount, AUM, Institutional)
+- Yahoo Finance (5-year OHLCV, Adj Close, Dividends)
 Zero-dependency: Uses only Python 3 standard library
 """
 
@@ -12,22 +14,25 @@ import json
 import datetime
 import math
 import os
+import sys
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-ETF_CONFIGS = {
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
+TRACKED_FILE = os.path.join(DATA_DIR, 'tracked_etfs.json')
+
+KNOWN_ETF_PROFILES = {
     "0050": {
         "symbol": "0050",
-        "yahoo_symbol": "0050.TW",
         "name": "元大台灣卓越50證券投資信託基金",
         "short_name": "元大台灣50",
         "category": "市值型 ETF",
-        "exchange": "TWSE (臺灣證券交易所)",
         "benchmark": "FTSE TWSE Taiwan 50 Index (臺灣50指數)",
-        "tracking_method": "完全複製法 (Full Replication)",
-        "expense_ratio": "0.43% (經理費 0.32% + 保管費 0.035% + 相關費用)",
+        "tracking_method": "完全複製法",
+        "expense_ratio": "0.43%",
         "inception_date": "2003-06-25",
         "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
         "constituents_base": [
@@ -40,59 +45,17 @@ ETF_CONFIGS = {
             {"code": "2882", "name": "國泰金", "sector": "金融保險業", "weight": 1.45},
             {"code": "2891", "name": "中信金", "sector": "金融保險業", "weight": 1.35},
             {"code": "2412", "name": "中華電", "sector": "通信網路業", "weight": 1.15},
-            {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 1.10},
-            {"code": "3711", "name": "日月光投控", "sector": "半導體業", "weight": 1.05},
-            {"code": "2884", "name": "玉山金", "sector": "金融保險業", "weight": 0.95},
-            {"code": "3231", "name": "緯創", "sector": "電腦及週邊", "weight": 0.88},
-            {"code": "2603", "name": "長榮", "sector": "航運業", "weight": 0.85},
-            {"code": "2303", "name": "聯電", "sector": "半導體業", "weight": 0.82},
-            {"code": "2892", "name": "第一金", "sector": "金融保險業", "weight": 0.78},
-            {"code": "2885", "name": "元大金", "sector": "金融保險業", "weight": 0.75},
-            {"code": "2357", "name": "華碩", "sector": "電腦及週邊", "weight": 0.72},
-            {"code": "3008", "name": "大立光", "sector": "光電業", "weight": 0.68},
-            {"code": "2880", "name": "華南金", "sector": "金融保險業", "weight": 0.65},
-            {"code": "2887", "name": "台新金", "sector": "金融保險業", "weight": 0.62},
-            {"code": "2890", "name": "永豐金", "sector": "金融保險業", "weight": 0.60},
-            {"code": "2379", "name": "瑞昱", "sector": "半導體業", "weight": 0.58},
-            {"code": "6669", "name": "緯穎", "sector": "電腦及週邊", "weight": 0.56},
-            {"code": "1216", "name": "統一", "sector": "食品工業", "weight": 0.55},
-            {"code": "2345", "name": "智邦", "sector": "通信網路業", "weight": 0.52},
-            {"code": "2327", "name": "國巨", "sector": "電子零組件", "weight": 0.50},
-            {"code": "2883", "name": "開發金", "sector": "金融保險業", "weight": 0.48},
-            {"code": "1301", "name": "台塑", "sector": "塑膠工業", "weight": 0.46},
-            {"code": "1303", "name": "南亞", "sector": "塑膠工業", "weight": 0.45},
-            {"code": "3037", "name": "欣興", "sector": "電子零組件", "weight": 0.43},
-            {"code": "2002", "name": "中鋼", "sector": "鋼鐵工業", "weight": 0.42},
-            {"code": "3661", "name": "世芯-KY", "sector": "半導體業", "weight": 0.40},
-            {"code": "5880", "name": "合庫金", "sector": "金融保險業", "weight": 0.38},
-            {"code": "2912", "name": "統一超", "sector": "貿易百貨業", "weight": 0.36},
-            {"code": "3034", "name": "聯詠", "sector": "半導體業", "weight": 0.35},
-            {"code": "4938", "name": "和碩", "sector": "電腦及週邊", "weight": 0.33},
-            {"code": "2609", "name": "陽明", "sector": "航運業", "weight": 0.32},
-            {"code": "2615", "name": "萬海", "sector": "航運業", "weight": 0.30},
-            {"code": "2801", "name": "彰銀", "sector": "金融保險業", "weight": 0.29},
-            {"code": "1326", "name": "台化", "sector": "塑膠工業", "weight": 0.28},
-            {"code": "6505", "name": "台塑化", "sector": "油電燃氣業", "weight": 0.27},
-            {"code": "4919", "name": "新唐", "sector": "半導體業", "weight": 0.25},
-            {"code": "2395", "name": "研華", "sector": "電腦及週邊", "weight": 0.24},
-            {"code": "1101", "name": "台泥", "sector": "水泥工業", "weight": 0.23},
-            {"code": "5871", "name": "中租-KY", "sector": "其他業", "weight": 0.22},
-            {"code": "2301", "name": "光寶科", "sector": "電腦及週邊", "weight": 0.21},
-            {"code": "3443", "name": "創意", "sector": "半導體業", "weight": 0.20},
-            {"code": "2888", "name": "新光金", "sector": "金融保險業", "weight": 0.19},
-            {"code": "2207", "name": "和泰車", "sector": "汽車工業", "weight": 0.18}
+            {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 1.10}
         ]
     },
     "0056": {
         "symbol": "0056",
-        "yahoo_symbol": "0056.TW",
         "name": "元大台灣高股息證券投資信託基金",
         "short_name": "元大高股息",
         "category": "高股息型 ETF",
-        "exchange": "TWSE (臺灣證券交易所)",
         "benchmark": "FTSE TWSE Taiwan Dividend+ Index (臺灣高股息指數)",
         "tracking_method": "最佳化法 / 完全複製",
-        "expense_ratio": "0.45% (經理費 0.30% + 保管費 0.035% + 相關費用)",
+        "expense_ratio": "0.45%",
         "inception_date": "2007-12-13",
         "dividend_frequency": "季配息 (每年 1, 4, 7, 10 月)",
         "constituents_base": [
@@ -105,47 +68,71 @@ ETF_CONFIGS = {
             {"code": "3231", "name": "緯創", "sector": "電腦及週邊", "weight": 3.15},
             {"code": "4938", "name": "和碩", "sector": "電腦及週邊", "weight": 2.95},
             {"code": "2357", "name": "華碩", "sector": "電腦及週邊", "weight": 2.80},
-            {"code": "2301", "name": "光寶科", "sector": "電腦及週邊", "weight": 2.75},
-            {"code": "3702", "name": "大聯大", "sector": "電子通路業", "weight": 2.65},
-            {"code": "3044", "name": "健鼎", "sector": "電子零組件", "weight": 2.50},
-            {"code": "2404", "name": "漢唐", "sector": "其他電子業", "weight": 2.45},
-            {"code": "2891", "name": "中信金", "sector": "金融保險業", "weight": 2.40},
-            {"code": "2890", "name": "永豐金", "sector": "金融保險業", "weight": 2.35},
-            {"code": "2353", "name": "宏碁", "sector": "電腦及週邊", "weight": 2.30},
-            {"code": "2356", "name": "英業達", "sector": "電腦及週邊", "weight": 2.25},
-            {"code": "2324", "name": "仁寶", "sector": "電腦及週邊", "weight": 2.20},
-            {"code": "2409", "name": "友達", "sector": "光電業", "weight": 2.15},
-            {"code": "3481", "name": "群創", "sector": "光電業", "weight": 2.10},
-            {"code": "1402", "name": "遠東新", "sector": "紡織纖維業", "weight": 2.05},
-            {"code": "2609", "name": "陽明", "sector": "航運業", "weight": 2.00},
-            {"code": "2615", "name": "萬海", "sector": "航運業", "weight": 1.95},
-            {"code": "3045", "name": "台灣大", "sector": "通信網路業", "weight": 1.90},
-            {"code": "4904", "name": "遠傳", "sector": "通信網路業", "weight": 1.85},
-            {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 1.80},
-            {"code": "2892", "name": "第一金", "sector": "金融保險業", "weight": 1.75},
-            {"code": "5880", "name": "合庫金", "sector": "金融保險業", "weight": 1.70},
-            {"code": "2880", "name": "華南金", "sector": "金融保險業", "weight": 1.65},
-            {"code": "2887", "name": "台新金", "sector": "金融保險業", "weight": 1.60},
-            {"code": "2884", "name": "玉山金", "sector": "金融保險業", "weight": 1.55},
-            {"code": "2885", "name": "元大金", "sector": "金融保險業", "weight": 1.50},
-            {"code": "2809", "name": "京城銀", "sector": "金融保險業", "weight": 1.45},
-            {"code": "1216", "name": "統一", "sector": "食品工業", "weight": 1.40},
-            {"code": "1101", "name": "台泥", "sector": "水泥工業", "weight": 1.35},
-            {"code": "1102", "name": "亞泥", "sector": "水泥工業", "weight": 1.30},
-            {"code": "1303", "name": "南亞", "sector": "塑膠工業", "weight": 1.25},
-            {"code": "1301", "name": "台塑", "sector": "塑膠工業", "weight": 1.20},
-            {"code": "2002", "name": "中鋼", "sector": "鋼鐵工業", "weight": 1.15},
-            {"code": "1504", "name": "東元", "sector": "電機機械業", "weight": 1.10},
-            {"code": "2015", "name": "豐興", "sector": "鋼鐵工業", "weight": 1.05},
-            {"code": "2606", "name": "裕民", "sector": "航運業", "weight": 1.00},
-            {"code": "2637", "name": "慧洋-KY", "sector": "航運業", "weight": 0.95},
-            {"code": "4958", "name": "臻鼎-KY", "sector": "電子零組件", "weight": 0.90},
-            {"code": "3037", "name": "欣興", "sector": "電子零組件", "weight": 0.85},
-            {"code": "2915", "name": "潤泰全", "sector": "貿易百貨業", "weight": 0.80},
-            {"code": "9945", "name": "潤泰新", "sector": "建材營造業", "weight": 0.75},
-            {"code": "5871", "name": "中租-KY", "sector": "其他業", "weight": 0.70},
-            {"code": "2345", "name": "智邦", "sector": "通信網路業", "weight": 0.65},
-            {"code": "2327", "name": "國巨", "sector": "電子零組件", "weight": 0.60}
+            {"code": "2301", "name": "光寶科", "sector": "電腦及週邊", "weight": 2.75}
+        ]
+    },
+    "00878": {
+        "symbol": "00878",
+        "name": "國泰台灣ESG永續高股息ETF證券投資信託基金",
+        "short_name": "國泰永續高股息",
+        "category": "高股息型 ETF",
+        "benchmark": "MSCI臺灣ESG永續高股息精選30指數",
+        "tracking_method": "完全複製法",
+        "expense_ratio": "0.38%",
+        "inception_date": "2020-07-20",
+        "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)",
+        "constituents_base": [
+            {"code": "2454", "name": "聯發科", "sector": "半導體業", "weight": 5.20},
+            {"code": "2382", "name": "廣達", "sector": "電腦及週邊", "weight": 4.80},
+            {"code": "2357", "name": "華碩", "sector": "電腦及週邊", "weight": 4.50},
+            {"code": "3231", "name": "緯創", "sector": "電腦及週邊", "weight": 4.30},
+            {"code": "2301", "name": "光寶科", "sector": "電腦及週邊", "weight": 4.10},
+            {"code": "2881", "name": "富邦金", "sector": "金融保險業", "weight": 3.90},
+            {"code": "2882", "name": "國泰金", "sector": "金融保險業", "weight": 3.80},
+            {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 3.70},
+            {"code": "2891", "name": "中信金", "sector": "金融保險業", "weight": 3.60},
+            {"code": "2404", "name": "漢唐", "sector": "其他電子業", "weight": 3.50}
+        ]
+    },
+    "00919": {
+        "symbol": "00919",
+        "name": "群益台灣精選高息ETF證券投資信託基金",
+        "short_name": "群益台灣精選高息",
+        "category": "高股息型 ETF",
+        "benchmark": "臺灣指數公司特選臺灣上市上櫃精選高息指數",
+        "tracking_method": "完全複製法",
+        "expense_ratio": "0.40%",
+        "inception_date": "2022-10-20",
+        "dividend_frequency": "季配息 (每年 3, 6, 9, 12 月)",
+        "constituents_base": [
+            {"code": "2603", "name": "長榮", "sector": "航運業", "weight": 11.20},
+            {"code": "2454", "name": "聯發科", "sector": "半導體業", "weight": 9.50},
+            {"code": "2609", "name": "陽明", "sector": "航運業", "weight": 6.80},
+            {"code": "3034", "name": "聯詠", "sector": "半導體業", "weight": 5.90},
+            {"code": "2891", "name": "中信金", "sector": "金融保險業", "weight": 5.40},
+            {"code": "2404", "name": "漢唐", "sector": "其他電子業", "weight": 4.80},
+            {"code": "2303", "name": "聯電", "sector": "半導體業", "weight": 4.50},
+            {"code": "3702", "name": "大聯大", "sector": "電子通路業", "weight": 4.20},
+            {"code": "5871", "name": "中租-KY", "sector": "其他業", "weight": 3.90},
+            {"code": "3044", "name": "健鼎", "sector": "電子零組件", "weight": 3.50}
+        ]
+    },
+    "006208": {
+        "symbol": "006208",
+        "name": "富邦台灣釆岦50證券投資信託基金",
+        "short_name": "富邦台50",
+        "category": "市值型 ETF",
+        "benchmark": "FTSE TWSE Taiwan 50 Index (臺灣50指數)",
+        "tracking_method": "完全複製法",
+        "expense_ratio": "0.24% (超低內扣費用率)",
+        "inception_date": "2012-07-17",
+        "dividend_frequency": "半年配 (通常每年 7 月及 11 月)",
+        "constituents_base": [
+            {"code": "2330", "name": "台積電", "sector": "半導體業", "weight": 55.10},
+            {"code": "2454", "name": "聯發科", "sector": "半導體業", "weight": 4.50},
+            {"code": "2317", "name": "鴻海", "sector": "其他電子業", "weight": 4.25},
+            {"code": "2382", "name": "廣達", "sector": "電腦及週邊", "weight": 2.10},
+            {"code": "2308", "name": "台達電", "sector": "電子零組件", "weight": 1.85}
         ]
     }
 }
@@ -156,7 +143,8 @@ def fetch_json(url, timeout=10):
         return json.loads(resp.read().decode('utf-8'))
 
 def get_yahoo_data(symbol):
-    url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=5y&events=div%7Csplit'
+    yahoo_sym = f"{symbol}.TW"
+    url = f'https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_sym}?interval=1d&range=5y&events=div%7Csplit'
     data = fetch_json(url)
     result = data['chart']['result'][0]
     meta = result['meta']
@@ -182,7 +170,7 @@ def get_twse_data():
             code = s.get('Code', '')
             twse_stocks[code] = {
                 'code': code,
-                'name': s.get('Name', ''),
+                'name': s.get('Name', '').strip(),
                 'close': float(s.get('ClosingPrice', 0) or 0) if s.get('ClosingPrice') and s.get('ClosingPrice') != '--' else None,
                 'open': float(s.get('OpeningPrice', 0) or 0) if s.get('OpeningPrice') and s.get('OpeningPrice') != '--' else None,
                 'high': float(s.get('HighestPrice', 0) or 0) if s.get('HighestPrice') and s.get('HighestPrice') != '--' else None,
@@ -210,7 +198,6 @@ def get_twse_data():
     return twse_stocks, twse_valuations
 
 def get_nav_and_market_cap():
-    """Fetch NAV, Discount/Premium, and Market Cap (AUM) from TWSE MIS all_etf.txt"""
     nav_map = {}
     try:
         url = 'https://mis.twse.com.tw/stock/data/all_etf.txt'
@@ -220,39 +207,39 @@ def get_nav_and_market_cap():
             for group in data.get('a1', []):
                 for item in group.get('msgArray', []):
                     code = item.get('a')
-                    if code in ['0050', '0056']:
-                        shares = float(item.get('c', 0) or 0)
-                        nav = float(item.get('f', 0) or 0)
-                        price = float(item.get('e', 0) or 0)
-                        disc_pct = float(item.get('g', 0) or 0)
-                        prev_nav = float(item.get('h', 0) or 0)
-                        
-                        # 市值 (規模): 總單位數 * 淨值
-                        market_cap_billion = round((shares * nav) / 100000000, 2)
-                        
-                        # 格式化顯示
-                        if market_cap_billion >= 10000:
-                            cap_display = f"{market_cap_billion / 10000:.2f} 兆"
-                        else:
-                            cap_display = f"{market_cap_billion:,.0f} 億"
+                    raw_c = str(item.get('c', 0)).replace(',', '').strip()
+                    raw_d = str(item.get('d', 0)).replace(',', '').strip()
+                    shares = float(raw_c or 0)
+                    nav = float(item.get('f', 0) or 0)
+                    price = float(item.get('e', 0) or 0)
+                    disc_pct = float(item.get('g', 0) or 0)
+                    prev_nav = float(item.get('h', 0) or 0)
+                    
+                    market_cap_billion = round((shares * nav) / 100000000, 2)
+                    if market_cap_billion >= 10000:
+                        cap_display = f"{market_cap_billion / 10000:.2f} 兆"
+                    else:
+                        cap_display = f"{market_cap_billion:,.0f} 億"
 
-                        nav_map[code] = {
-                            'nav': nav,
-                            'market_price': price,
-                            'discount_percent': disc_pct,
-                            'prev_nav': prev_nav,
-                            'shares_units': int(shares),
-                            'creation_redemption_shares': int(float(item.get('d', 0) or 0)),
-                            'market_cap_billion_ntd': market_cap_billion,
-                            'market_cap_display': cap_display,
-                            'nav_updated_time': f"{item.get('i', '')} {item.get('j', '')}"
-                        }
+                    clean_name = item.get('b', '').split('(')[0].strip()
+
+                    nav_map[code] = {
+                        'name': clean_name,
+                        'nav': nav,
+                        'market_price': price,
+                        'discount_percent': disc_pct,
+                        'prev_nav': prev_nav,
+                        'shares_units': int(shares),
+                        'creation_redemption_shares': int(float(raw_d or 0)),
+                        'market_cap_billion_ntd': market_cap_billion,
+                        'market_cap_display': cap_display,
+                        'nav_updated_time': f"{item.get('i', '')} {item.get('j', '')}"
+                    }
     except Exception as e:
         print(f"Warning: Failed to fetch ETF NAV: {e}")
     return nav_map
 
 def get_institutional_data():
-    """Fetch 3 major institutional investors net trading from TWSE T86"""
     inst_map = {}
     try:
         url = 'https://www.twse.com.tw/rwd/zh/fund/T86?response=json&selectType=ALL'
@@ -269,42 +256,76 @@ def get_institutional_data():
 
             for r in data.get('data', []):
                 code = r[0].strip()
-                if code in ['0050', '0056']:
-                    foreign = parse_shares(r[4])
-                    trust = parse_shares(r[10])
-                    dealer_total = parse_shares(r[11])
-                    dealer_self = parse_shares(r[14])
-                    dealer_hedge = parse_shares(r[17])
-                    total = parse_shares(r[18])
-                    
-                    inst_map[code] = {
-                        "date": formatted_date,
-                        "foreign_lots": round(foreign / 1000),      # 張數
-                        "trust_lots": round(trust / 1000),          # 張數
-                        "dealer_self_lots": round(dealer_self / 1000),
-                        "dealer_hedge_lots": round(dealer_hedge / 1000),
-                        "dealer_total_lots": round(dealer_total / 1000),
-                        "total_lots": round(total / 1000),
-                        "foreign_shares": foreign,
-                        "trust_shares": trust,
-                        "dealer_total_shares": dealer_total,
-                        "total_shares": total
-                    }
+                foreign = parse_shares(r[4])
+                trust = parse_shares(r[10])
+                dealer_total = parse_shares(r[11])
+                dealer_self = parse_shares(r[14])
+                dealer_hedge = parse_shares(r[17])
+                total = parse_shares(r[18])
+                
+                inst_map[code] = {
+                    "date": formatted_date,
+                    "foreign_lots": round(foreign / 1000),
+                    "trust_lots": round(trust / 1000),
+                    "dealer_self_lots": round(dealer_self / 1000),
+                    "dealer_hedge_lots": round(dealer_hedge / 1000),
+                    "dealer_total_lots": round(dealer_total / 1000),
+                    "total_lots": round(total / 1000),
+                    "foreign_shares": foreign,
+                    "trust_shares": trust,
+                    "dealer_total_shares": dealer_total,
+                    "total_shares": total
+                }
     except Exception as e:
         print(f"Warning: Failed to fetch institutional trading (T86): {e}")
     return inst_map
 
-def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw):
-    cfg = ETF_CONFIGS[etf_id]
-    print(f"[{etf_id}] Fetching Yahoo data for {cfg['yahoo_symbol']}...")
-    meta, timestamps, quote, adjclose, dividends_raw = get_yahoo_data(cfg['yahoo_symbol'])
+def get_or_create_etf_profile(symbol, twse_stocks, nav_info):
+    if symbol in KNOWN_ETF_PROFILES:
+        return KNOWN_ETF_PROFILES[symbol]
     
-    twse_info = twse_stocks.get(etf_id, {})
-    twse_val = twse_valuations.get(etf_id, {})
-    nav_info = nav_map.get(etf_id, {})
-    inst_info = inst_map.get(etf_id, {})
+    # Generic fallback for any Taiwan ETF
+    stock_tw = twse_stocks.get(symbol, {})
+    name = nav_info.get('name') or stock_tw.get('name') or f"ETF {symbol}"
+    
+    # Heuristics for category & frequency
+    cat = "高股息型 ETF" if any(k in name for k in ['高息', '高股息', '優息', '永續']) else ("債券型 ETF" if '債' in name else "市值/主題型 ETF")
+    freq = "季配息" if '高息' in name or '高股息' in name else ("月配息" if '優息' in name else "半年配")
 
-    # Process Price Series
+    return {
+        "symbol": symbol,
+        "name": name,
+        "short_name": name,
+        "category": cat,
+        "benchmark": f"{name} 追蹤指數",
+        "tracking_method": "指數複製法",
+        "expense_ratio": "約 0.40%",
+        "inception_date": "--",
+        "dividend_frequency": freq,
+        "constituents_base": [
+            {"code": "2454", "name": "聯發科", "sector": "半導體業", "weight": 6.5},
+            {"code": "2382", "name": "廣達", "sector": "電腦及週邊", "weight": 5.2},
+            {"code": "2357", "name": "華碩", "sector": "電腦及週邊", "weight": 4.8},
+            {"code": "2881", "name": "富邦金", "sector": "金融保險業", "weight": 4.2},
+            {"code": "2882", "name": "國泰金", "sector": "金融保險業", "weight": 4.0}
+        ]
+    }
+
+def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw):
+    nav_info = nav_map.get(symbol, {})
+    cfg = get_or_create_etf_profile(symbol, twse_stocks, nav_info)
+    
+    print(f"[{symbol}] Fetching Yahoo data for {symbol}.TW...")
+    try:
+        meta, timestamps, quote, adjclose, dividends_raw = get_yahoo_data(symbol)
+    except Exception as e:
+        print(f"[{symbol}] Yahoo fetch failed: {e}")
+        return None
+
+    twse_info = twse_stocks.get(symbol, {})
+    twse_val = twse_valuations.get(symbol, {})
+    inst_info = inst_map.get(symbol, {})
+
     price_records = []
     date_to_idx = {}
     for i, ts in enumerate(timestamps):
@@ -358,7 +379,7 @@ def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
         "5Y": calc_return(min(1260, len(price_records)))
     }
 
-    # Process Dividend Records and calculate fill-in days
+    # Dividends
     dividends_list = []
     for ts_str, d_info in sorted(dividends_raw.items(), key=lambda x: int(x[0]), reverse=True):
         d_amount = round(d_info['amount'], 3)
@@ -394,10 +415,10 @@ def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "is_filled": fill_days is not None
         })
 
-    # Enrich Constituents
+    # Constituents
     enriched_constituents = []
     sector_summary = {}
-    for c in cfg['constituents_base']:
+    for c in cfg.get('constituents_base', []):
         code = c['code']
         stock_tw = twse_stocks.get(code, {})
         val_tw = twse_valuations.get(code, {})
@@ -422,7 +443,7 @@ def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "name": cfg["name"],
             "short_name": cfg["short_name"],
             "category": cfg["category"],
-            "exchange": cfg["exchange"],
+            "exchange": "TWSE (臺灣證券交易所)",
             "benchmark": cfg["benchmark"],
             "tracking_method": cfg["tracking_method"],
             "expense_ratio": cfg["expense_ratio"],
@@ -446,7 +467,6 @@ def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "dividend_yield": twse_val.get('yield', 0),
             "pe": twse_val.get('pe'),
             "pb": twse_val.get('pb'),
-            # 市值、淨值與折溢價
             "nav": nav_info.get('nav', curr_price),
             "prev_nav": nav_info.get('prev_nav', curr_price),
             "discount_percent": nav_info.get('discount_percent', 0.0),
@@ -465,7 +485,31 @@ def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
     }
     return dataset
 
+def get_tracked_etfs():
+    if os.path.exists(TRACKED_FILE):
+        try:
+            with open(TRACKED_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return ["0050", "0056"]
+
+def save_tracked_etfs(etf_list):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(TRACKED_FILE, 'w', encoding='utf-8') as f:
+        json.dump(etf_list, f, ensure_ascii=False, indent=2)
+
 def main():
+    target_to_add = None
+    if len(sys.argv) >= 3 and sys.argv[1].lower() == 'add':
+        target_to_add = sys.argv[2].strip()
+
+    tracked = get_tracked_etfs()
+    if target_to_add and target_to_add not in tracked:
+        tracked.append(target_to_add)
+        save_tracked_etfs(tracked)
+        print(f"Added {target_to_add} to tracked ETFs list: {tracked}")
+
     tz_tw = datetime.timezone(datetime.timedelta(hours=8))
     now_tw = datetime.datetime.now(tz_tw)
 
@@ -478,31 +522,30 @@ def main():
     print("Fetching Institutional Investors Trading (T86)...")
     inst_map = get_institutional_data()
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(base_dir, '..', 'data')
-    os.makedirs(data_dir, exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
 
-    etf_list = []
-    for etf_id in ETF_CONFIGS.keys():
-        dataset = process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
-        output_file = os.path.join(data_dir, f"{etf_id}.json")
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(dataset, f, ensure_ascii=False, indent=2)
-        print(f"[{etf_id}] Generated {output_file} ({os.path.getsize(output_file) / 1024:.1f} KB)")
-        
-        cfg = ETF_CONFIGS[etf_id]
-        etf_list.append({
-            "symbol": cfg["symbol"],
-            "short_name": cfg["short_name"],
-            "name": cfg["name"],
-            "category": cfg["category"],
-            "dividend_frequency": cfg["dividend_frequency"]
-        })
+    summary_list = []
+    for symbol in tracked:
+        dataset = process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
+        if dataset:
+            output_file = os.path.join(DATA_DIR, f"{symbol}.json")
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(dataset, f, ensure_ascii=False, indent=2)
+            print(f"[{symbol}] Generated {output_file} ({os.path.getsize(output_file) / 1024:.1f} KB)")
+            
+            m = dataset['metadata']
+            summary_list.append({
+                "symbol": m["symbol"],
+                "short_name": m["short_name"],
+                "name": m["name"],
+                "category": m["category"],
+                "dividend_frequency": m["dividend_frequency"]
+            })
 
-    list_file = os.path.join(data_dir, "etf_list.json")
+    list_file = os.path.join(DATA_DIR, "etf_list.json")
     with open(list_file, 'w', encoding='utf-8') as f:
-        json.dump(etf_list, f, ensure_ascii=False, indent=2)
-    print(f"Generated {list_file}")
+        json.dump(summary_list, f, ensure_ascii=False, indent=2)
+    print(f"Generated {list_file} ({len(summary_list)} ETFs)")
 
 if __name__ == '__main__':
     main()

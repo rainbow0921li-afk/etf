@@ -64,19 +64,10 @@
     </div>
   </header>
 
-  <!-- ETF 切換 Tabs (手機觸控友善) -->
+  <!-- ETF 動態切換 Tabs (手機左右滑動友善) -->
   <div class="max-w-4xl mx-auto px-4 pt-3 pb-1">
-    <div class="grid grid-cols-2 gap-2 bg-slate-900/90 p-1 rounded-2xl border border-slate-800 shadow-inner">
-      <button id="tab-0050" onclick="switchETF('0050')" class="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-blue-600 text-white">
-        <span class="mr-1.5 font-black text-sm">0050</span>
-        <span>元大台灣50</span>
-        <span class="ml-1 text-[10px] opacity-80">(市值型)</span>
-      </button>
-      <button id="tab-0056" onclick="switchETF('0056')" class="flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white">
-        <span class="mr-1.5 font-black text-sm">0056</span>
-        <span>元大高股息</span>
-        <span class="ml-1 text-[10px] opacity-80">(季配息)</span>
-      </button>
+    <div id="etf-tabs-container" class="flex space-x-2 overflow-x-auto scrollbar-none py-1.5 px-1 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-inner">
+      <!-- 由 JS 動態依據 etf_list.json 自動生成按鈕 -->
     </div>
   </div>
 
@@ -421,45 +412,79 @@
   <!-- 應用主邏輯 -->
   <script>
     let currentETF = '0050';
+    let etfList = [];
     let etfData = null;
     let priceChartInstance = null;
     let currentRange = '1Y';
     let dcaYears = 3;
 
-    // 啟動載入：檢查網址 Hash (如 #0056)
-    document.addEventListener('DOMContentLoaded', () => {
+    // 啟動載入：讀取清單並檢查網址 Hash (如 #00878)
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadETFList();
       const hash = window.location.hash.replace('#', '');
-      if (hash === '0056' || hash === '0050') {
+      if (hash && etfList.some(item => item.symbol === hash)) {
         currentETF = hash;
       }
-      updateTabUI();
+      renderTabs();
       loadData();
     });
+
+    async function loadETFList() {
+      try {
+        const res = await fetch(`./data/etf_list.json?t=${Date.now()}`);
+        if (res.ok) {
+          etfList = await res.json();
+        }
+      } catch (err) {
+        console.error('Failed to load etf_list.json', err);
+      }
+      if (!etfList || etfList.length === 0) {
+        etfList = [
+          { symbol: '0050', short_name: '元大台灣50', category: '市值型' },
+          { symbol: '0056', short_name: '元大高股息', category: '高股息' }
+        ];
+      }
+    }
 
     function switchETF(symbol) {
       if (currentETF === symbol) return;
       currentETF = symbol;
       window.location.hash = symbol;
-      updateTabUI();
+      renderTabs();
       loadData();
     }
 
-    function updateTabUI() {
-      const tab50 = document.getElementById('tab-0050');
-      const tab56 = document.getElementById('tab-0056');
-      const badgeIcon = document.getElementById('etf-badge-icon');
+    function renderTabs() {
+      const container = document.getElementById('etf-tabs-container');
+      if (!container) return;
+      container.innerHTML = '';
 
-      if (currentETF === '0050') {
-        tab50.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-blue-600 text-white';
-        tab56.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white';
-        badgeIcon.className = 'w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20 text-xs';
-        badgeIcon.innerText = '50';
-      } else {
-        tab50.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white';
-        tab56.className = 'flex items-center justify-center py-2 px-3 rounded-xl text-xs font-bold transition-all shadow bg-emerald-600 text-white';
-        badgeIcon.className = 'w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20 text-xs';
-        badgeIcon.innerText = '56';
+      const badgeIcon = document.getElementById('etf-badge-icon');
+      if (badgeIcon) {
+        badgeIcon.innerText = currentETF.replace(/^00/, '');
       }
+
+      etfList.forEach(item => {
+        const isActive = item.symbol === currentETF;
+        const btn = document.createElement('button');
+        btn.onclick = () => switchETF(item.symbol);
+        
+        let activeBg = 'bg-blue-600 text-white shadow';
+        if (item.symbol === '0056') activeBg = 'bg-emerald-600 text-white shadow';
+        else if (item.symbol === '00878') activeBg = 'bg-indigo-600 text-white shadow';
+        else if (item.symbol === '00919') activeBg = 'bg-amber-600 text-white shadow';
+        else if (item.symbol === '006208') activeBg = 'bg-teal-600 text-white shadow';
+
+        btn.className = isActive 
+          ? `flex-shrink-0 flex items-center justify-center py-2 px-3.5 rounded-xl text-xs font-bold transition-all ${activeBg}`
+          : 'flex-shrink-0 flex items-center justify-center py-2 px-3.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-white bg-slate-800/40 border border-slate-800/60';
+
+        btn.innerHTML = `
+          <span class="mr-1.5 font-black text-sm">${item.symbol}</span>
+          <span>${item.short_name}</span>
+        `;
+        container.appendChild(btn);
+      });
     }
 
     async function loadData(forceReload = false) {

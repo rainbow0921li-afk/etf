@@ -268,8 +268,20 @@ def handle_message(msg):
         send_message(chat_id, calculate_dca(symbol, amt, years), reply_markup=get_main_keyboard())
 
     else:
-        # Default fallback
-        send_message(chat_id, f"💡 收到指令：「{text}」\n您可以點擊下方選單按鈕，或輸入 `/0050`、`/0056` 進行查詢！", reply_markup=get_main_keyboard())
+        fallback_msg = f"""
+💡 收到您的訊息：「{text}」
+
+目前我是專門為您打造的 *台灣 ETF 投資助理*（目前主打 0050 與 0056）！
+
+您隨時可以：
+▫️ 點選下方按鈕直接查詢行情與法人籌碼
+▫️ 輸入 `/compare` 比較市值型 vs 高股息型的優缺點
+▫️ 輸入 `/dca 0050 5000 3` 快速試算定期定額複利成效
+▫️ 輸入 `/update` 遠端更新雲端網站資料
+
+如果您之後想追蹤更多標的（例如 00878、006208、00919），我們也可以隨時擴充進來喔！
+""".strip()
+        send_message(chat_id, fallback_msg, reply_markup=get_main_keyboard())
 
 def run_polling():
     print("Telegram Bot Polling started...")

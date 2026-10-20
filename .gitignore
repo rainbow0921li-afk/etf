@@ -7,3 +7,4 @@ venv/
 bot.log
 bot.pid
 tg_images/
+restart.log

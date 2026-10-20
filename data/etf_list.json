@@ -26,5 +26,12 @@
     "name": "群益台灣精選高息ETF證券投資信託基金",
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 3, 6, 9, 12 月)"
+  },
+  {
+    "symbol": "006208",
+    "short_name": "富邦台50",
+    "name": "富邦台灣釆岦50證券投資信託基金",
+    "category": "市值型 ETF",
+    "dividend_frequency": "半年配 (通常每年 7 月及 11 月)"
   }
 ]

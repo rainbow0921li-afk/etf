@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>0050 元大台灣50 ETF 投資看板</title>
+  <meta name="description" content="0050 元大台灣50 ETF 專屬投資平台，提供即時行情、折溢價、成分股透視、歷年配息填息天數與定期定額回測試算。">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="0050看板">
+  <!-- Tailwind CSS & Lucide Icons & Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            twup: '#ef4444',    // 台股紅漲
+            twdown: '#22c55e',  // 台股綠跌
+            brand: '#3b82f6',
+            cardbg: '#1e293b',
+            darkbg: '#0f172a'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* iOS 安全區域適配 */
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen pb-16 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Mobile Top Sticky Navigation -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">50</div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <h1 class="text-base font-bold text-white tracking-wide">0050 元大台灣50</h1>
+            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">ETF</span>
+          </div>
+          <p class="text-[11px] text-slate-400" id="update-time-text">載入中...</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="refresh-btn" onclick="loadData(true)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors" title="重新整理">
+          <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-4 space-y-4">
+
+    <!-- 1. 核心即時行情卡片 -->
+    <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
+        <div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">現價 (TWD)</div>
+          <div class="flex items-baseline space-x-3">
+            <span id="price-display" class="text-4xl sm:text-5xl font-black text-white tracking-tight">--</span>
+            <div id="price-change-pill" class="flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-slate-800 text-slate-400">
+              <span id="price-change-text">--</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-xs text-slate-400 sm:text-right">
+          <div>臺灣50指數完全複製</div>
+          <div class="text-slate-500 mt-0.5">每股面額分割後市場報價</div>
+        </div>
+      </div>
+
+      <!-- 行情報價網格 -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-4 border-t border-slate-800/80 text-xs">
+        <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
+          <div class="text-slate-400">昨收</div>
+          <div id="prev-close-text" class="text-sm font-semibold text-slate-200 mt-0.5">--</div>
+        </div>
+        <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
+          <div class="text-slate-400">今開</div>
+          <div id="open-text" class="text-sm font-semibold text-slate-200 mt-0.5">--</div>
+        </div>
+        <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
+          <div class="text-slate-400">今日區間 (高 / 低)</div>
+          <div id="day-range-text" class="text-sm font-semibold text-slate-200 mt-0.5">-- / --</div>
+        </div>
+        <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
+          <div class="text-slate-400">成交量 (張)</div>
+          <div id="volume-text" class="text-sm font-semibold text-slate-200 mt-0.5">--</div>
+        </div>
+      </div>
+
+      <!-- 52 週最高與最低進度條 -->
+      <div class="mt-4 pt-3 border-t border-slate-800/60">
+        <div class="flex justify-between text-[11px] text-slate-400 mb-1.5">
+          <span>52週低: <b id="low-52w-text" class="text-slate-200">--</b></span>
+          <span class="text-slate-500 font-medium">52 週區間價格位置</span>
+          <span>52週高: <b id="high-52w-text" class="text-slate-200">--</b></span>
+        </div>
+        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden relative">
+          <div id="range-52w-bar" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-700" style="width: 50%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 多週期歷史累積報酬率 -->
+    <section class="bg-cardbg rounded-2xl p-4 border border-slate-800">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-4 h-4 text-blue-400"></i>
+          歷史累積報酬率 (含息總回報)
+        </h2>
+        <span class="text-[11px] text-slate-400">股息再投資基準</span>
+      </div>
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="returns-container">
+        <!-- JS 動態生成 -->
+      </div>
+    </section>
+
+    <!-- 3. 走勢圖表 (K線/折線與成交量) -->
+    <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="line-chart" class="w-4 h-4 text-blue-400"></i>
+            價格走勢圖
+          </h2>
+          <div id="chart-hover-info" class="text-[11px] text-slate-400 mt-0.5">點選或拖曳圖表檢視詳細歷史數值</div>
+        </div>
+        <!-- 週期切換按鈕 (適合手機觸控) -->
+        <div class="flex bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-xs font-semibold" id="range-buttons">
+          <button onclick="changeChartRange('1M')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-colors" data-range="1M">1M</button>
+          <button onclick="changeChartRange('3M')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-colors" data-range="3M">3M</button>
+          <button onclick="changeChartRange('6M')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-colors" data-range="6M">6M</button>
+          <button onclick="changeChartRange('1Y')" class="px-2.5 py-1 rounded-lg text-white bg-blue-600 transition-colors shadow" data-range="1Y">1Y</button>
+          <button onclick="changeChartRange('3Y')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-colors" data-range="3Y">3Y</button>
+        </div>
+      </div>
+      <div class="h-64 sm:h-72 w-full relative">
+        <canvas id="priceChart"></canvas>
+      </div>
+    </section>
+
+    <!-- 4. 定期定額回測試算機 (投資人核心功能) -->
+    <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i>
+          定期定額 (DCA) 歷史回測試算
+        </h2>
+        <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">真實歷史價格</span>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">模擬自過去特定時間起，於每月第一個交易日固定扣款買入 0050 的複利成效：</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- 左側：輸入選項 -->
+        <div class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">每月扣款金額 (TWD)</label>
+            <div class="flex items-center space-x-2">
+              <input type="number" id="dca-amount" value="5000" min="1000" step="1000"
+                     class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-sm focus:outline-none focus:border-blue-500">
+              <div class="flex space-x-1">
+                <button onclick="setDcaAmount(3000)" class="text-[11px] px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300">3千</button>
+                <button onclick="setDcaAmount(5000)" class="text-[11px] px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300">5千</button>
+                <button onclick="setDcaAmount(10000)" class="text-[11px] px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300">1萬</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">投資年限</label>
+            <div class="grid grid-cols-3 gap-2" id="dca-years-buttons">
+              <button onclick="setDcaYears(1)" class="py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700" data-year="1">近 1 年</button>
+              <button onclick="setDcaYears(2)" class="py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700" data-year="2">近 2 年</button>
+              <button onclick="setDcaYears(3)" class="py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white border border-blue-500 shadow" data-year="3">近 3 年</button>
+            </div>
+          </div>
+
+          <button onclick="calculateDCA()" class="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-bold text-xs text-white shadow-lg shadow-emerald-900/30 transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            重新試算
+          </button>
+        </div>
+
+        <!-- 右側：試算結果呈現 -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 flex flex-col justify-between space-y-3">
+          <div>
+            <div class="text-xs text-slate-400">目前累積資產總值</div>
+            <div id="dca-total-asset" class="text-2xl sm:text-3xl font-black text-emerald-400 mt-0.5">$0</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800 text-xs">
+            <div>
+              <div class="text-slate-400">累積投入本金</div>
+              <div id="dca-total-principal" class="text-sm font-bold text-slate-200 mt-0.5">$0</div>
+            </div>
+            <div>
+              <div class="text-slate-400">總投資報酬率</div>
+              <div id="dca-total-return" class="text-sm font-black text-twup mt-0.5">+0.0%</div>
+            </div>
+            <div>
+              <div class="text-slate-400">獲利金額 (價差+股息)</div>
+              <div id="dca-profit-amount" class="text-sm font-bold text-twup mt-0.5">+$0</div>
+            </div>
+            <div>
+              <div class="text-slate-400">累積持有股數</div>
+              <div id="dca-total-shares" class="text-sm font-bold text-slate-200 mt-0.5">0 股</div>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-500">
+            * 試算依據每月第一個交易日還原收盤價執行模擬，已含現金股息自動再投資效應。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 成分股與產業權重透視 -->
+    <section class="bg-cardbg rounded-2xl p-5 border border-slate-800">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
+            成分股與產業權重透視
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">追蹤臺灣市值前 50 大頂尖上市公司</p>
+        </div>
+      </div>
+
+      <!-- 產業權重橫條 -->
+      <div class="mb-5">
+        <div class="text-xs text-slate-400 mb-2 font-medium">主要產業佔比</div>
+        <div class="space-y-2" id="sectors-bar-container">
+          <!-- JS 動態生成 -->
+        </div>
+      </div>
+
+      <!-- 前十大重倉股卡片清單 -->
+      <div class="pt-3 border-t border-slate-800">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-bold text-slate-300">前十大重倉成分股</span>
+          <span class="text-[11px] text-slate-500">權重總計 > 75%</span>
+        </div>
+        <div class="space-y-2" id="top-holdings-container">
+          <!-- JS 動態生成 -->
+        </div>
+
+        <!-- 展開 50 檔成分股按鈕 -->
+        <button id="toggle-all-btn" onclick="toggleAllConstituents()" class="mt-3 w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-800 transition-colors flex items-center justify-center gap-1.5">
+          <span id="toggle-text">展開全部 50 檔成分股</span>
+          <i id="toggle-icon" data-lucide="chevron-down" class="w-4 h-4"></i>
+        </button>
+
+        <!-- 摺疊的其餘成分股 -->
+        <div id="rest-constituents-wrapper" class="hidden mt-3 space-y-2">
+          <!-- 搜尋框 -->
+          <input type="text" id="constituent-search" placeholder="搜尋成分股代號或名稱 (如 2603, 長榮)..."
+                 oninput="filterConstituents(this.value)"
+                 class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 mb-2">
+          <div id="all-constituents-container" class="space-y-2 max-h-96 overflow-y-auto pr-1">
+            <!-- JS 動態生成 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 歷年配息與填息紀錄 -->
+    <section class="bg-cardbg rounded-2xl p-5 border border-slate-800">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
+            歷年配息與填息天數紀錄
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">半年配發一次，連續 100% 填息成功紀錄</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto scrollbar-none -mx-5 px-5 sm:mx-0 sm:px-0">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="text-slate-400 border-b border-slate-800">
+              <th class="py-2.5 font-medium">除息日期</th>
+              <th class="py-2.5 font-medium text-right">每股配息</th>
+              <th class="py-2.5 font-medium text-right">當期殖利率</th>
+              <th class="py-2.5 font-medium text-right">填息天數</th>
+              <th class="py-2.5 font-medium text-center">填息狀態</th>
+            </tr>
+          </thead>
+          <tbody id="dividends-tbody" class="divide-y divide-slate-800/60">
+            <!-- JS 動態生成 -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. 基金基本小檔案 (Profile) -->
+    <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 text-xs">
+      <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
+        <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
+        0050 基金基本檔案
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-slate-400">
+        <div>發行公司: <span class="text-slate-200 font-medium">元大證券投資信託</span></div>
+        <div>成立日期: <span class="text-slate-200 font-medium" id="meta-inception">2003-06-25</span></div>
+        <div>配息週期: <span class="text-slate-200 font-medium">半年配 (1月/7月)</span></div>
+        <div>總費用率: <span class="text-slate-200 font-medium">約 0.43% / 年</span></div>
+        <div>經理費 / 保管費: <span class="text-slate-200 font-medium">0.32% / 0.035%</span></div>
+        <div>追蹤指數: <span class="text-slate-200 font-medium">臺灣50指數 (完全複製)</span></div>
+      </div>
+    </section>
+
+    <!-- 頁尾說明 -->
+    <footer class="text-center text-[11px] text-slate-500 py-4 space-y-1">
+      <p>本平台資料每日於證券市場盤後自動彙整，僅供個人研究與教學用途，非任何投資買賣建議。</p>
+      <p>資料來源：臺灣證券交易所 (TWSE) & Yahoo Finance 官方開放資訊</p>
+    </footer>
+
+  </main>
+
+  <!-- 應用主邏輯 -->
+  <script>
+    let etfData = null;
+    let priceChartInstance = null;
+    let currentRange = '1Y';
+    let dcaYears = 3;
+
+    // 啟動載入
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+
+    async function loadData(forceReload = false) {
+      const updateText = document.getElementById('update-time-text');
+      updateText.innerText = '讀取最新行情中...';
+      try {
+        const cacheBuster = forceReload ? `?t=${Date.now()}` : '';
+        const res = await fetch(`./data/0050.json${cacheBuster}`);
+        if (!res.ok) throw new Error('無法讀取 0050.json');
+        etfData = await res.json();
+        renderAll();
+        updateText.innerText = `最後更新: ${etfData.metadata.updated_at}`;
+      } catch (err) {
+        console.error('Fetch error:', err);
+        updateText.innerText = '載入失敗，請確認 data/0050.json 是否存在';
+      }
+    }
+
+    function renderAll() {
+      if (!etfData) return;
+      renderQuote();
+      renderReturns();
+      renderChart(currentRange);
+      calculateDCA();
+      renderSectors();
+      renderHoldings();
+      renderDividends();
+      lucide.createIcons();
+    }
+
+    // 1. 渲染即時報價
+    function renderQuote() {
+      const q = etfData.quote;
+      const m = etfData.metadata;
+
+      document.getElementById('price-display').innerText = q.price.toFixed(2);
+      
+      const changePill = document.getElementById('price-change-pill');
+      const changeText = document.getElementById('price-change-text');
+      const isUp = q.change > 0;
+      const isDown = q.change < 0;
+      const sign = isUp ? '+' : '';
+
+      if (isUp) {
+        changePill.className = 'flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-red-950/80 text-twup border border-red-800';
+      } else if (isDown) {
+        changePill.className = 'flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-emerald-950/80 text-twdown border border-emerald-800';
+      } else {
+        changePill.className = 'flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-slate-800 text-slate-300';
+      }
+      changeText.innerText = `${sign}${q.change.toFixed(2)} (${sign}${q.change_percent.toFixed(2)}%)`;
+
+      document.getElementById('prev-close-text').innerText = q.prev_close.toFixed(2);
+      document.getElementById('open-text').innerText = q.open.toFixed(2);
+      document.getElementById('day-range-text').innerText = `${q.high.toFixed(2)} / ${q.low.toFixed(2)}`;
+      document.getElementById('volume-text').innerText = (q.volume_shares / 1000).toLocaleString('zh-TW', { maximumFractionDigits: 0 });
+
+      // 52 週進度條
+      document.getElementById('low-52w-text').innerText = q.low_52w.toFixed(2);
+      document.getElementById('high-52w-text').innerText = q.high_52w.toFixed(2);
+      const span52 = q.high_52w - q.low_52w;
+      if (span52 > 0) {
+        const pct = Math.min(100, Math.max(0, ((q.price - q.low_52w) / span52) * 100));
+        document.getElementById('range-52w-bar').style.width = `${pct}%`;
+      }
+    }
+
+    // 2. 渲染累積報酬率
+    function renderReturns() {
+      const container = document.getElementById('returns-container');
+      container.innerHTML = '';
+      const r = etfData.returns;
+      const periods = [
+        { label: '近1月', key: '1M' },
+        { label: '近3月', key: '3M' },
+        { label: '近6月', key: '6M' },
+        { label: '近1年', key: '1Y' },
+        { label: '近3年', key: '3Y' },
+        { label: '近5年', key: '5Y' }
+      ];
+
+      periods.forEach(p => {
+        const val = r[p.key];
+        const isUp = val !== null && val > 0;
+        const colorClass = val === null ? 'text-slate-400' : isUp ? 'text-twup' : 'text-twdown';
+        const displayVal = val === null ? '--' : `${isUp ? '+' : ''}${val.toFixed(1)}%`;
+
+        const div = document.createElement('div');
+        div.className = 'bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-center';
+        div.innerHTML = `
+          <div class="text-[11px] text-slate-400">${p.label}</div>
+          <div class="text-sm font-bold ${colorClass} mt-0.5">${displayVal}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // 3. 圖表渲染
+    function changeChartRange(range) {
+      currentRange = range;
+      document.querySelectorAll('#range-buttons button').forEach(btn => {
+        if (btn.getAttribute('data-range') === range) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-white bg-blue-600 transition-colors shadow';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-colors';
+        }
+      });
+      renderChart(range);
+    }
+
+    function renderChart(range) {
+      if (!etfData || !etfData.prices) return;
+      const allPrices = etfData.prices;
+
+      let daysCount = 21;
+      if (range === '1M') daysCount = 21;
+      else if (range === '3M') daysCount = 63;
+      else if (range === '6M') daysCount = 126;
+      else if (range === '1Y') daysCount = 252;
+      else if (range === '3Y') daysCount = 756;
+
+      const slicePrices = allPrices.slice(-daysCount);
+      const labels = slicePrices.map(p => p.date.substring(5)); // 'MM-DD'
+      const dataPoints = slicePrices.map(p => p.close);
+
+      const ctx = document.getElementById('priceChart').getContext('2d');
+      if (priceChartInstance) {
+        priceChartInstance.destroy();
+      }
+
+      // 漸層背景
+      const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+      gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+      priceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '收盤價',
+            data: dataPoints,
+            borderColor: '#3b82f6',
+            borderWidth: 2,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.15,
+            pointRadius: slicePrices.length > 60 ? 0 : 2,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: '#60a5fa',
+            pointHoverBorderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1e293b',
+              titleColor: '#94a3b8',
+              bodyColor: '#ffffff',
+              borderColor: '#334155',
+              borderWidth: 1,
+              padding: 10,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => `收盤價: NT$ ${ctx.parsed.y.toFixed(2)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false, drawBorder: false },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                maxTicksLimit: 6
+              }
+            },
+            y: {
+              grid: { color: 'rgba(51, 65, 85, 0.4)' },
+              ticks: {
+                color: '#64748b',
+                font: { size: 10 },
+                callback: (val) => `$${val}`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // 4. 定期定額回測試算
+    function setDcaAmount(amt) {
+      document.getElementById('dca-amount').value = amt;
+      calculateDCA();
+    }
+
+    function setDcaYears(years) {
+      dcaYears = years;
+      document.querySelectorAll('#dca-years-buttons button').forEach(btn => {
+        if (parseInt(btn.getAttribute('data-year')) === years) {
+          btn.className = 'py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white border border-blue-500 shadow';
+        } else {
+          btn.className = 'py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700';
+        }
+      });
+      calculateDCA();
+    }
+
+    function calculateDCA() {
+      if (!etfData || !etfData.prices) return;
+      const amountPerMonth = parseFloat(document.getElementById('dca-amount').value) || 5000;
+      const allPrices = etfData.prices;
+
+      // 每年大約 252 交易日，取對應長度
+      const tradingDays = Math.min(allPrices.length, dcaYears * 252);
+      const subPrices = allPrices.slice(-tradingDays);
+      if (subPrices.length === 0) return;
+
+      // 篩選出每月第一個交易日買入
+      let lastMonth = '';
+      let totalShares = 0;
+      let totalInvested = 0;
+
+      subPrices.forEach(p => {
+        const month = p.date.substring(0, 7); // 'YYYY-MM'
+        if (month !== lastMonth) {
+          lastMonth = month;
+          const buyPrice = p.adj_close || p.close;
+          const boughtShares = amountPerMonth / buyPrice;
+          totalShares += boughtShares;
+          totalInvested += amountPerMonth;
+        }
+      });
+
+      const latestPrice = subPrices[subPrices.length - 1].close;
+      const currentAssetValue = Math.round(totalShares * latestPrice);
+      const profit = currentAssetValue - totalInvested;
+      const totalReturnPct = totalInvested > 0 ? ((profit / totalInvested) * 100).toFixed(1) : 0;
+
+      document.getElementById('dca-total-asset').innerText = `$${currentAssetValue.toLocaleString('zh-TW')}`;
+      document.getElementById('dca-total-principal').innerText = `$${totalInvested.toLocaleString('zh-TW')}`;
+      
+      const isUp = profit >= 0;
+      const profitSign = isUp ? '+' : '';
+      const returnEl = document.getElementById('dca-total-return');
+      const profitEl = document.getElementById('dca-profit-amount');
+
+      returnEl.className = `text-sm font-black ${isUp ? 'text-twup' : 'text-twdown'} mt-0.5`;
+      returnEl.innerText = `${profitSign}${totalReturnPct}%`;
+
+      profitEl.className = `text-sm font-bold ${isUp ? 'text-twup' : 'text-twdown'} mt-0.5`;
+      profitEl.innerText = `${profitSign}$${profit.toLocaleString('zh-TW')}`;
+
+      document.getElementById('dca-total-shares').innerText = `${Math.round(totalShares).toLocaleString('zh-TW')} 股`;
+    }
+
+    // 5. 渲染產業佔比
+    function renderSectors() {
+      const container = document.getElementById('sectors-bar-container');
+      container.innerHTML = '';
+      const sectors = etfData.sectors.slice(0, 5); // 取前五大
+      const colors = ['bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500'];
+
+      sectors.forEach((s, idx) => {
+        const color = colors[idx % colors.length];
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-slate-300">${s.name}</span>
+            <span class="text-slate-400 font-bold">${s.weight.toFixed(1)}%</span>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+            <div class="${color} h-full rounded-full" style="width: ${s.weight}%"></div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // 6. 渲染成分股
+    function renderHoldings() {
+      const topContainer = document.getElementById('top-holdings-container');
+      topContainer.innerHTML = '';
+      etfData.top_holdings.forEach((h, idx) => {
+        topContainer.appendChild(createHoldingCard(h, idx + 1));
+      });
+
+      renderAllConstituentsList(etfData.all_constituents);
+    }
+
+    function createHoldingCard(h, rank) {
+      const div = document.createElement('div');
+      div.className = 'bg-slate-900/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between';
+      div.innerHTML = `
+        <div class="flex items-center space-x-3">
+          <span class="w-5 text-center text-xs font-bold text-slate-500">${rank}</span>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xs font-bold text-white">${h.name}</span>
+              <span class="text-[11px] text-slate-400">${h.code}</span>
+            </div>
+            <div class="text-[10px] text-slate-500">${h.sector} · 本益比 ${h.pe || '--'}</div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-xs font-bold text-blue-400">${h.weight.toFixed(2)}%</div>
+          <div class="text-[10px] text-slate-400">$${h.close || '--'}</div>
+        </div>
+      `;
+      return div;
+    }
+
+    function renderAllConstituentsList(list) {
+      const container = document.getElementById('all-constituents-container');
+      container.innerHTML = '';
+      list.forEach((h, idx) => {
+        container.appendChild(createHoldingCard(h, idx + 1));
+      });
+    }
+
+    function filterConstituents(keyword) {
+      keyword = keyword.trim().toLowerCase();
+      const filtered = etfData.all_constituents.filter(h => 
+        h.name.toLowerCase().includes(keyword) || h.code.includes(keyword) || h.sector.toLowerCase().includes(keyword)
+      );
+      renderAllConstituentsList(filtered);
+    }
+
+    let isExpanded = false;
+    function toggleAllConstituents() {
+      isExpanded = !isExpanded;
+      const wrapper = document.getElementById('rest-constituents-wrapper');
+      const text = document.getElementById('toggle-text');
+      const icon = document.getElementById('toggle-icon');
+      
+      if (isExpanded) {
+        wrapper.classList.remove('hidden');
+        text.innerText = '收合其餘成分股';
+        icon.setAttribute('data-lucide', 'chevron-up');
+      } else {
+        wrapper.classList.add('hidden');
+        text.innerText = '展開全部 50 檔成分股';
+        icon.setAttribute('data-lucide', 'chevron-down');
+      }
+      lucide.createIcons();
+    }
+
+    // 7. 渲染歷年配息
+    function renderDividends() {
+      const tbody = document.getElementById('dividends-tbody');
+      tbody.innerHTML = '';
+      etfData.dividends.slice(0, 8).forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition-colors';
+        const fillText = d.is_filled ? `${d.fill_days} 天` : '未填息';
+        const fillBadge = d.is_filled 
+          ? '<span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-[10px] border border-emerald-800">已填息</span>'
+          : '<span class="px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 text-[10px] border border-amber-800">進行中</span>';
+
+        tr.innerHTML = `
+          <td class="py-2.5 font-medium text-slate-200">${d.date}</td>
+          <td class="py-2.5 text-right font-bold text-amber-400">NT$ ${d.amount.toFixed(2)}</td>
+          <td class="py-2.5 text-right text-slate-300">${d.yield ? d.yield.toFixed(2) + '%' : '--'}</td>
+          <td class="py-2.5 text-right font-semibold text-slate-300">${fillText}</td>
+          <td class="py-2.5 text-center">${fillBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>

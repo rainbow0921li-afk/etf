@@ -52,6 +52,24 @@ def api_call(endpoint, payload=None):
         print(f"API Error ({endpoint}): {e}")
         return {"ok": False, "description": str(e)}
 
+def download_telegram_file(file_id, dest_path):
+    res = api_call("getFile", {"file_id": file_id})
+    if not res or not res.get("ok"):
+        return False
+    file_path = res["result"].get("file_path")
+    if not file_path:
+        return False
+    
+    file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
+    req = urllib.request.Request(file_url, headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r, open(dest_path, "wb") as f:
+            f.write(r.read())
+        return True
+    except Exception as e:
+        print(f"Failed to download telegram file {file_id}: {e}")
+        return False
+
 def send_chat_action(chat_id, action="typing"):
     return api_call("sendChatAction", {"chat_id": chat_id, "action": action})
 
@@ -377,13 +395,48 @@ def trigger_github_update():
 def handle_message(msg):
     chat_id = msg['chat']['id']
     text = (msg.get('text') or '').strip()
+    photo = msg.get('photo')
+    caption = (msg.get('caption') or '').strip()
+    document = msg.get('document')
+
+    # 1. 圖片訊息 (Photo / Image Document) - 啟動多模態視覺 AI 解讀
+    if photo or (document and document.get('mime_type', '').startswith('image/')):
+        img_dir = os.path.join(PROJECT_DIR, 'tg_images')
+        os.makedirs(img_dir, exist_ok=True)
+        
+        if photo:
+            # 取最高解析度的相片 (陣列最後一個)
+            file_id = photo[-1]['file_id']
+            ext = '.jpg'
+        else:
+            file_id = document['file_id']
+            orig_name = document.get('file_name', 'img.png')
+            ext = os.path.splitext(orig_name)[1] or '.png'
+
+        timestamp = int(time.time() * 1000)
+        local_img_path = os.path.join(img_dir, f"tg_{chat_id}_{timestamp}{ext}")
+
+        send_message(chat_id, "📥 收到圖片！正在下載並啟動 Antigravity 多模態視覺 AI 分析中...")
+        success = download_telegram_file(file_id, local_img_path)
+        if not success or not os.path.exists(local_img_path):
+            send_message(chat_id, "❌ 圖片下載失敗，請稍後再試。")
+            return
+
+        if caption:
+            prompt = f"請使用 view_file 查看使用者傳送的圖片 {local_img_path}，並依據使用者隨附的要求或問題進行詳細回答與解讀：「{caption}」"
+        else:
+            prompt = f"請使用 view_file 查看使用者傳送的圖片 {local_img_path}，詳細解讀並結構化分析這張圖片的內容、畫面細節、圖表文字/數據與重點意涵。"
+
+        print(f"Received image from {chat_id}, saved to {local_img_path}, caption: {caption}")
+        task_queue.put((chat_id, prompt, False))
+        return
 
     if not text:
         return
 
     print(f"Received from {chat_id}: {text}")
 
-    # 1. 說明與選單
+    # 2. 說明與選單
     if text in ['/start', '/help', '選單', 'help', 'menu']:
         welcome_text = """
 👋 您好！我是您的 *Antigravity AI 全能助理（純代理模式）*！
@@ -391,6 +444,7 @@ def handle_message(msg):
 這個機器人直接連結此 Docker 容器內的 **Google Antigravity 核心引擎**。即使您關閉電腦終端機，隨時拿起手機在 Telegram 交代任務，我都可以在此容器內全自動完成！
 
 💡 *您可以要我做什麼？（任何事情都可以！）*
+▫️ 「*直接傳送圖片或截圖*」- 支援多模態視覺解讀（K線圖、對帳單、程式碼截圖、發票等）！
 ▫️ 「*幫我寫一個 Python 腳本抓每天天氣*」
 ▫️ 「*修改看板首頁，把標題加上今日日期*」
 ▫️ 「*幫我加入 00919 並推送到 GitHub Pages*」
@@ -403,7 +457,7 @@ def handle_message(msg):
 ▫️ `/compare` - 市值型 vs 高股息速評
 ▫️ 點選下方快速選單可即時查看伺服器狀態！
 
-現在，請直接傳送任何一句話或開發任務給我試試看吧！🚀
+現在，請直接傳送任何文字、指令或圖片給我試試看吧！🚀
 """.strip()
         send_message(chat_id, welcome_text, reply_markup=get_main_keyboard())
         return

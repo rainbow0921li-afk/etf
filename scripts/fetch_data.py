@@ -263,6 +263,10 @@ def build_dataset():
     # Sort sector summary
     sorted_sectors = [{"name": k, "weight": v} for k, v in sorted(sector_summary.items(), key=lambda x: x[1], reverse=True)]
 
+    # Taiwan Time (UTC+8)
+    tz_tw = datetime.timezone(datetime.timedelta(hours=8))
+    now_tw = datetime.datetime.now(tz_tw)
+
     # Final Dataset
     dataset = {
         "metadata": {
@@ -275,7 +279,7 @@ def build_dataset():
             "expense_ratio": "0.43% (經理費 0.32% + 保管費 0.035% + 相關費用)",
             "inception_date": "2003-06-25",
             "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
-            "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "updated_at": now_tw.strftime('%Y-%m-%d %H:%M:%S'),
             "total_records": len(price_records)
         },
         "quote": {

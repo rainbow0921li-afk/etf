@@ -352,7 +352,7 @@
         if (!res.ok) throw new Error('無法讀取 0050.json');
         etfData = await res.json();
         renderAll();
-        updateText.innerText = `最後更新: ${etfData.metadata.updated_at}`;
+        updateText.innerText = `最後更新: ${etfData.metadata.updated_at} (台灣時間)`;
       } catch (err) {
         console.error('Fetch error:', err);
         updateText.innerText = '載入失敗，請確認 data/0050.json 是否存在';

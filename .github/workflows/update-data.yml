@@ -4,7 +4,7 @@ on:
   schedule:
     # 台灣時間 (UTC+8) 週一至週五 15:30 (收盤並結算盤後資料) -> UTC 07:30
     - cron: '30 7 * * 1-5'
-  workflow_dispatch: # 支援在 GitHub 網頁上手動點擊「Run workflow」立即更新
+  workflow_dispatch: # 支援在 GitHub 網頁或 Telegram 手動點擊「Run workflow」立即更新
 
 jobs:
   update-etf-data:
@@ -31,3 +31,42 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore(data): auto-update ETF market data (0050 & 0056) [skip ci]" && git push)
+
+      - name: Push Telegram Daily Closing Report
+        run: |
+          python3 -c "
+          import urllib.request, json
+          token = '8986464959:AAG6Hl26vSx2mygIHi3knYzsxA3xf_UJr9s'
+          chat_id = '5709621345'
+          try:
+              with open('data/0050.json') as f: d50 = json.load(f)
+              with open('data/0056.json') as f: d56 = json.load(f)
+              q50, q56 = d50['quote'], d56['quote']
+              i50, i56 = d50.get('institutional', {}), d56.get('institutional', {})
+              s50 = '+' if q50['change'] > 0 else ''
+              s56 = '+' if q56['change'] > 0 else ''
+              text = f'''📢 *0050 / 0056 今日盤後日報 ({i50.get(\"date\", \"最新\")})*
+          ━━━━━━━━━━━━━━━━━━
+          📊 *0050 元大台灣50*
+          • 收盤：`NT$ {q50[\"price\"]}` ({s50}{q50[\"change\"]} / {s50}{q50[\"change_percent\"]}%)
+          • 淨值：`NT$ {q50.get(\"nav\")}` (折溢價 {q50.get(\"discount_percent\")}%)
+          • 外資：`{i50.get(\"foreign_lots\", 0):,} 張` ｜ 投信：`{i50.get(\"trust_lots\", 0):,} 張`
+          • 法人合計：`{i50.get(\"total_lots\", 0):,} 張`
+
+          💰 *0056 元大高股息*
+          • 收盤：`NT$ {q56[\"price\"]}` ({s56}{q56[\"change\"]} / {s56}{q56[\"change_percent\"]}%)
+          • 淨值：`NT$ {q56.get(\"nav\")}` (折溢價 {q56.get(\"discount_percent\")}%)
+          • 外資：`{i56.get(\"foreign_lots\", 0):,} 張` ｜ 投信：`{i56.get(\"trust_lots\", 0):,} 張`
+          • 法人合計：`{i56.get(\"total_lots\", 0):,} 張`
+
+          🌐 [開啟手機專屬儀表板](https://rainbow0921li-afk.github.io/etf/)'''
+              req = urllib.request.Request(
+                  f'https://api.telegram.org/bot{token}/sendMessage',
+                  data=json.dumps({'chat_id': chat_id, 'text': text, 'parse_mode': 'Markdown', 'disable_web_page_preview': True}).encode('utf-8'),
+                  headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
+              )
+              urllib.request.urlopen(req, timeout=10)
+              print('Telegram daily report pushed successfully!')
+          except Exception as e:
+              print('Telegram push warning:', e)
+          "

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>台灣熱門 ETF 投資看板 (0050 / 0056)</title>
-  <meta name="description" content="台灣熱門 ETF 投資平台，提供 0050 元大台灣50 與 0056 元大高股息即時行情、走勢圖、歷年配息填息紀錄、成分股透視與定期定額回測試算。">
+  <meta name="description" content="台灣熱門 ETF 投資平台，提供 0050 元大台灣50 與 0056 元大高股息即時行情、淨值、折溢價、市值規模、三大法人買賣超、走勢圖與定期定額回測試算。">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,8 +19,8 @@
       theme: {
         extend: {
           colors: {
-            twup: '#ef4444',    // 台股紅漲
-            twdown: '#22c55e',  // 台股綠跌
+            twup: '#ef4444',    // 台股紅漲 / 買超
+            twdown: '#22c55e',  // 台股綠跌 / 賣超
             brand: '#3b82f6',
             cardbg: '#1e293b',
             darkbg: '#0f172a'
@@ -82,7 +82,7 @@
 
   <main class="max-w-4xl mx-auto px-4 py-3 space-y-4">
 
-    <!-- 1. 核心即時行情卡片 -->
+    <!-- 1. 核心即時行情與淨值折溢價卡片 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
       <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
         <div>
@@ -100,8 +100,26 @@
         </div>
       </div>
 
+      <!-- 淨值、折溢價與市值規模重點區塊 -->
+      <div class="grid grid-cols-3 gap-2 mt-4 p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs">
+        <div>
+          <div class="text-slate-400 text-[11px]">即時淨值 (NAV)</div>
+          <div id="nav-price-text" class="text-base font-bold text-white mt-0.5">--</div>
+        </div>
+        <div>
+          <div class="text-slate-400 text-[11px]">折溢價幅度</div>
+          <div id="discount-pill" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-800 text-slate-300 mt-0.5">
+            <span id="discount-text">--%</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-slate-400 text-[11px]">基金總規模 (市值)</div>
+          <div id="market-cap-text" class="text-base font-bold text-amber-400 mt-0.5">--</div>
+        </div>
+      </div>
+
       <!-- 行情報價網格 -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5 pt-4 border-t border-slate-800/80 text-xs">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 border-t border-slate-800/80 text-xs">
         <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
           <div class="text-slate-400">昨收</div>
           <div id="prev-close-text" class="text-sm font-semibold text-slate-200 mt-0.5">--</div>
@@ -133,7 +151,60 @@
       </div>
     </section>
 
-    <!-- 2. 多週期歷史累積報酬率 -->
+    <!-- 2. 三大法人買賣超動向卡片 (籌碼面) -->
+    <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4 text-sky-400"></i>
+            三大法人買賣超動向 (籌碼面)
+          </h2>
+          <p class="text-[11px] text-slate-400 mt-0.5" id="institutional-date-text">臺灣證券交易所盤後公佈</p>
+        </div>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">單位: 張</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <!-- 外資 -->
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>外資及陸資</span>
+            <span class="text-[10px] text-slate-500">Foreign</span>
+          </div>
+          <div id="inst-foreign" class="text-base font-black mt-1">--</div>
+        </div>
+        <!-- 投信 -->
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>投信</span>
+            <span class="text-[10px] text-slate-500">Trust</span>
+          </div>
+          <div id="inst-trust" class="text-base font-black mt-1">--</div>
+        </div>
+        <!-- 自營商 -->
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>自營商 (總計)</span>
+            <span class="text-[10px] text-slate-500">Dealer</span>
+          </div>
+          <div id="inst-dealer" class="text-base font-black mt-1">--</div>
+          <div id="inst-dealer-detail" class="text-[10px] text-slate-500 mt-0.5">自行 -- / 避險 --</div>
+        </div>
+        <!-- 合計 -->
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>三大法人合計</span>
+            <span class="text-[10px] text-slate-500">Total</span>
+          </div>
+          <div id="inst-total" class="text-base font-black mt-1">--</div>
+        </div>
+      </div>
+      <p class="text-[10px] text-slate-500 mt-2.5">
+        * 註：自營商包含「自行買賣」與「避險」部位，ETF 自營商避險通常反映造市套利及權證發行避險需求。
+      </p>
+    </section>
+
+    <!-- 3. 多週期歷史累積報酬率 -->
     <section class="bg-cardbg rounded-2xl p-4 border border-slate-800">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
@@ -147,7 +218,7 @@
       </div>
     </section>
 
-    <!-- 3. 走勢圖表 (K線/折線與成交量) -->
+    <!-- 4. 走勢圖表 (K線/折線與成交量) -->
     <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
@@ -171,7 +242,7 @@
       </div>
     </section>
 
-    <!-- 4. 定期定額回測試算機 -->
+    <!-- 5. 定期定額回測試算機 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 shadow-xl">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
@@ -244,7 +315,7 @@
       </div>
     </section>
 
-    <!-- 5. 成分股與產業權重透視 -->
+    <!-- 6. 成分股與產業權重透視 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -293,7 +364,7 @@
       </div>
     </section>
 
-    <!-- 6. 歷年配息與填息紀錄 -->
+    <!-- 7. 歷年配息與填息紀錄 -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800">
       <div class="flex items-center justify-between mb-3">
         <div>
@@ -323,7 +394,7 @@
       </div>
     </section>
 
-    <!-- 7. 基金基本小檔案 (Profile) -->
+    <!-- 8. 基金基本小檔案 (Profile) -->
     <section class="bg-cardbg rounded-2xl p-5 border border-slate-800 text-xs">
       <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
         <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
@@ -411,6 +482,7 @@
       if (!etfData) return;
       renderHeaderAndMetadata();
       renderQuote();
+      renderInstitutional();
       renderReturns();
       renderChart(currentRange);
       calculateDCA();
@@ -452,7 +524,7 @@
       document.getElementById('meta-benchmark').innerText = m.benchmark;
     }
 
-    // 1. 渲染即時報價
+    // 1. 渲染即時報價、淨值、折溢價與規模
     function renderQuote() {
       const q = etfData.quote;
 
@@ -472,6 +544,27 @@
         changePill.className = 'flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-slate-800 text-slate-300';
       }
       changeText.innerText = `${sign}${q.change.toFixed(2)} (${sign}${q.change_percent.toFixed(2)}%)`;
+
+      // 淨值、折溢價與規模
+      document.getElementById('nav-price-text').innerText = `NT$ ${q.nav ? q.nav.toFixed(2) : '--'}`;
+      document.getElementById('market-cap-text').innerText = q.market_cap_display ? `NT$ ${q.market_cap_display}` : '--';
+
+      const discPill = document.getElementById('discount-pill');
+      const discText = document.getElementById('discount-text');
+      const disc = q.discount_percent || 0;
+      const isPremium = disc > 0;
+      const isDiscount = disc < 0;
+      const discSign = isPremium ? '+' : '';
+      const discLabel = isPremium ? '溢價' : isDiscount ? '折價' : '平價';
+
+      if (isPremium) {
+        discPill.className = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-amber-950/80 text-amber-400 border border-amber-800';
+      } else if (isDiscount) {
+        discPill.className = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-950/80 text-twdown border border-emerald-800';
+      } else {
+        discPill.className = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-800 text-slate-300';
+      }
+      discText.innerText = `${discSign}${disc.toFixed(2)}% (${discLabel})`;
 
       document.getElementById('prev-close-text').innerText = q.prev_close.toFixed(2);
       document.getElementById('open-text').innerText = q.open.toFixed(2);
@@ -494,7 +587,32 @@
       }
     }
 
-    // 2. 渲染累積報酬率
+    // 2. 渲染三大法人買賣超
+    function renderInstitutional() {
+      const inst = etfData.institutional || {};
+      const dateText = document.getElementById('institutional-date-text');
+      dateText.innerText = inst.date ? `${inst.date} 臺灣證券交易所盤後公佈` : '臺灣證券交易所盤後公佈';
+
+      function formatLots(val) {
+        if (val === undefined || val === null) return '--';
+        const isUp = val > 0;
+        const isDown = val < 0;
+        const color = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-300';
+        const sign = isUp ? '+' : '';
+        return `<span class="${color}">${sign}${val.toLocaleString('zh-TW')}</span>`;
+      }
+
+      document.getElementById('inst-foreign').innerHTML = formatLots(inst.foreign_lots);
+      document.getElementById('inst-trust').innerHTML = formatLots(inst.trust_lots);
+      document.getElementById('inst-dealer').innerHTML = formatLots(inst.dealer_total_lots);
+      document.getElementById('inst-total').innerHTML = formatLots(inst.total_lots);
+
+      const selfLots = inst.dealer_self_lots ? (inst.dealer_self_lots > 0 ? `+${inst.dealer_self_lots}` : inst.dealer_self_lots) : 0;
+      const hedgeLots = inst.dealer_hedge_lots ? (inst.dealer_hedge_lots > 0 ? `+${inst.dealer_hedge_lots}` : inst.dealer_hedge_lots) : 0;
+      document.getElementById('inst-dealer-detail').innerText = `自行 ${selfLots} / 避險 ${hedgeLots}`;
+    }
+
+    // 3. 渲染累積報酬率
     function renderReturns() {
       const container = document.getElementById('returns-container');
       container.innerHTML = '';
@@ -524,7 +642,7 @@
       });
     }
 
-    // 3. 圖表渲染
+    // 4. 圖表渲染
     function changeChartRange(range) {
       currentRange = range;
       document.querySelectorAll('#range-buttons button').forEach(btn => {
@@ -549,7 +667,7 @@
       else if (range === '3Y') daysCount = 756;
 
       const slicePrices = allPrices.slice(-daysCount);
-      const labels = slicePrices.map(p => p.date.substring(5)); // 'MM-DD'
+      const labels = slicePrices.map(p => p.date.substring(5));
       const dataPoints = slicePrices.map(p => p.close);
 
       const ctx = document.getElementById('priceChart').getContext('2d');
@@ -632,7 +750,7 @@
       });
     }
 
-    // 4. 定期定額回測試算
+    // 5. 定期定額回測試算
     function setDcaAmount(amt) {
       document.getElementById('dca-amount').value = amt;
       calculateDCA();
@@ -696,7 +814,7 @@
       document.getElementById('dca-total-shares').innerText = `${Math.round(totalShares).toLocaleString('zh-TW')} 股`;
     }
 
-    // 5. 渲染產業佔比
+    // 6. 渲染產業佔比
     function renderSectors() {
       const container = document.getElementById('sectors-bar-container');
       container.innerHTML = '';
@@ -721,7 +839,7 @@
       });
     }
 
-    // 6. 渲染成分股
+    // 7. 渲染成分股
     function renderHoldings() {
       const topContainer = document.getElementById('top-holdings-container');
       topContainer.innerHTML = '';
@@ -792,7 +910,7 @@
       lucide.createIcons();
     }
 
-    // 7. 渲染歷年配息
+    // 8. 渲染歷年配息
     function renderDividends() {
       const tbody = document.getElementById('dividends-tbody');
       tbody.innerHTML = '';

@@ -10,16 +10,16 @@
     "expense_ratio": "0.43% (經理費 0.32% + 保管費 0.035% + 相關費用)",
     "inception_date": "2003-06-25",
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
-    "updated_at": "2026-10-20 09:58:35",
+    "updated_at": "2026-10-20 10:07:13",
     "total_records": 1214
   },
   "quote": {
-    "price": 108.15,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 107.9,
+    "change": -0.25,
+    "change_percent": -0.23,
     "prev_close": 108.15,
     "open": 107.65,
-    "high": 108.15,
+    "high": 108.3,
     "low": 107.3,
     "volume_shares": 165406652,
     "trade_value_ntd": 17785038460,
@@ -27,15 +27,35 @@
     "low_52w": 59.45,
     "dividend_yield": 0,
     "pe": null,
-    "pb": null
+    "pb": null,
+    "nav": 107.81,
+    "prev_nav": 108.24,
+    "discount_percent": 0.08,
+    "market_cap_billion_ntd": 24810.85,
+    "market_cap_display": "2.48 兆",
+    "shares_units": 23013500000,
+    "creation_redemption_shares": 132500000
+  },
+  "institutional": {
+    "date": "2026-10-19",
+    "foreign_lots": -36893,
+    "trust_lots": 5054,
+    "dealer_self_lots": 966,
+    "dealer_hedge_lots": -62299,
+    "dealer_total_lots": -61333,
+    "total_lots": -93171,
+    "foreign_shares": -36892650,
+    "trust_shares": 5054000,
+    "dealer_total_shares": -61332822,
+    "total_shares": -93171472
   },
   "returns": {
-    "1M": 0.09,
-    "3M": 5.51,
-    "6M": 28.69,
-    "1Y": 83.74,
-    "3Y": 271.27,
-    "5Y": 266.11
+    "1M": 0.23,
+    "3M": 5.66,
+    "6M": 28.87,
+    "1Y": 84.0,
+    "3Y": 271.78,
+    "5Y": 266.62
   },
   "dividends": [
     {
@@ -7585,11 +7605,11 @@
     {
       "date": "2026-10-20",
       "open": 107.65,
-      "high": 108.15,
+      "high": 108.3,
       "low": 107.3,
-      "close": 108.15,
-      "adj_close": 108.15,
-      "volume": 34643372
+      "close": 108.3,
+      "adj_close": 108.3,
+      "volume": 37172489
     }
   ]
 }

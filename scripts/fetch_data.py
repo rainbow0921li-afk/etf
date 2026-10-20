@@ -3,7 +3,7 @@
 Fetch ETF Data (0050 and 0056)
 Sources:
 - Yahoo Finance (Historical OHLCV, Adj Close, Dividends, Quote)
-- TWSE OpenAPI (Official closing, valuation, constituent metrics)
+- TWSE OpenAPI & MIS (Official closing, valuation, constituent metrics, NAV, Discount, AUM, Institutional Trading)
 Zero-dependency: Uses only Python 3 standard library
 """
 
@@ -209,13 +209,100 @@ def get_twse_data():
 
     return twse_stocks, twse_valuations
 
-def process_etf(etf_id, twse_stocks, twse_valuations, now_tw):
+def get_nav_and_market_cap():
+    """Fetch NAV, Discount/Premium, and Market Cap (AUM) from TWSE MIS all_etf.txt"""
+    nav_map = {}
+    try:
+        url = 'https://mis.twse.com.tw/stock/data/all_etf.txt'
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=8) as res:
+            data = json.loads(res.read().decode('utf-8'))
+            for group in data.get('a1', []):
+                for item in group.get('msgArray', []):
+                    code = item.get('a')
+                    if code in ['0050', '0056']:
+                        shares = float(item.get('c', 0) or 0)
+                        nav = float(item.get('f', 0) or 0)
+                        price = float(item.get('e', 0) or 0)
+                        disc_pct = float(item.get('g', 0) or 0)
+                        prev_nav = float(item.get('h', 0) or 0)
+                        
+                        # 市值 (規模): 總單位數 * 淨值
+                        market_cap_billion = round((shares * nav) / 100000000, 2)
+                        
+                        # 格式化顯示
+                        if market_cap_billion >= 10000:
+                            cap_display = f"{market_cap_billion / 10000:.2f} 兆"
+                        else:
+                            cap_display = f"{market_cap_billion:,.0f} 億"
+
+                        nav_map[code] = {
+                            'nav': nav,
+                            'market_price': price,
+                            'discount_percent': disc_pct,
+                            'prev_nav': prev_nav,
+                            'shares_units': int(shares),
+                            'creation_redemption_shares': int(float(item.get('d', 0) or 0)),
+                            'market_cap_billion_ntd': market_cap_billion,
+                            'market_cap_display': cap_display,
+                            'nav_updated_time': f"{item.get('i', '')} {item.get('j', '')}"
+                        }
+    except Exception as e:
+        print(f"Warning: Failed to fetch ETF NAV: {e}")
+    return nav_map
+
+def get_institutional_data():
+    """Fetch 3 major institutional investors net trading from TWSE T86"""
+    inst_map = {}
+    try:
+        url = 'https://www.twse.com.tw/rwd/zh/fund/T86?response=json&selectType=ALL'
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=10) as res:
+            data = json.loads(res.read().decode('utf-8'))
+            raw_date = data.get('date', '')
+            formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:]}" if len(raw_date) == 8 else raw_date
+            
+            def parse_shares(val):
+                if not val:
+                    return 0
+                return int(str(val).replace(',', '').strip())
+
+            for r in data.get('data', []):
+                code = r[0].strip()
+                if code in ['0050', '0056']:
+                    foreign = parse_shares(r[4])
+                    trust = parse_shares(r[10])
+                    dealer_total = parse_shares(r[11])
+                    dealer_self = parse_shares(r[14])
+                    dealer_hedge = parse_shares(r[17])
+                    total = parse_shares(r[18])
+                    
+                    inst_map[code] = {
+                        "date": formatted_date,
+                        "foreign_lots": round(foreign / 1000),      # 張數
+                        "trust_lots": round(trust / 1000),          # 張數
+                        "dealer_self_lots": round(dealer_self / 1000),
+                        "dealer_hedge_lots": round(dealer_hedge / 1000),
+                        "dealer_total_lots": round(dealer_total / 1000),
+                        "total_lots": round(total / 1000),
+                        "foreign_shares": foreign,
+                        "trust_shares": trust,
+                        "dealer_total_shares": dealer_total,
+                        "total_shares": total
+                    }
+    except Exception as e:
+        print(f"Warning: Failed to fetch institutional trading (T86): {e}")
+    return inst_map
+
+def process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw):
     cfg = ETF_CONFIGS[etf_id]
     print(f"[{etf_id}] Fetching Yahoo data for {cfg['yahoo_symbol']}...")
     meta, timestamps, quote, adjclose, dividends_raw = get_yahoo_data(cfg['yahoo_symbol'])
     
     twse_info = twse_stocks.get(etf_id, {})
     twse_val = twse_valuations.get(etf_id, {})
+    nav_info = nav_map.get(etf_id, {})
+    inst_info = inst_map.get(etf_id, {})
 
     # Process Price Series
     price_records = []
@@ -247,7 +334,7 @@ def process_etf(etf_id, twse_stocks, twse_valuations, now_tw):
     latest = price_records[-1] if price_records else {}
     prev = price_records[-2] if len(price_records) > 1 else latest
 
-    curr_price = latest.get('close', 0)
+    curr_price = nav_info.get('market_price') or latest.get('close', 0)
     prev_close = prev.get('close', curr_price)
     change = round(curr_price - prev_close, 2)
     change_pct = round((change / prev_close) * 100, 2) if prev_close else 0.0
@@ -358,8 +445,17 @@ def process_etf(etf_id, twse_stocks, twse_valuations, now_tw):
             "low_52w": meta.get('fiftyTwoWeekLow', 0),
             "dividend_yield": twse_val.get('yield', 0),
             "pe": twse_val.get('pe'),
-            "pb": twse_val.get('pb')
+            "pb": twse_val.get('pb'),
+            # 市值、淨值與折溢價
+            "nav": nav_info.get('nav', curr_price),
+            "prev_nav": nav_info.get('prev_nav', curr_price),
+            "discount_percent": nav_info.get('discount_percent', 0.0),
+            "market_cap_billion_ntd": nav_info.get('market_cap_billion_ntd', 0),
+            "market_cap_display": nav_info.get('market_cap_display', '--'),
+            "shares_units": nav_info.get('shares_units', 0),
+            "creation_redemption_shares": nav_info.get('creation_redemption_shares', 0)
         },
+        "institutional": inst_info,
         "returns": returns,
         "dividends": dividends_list,
         "sectors": sorted_sectors,
@@ -373,8 +469,14 @@ def main():
     tz_tw = datetime.timezone(datetime.timedelta(hours=8))
     now_tw = datetime.datetime.now(tz_tw)
 
-    print("Fetching TWSE OpenAPI global stock & valuation data...")
+    print("Fetching TWSE OpenAPI stock & valuation data...")
     twse_stocks, twse_valuations = get_twse_data()
+
+    print("Fetching ETF NAV, Discount/Premium & Market Cap (all_etf)...")
+    nav_map = get_nav_and_market_cap()
+
+    print("Fetching Institutional Investors Trading (T86)...")
+    inst_map = get_institutional_data()
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(base_dir, '..', 'data')
@@ -382,7 +484,7 @@ def main():
 
     etf_list = []
     for etf_id in ETF_CONFIGS.keys():
-        dataset = process_etf(etf_id, twse_stocks, twse_valuations, now_tw)
+        dataset = process_etf(etf_id, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
         output_file = os.path.join(data_dir, f"{etf_id}.json")
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(dataset, f, ensure_ascii=False, indent=2)

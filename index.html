@@ -173,6 +173,11 @@
           <span>🎯 潛力股</span>
           <span id="badge-count-potential" class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-bold">20</span>
         </button>
+        <button id="category-tab-simulation" onclick="switchCategory('simulation')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white flex-shrink-0 whitespace-nowrap">
+          <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>💼 模擬操作</span>
+          <span id="badge-count-simulation" class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">0單</span>
+        </button>
       </div>
 
       <!-- 目前模式提示 -->
@@ -257,6 +262,10 @@
             <div id="price-change-pill" class="flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-slate-800 text-slate-400">
               <span id="price-change-text">--</span>
             </div>
+            <button onclick="quickOpenSimulationTrade()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs shadow-md shadow-emerald-950 transition-all cursor-pointer">
+              <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
+              <span>帶入模擬單</span>
+            </button>
           </div>
         </div>
         <div class="text-xs text-slate-400 sm:text-right">
@@ -349,7 +358,10 @@
       <div class="bg-slate-950/70 rounded-xl p-4 border border-slate-800 space-y-2 text-xs">
         <div class="flex items-center justify-between text-indigo-300 font-bold border-b border-slate-800 pb-1.5">
           <span class="flex items-center gap-1"><i data-lucide="compass" class="w-3.5 h-3.5"></i> 進出場策略與風控指引</span>
-          <span class="text-[10px] text-slate-400 font-normal">嚴格執行停損停利</span>
+          <button onclick="quickOpenSimulationTrade()" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/50 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer">
+            <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
+            <span>依此策略帶入模擬</span>
+          </button>
         </div>
         <div class="space-y-1.5 text-slate-300 pt-1">
           <div><b class="text-indigo-400">策略總結：</b><span id="plan-strategy">--</span></div>
@@ -679,6 +691,396 @@
     </section>
     </div> <!-- /single-target-view -->
 
+    <!-- 💼 模擬操作與策略驗證專區 (Paper Trading Sandbox) -->
+    <div id="simulation-category-view" class="hidden space-y-4">
+
+      <!-- 1. 頂部總覽卡：資產與績效總結 -->
+      <section class="bg-gradient-to-b from-cardbg to-slate-900 rounded-2xl p-4 sm:p-5 border border-emerald-500/40 shadow-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-emerald-400 font-black text-sm">
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-base font-black text-white">模擬操作與策略成效驗證沙盒</h2>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold" id="sim-account-badge">虛擬沙盒 (即時連線市價)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">依照選股邏輯與 5+1 均線分析模擬下單 · 嚴格執行停損停利 · 追蹤各策略歷史勝率</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openNewTradeModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-900/30 transition-all cursor-pointer">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>建立模擬下單</span>
+            </button>
+            <button onclick="refreshSimPrices()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer" title="重新計算現價損益">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+            <button onclick="resetSimAccountPrompt()" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-900/40 hover:text-rose-300 text-slate-400 transition-colors cursor-pointer" title="重設模擬帳戶">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 核心資產數據網格 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- 總資產淨值 -->
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>總資產淨值</span>
+              <span class="text-[10px] text-slate-500">Net Worth</span>
+            </div>
+            <div id="sim-total-equity" class="text-lg sm:text-xl font-black text-white mt-0.5">NT$ 1,000,000</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">初始資本: <span id="sim-initial-capital">NT$ 1,000,000</span></div>
+          </div>
+
+          <!-- 未實現損益 (浮動盈虧) -->
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>未實現損益</span>
+              <span class="text-[10px] text-slate-500">Unrealized</span>
+            </div>
+            <div id="sim-unrealized-pl" class="text-lg sm:text-xl font-black text-slate-200 mt-0.5">NT$ 0</div>
+            <div id="sim-unrealized-pct" class="text-[11px] font-bold text-slate-400 mt-0.5">0.00%</div>
+          </div>
+
+          <!-- 已實現總損益 -->
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>已平倉累計損益</span>
+              <span class="text-[10px] text-slate-500">Realized</span>
+            </div>
+            <div id="sim-realized-pl" class="text-lg sm:text-xl font-black text-slate-200 mt-0.5">NT$ 0</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">已結算: <span id="sim-closed-count">0 次</span></div>
+          </div>
+
+          <!-- 策略勝率統計 -->
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>策略勝率 (Win Rate)</span>
+              <span class="text-[10px] text-slate-500">勝率統計</span>
+            </div>
+            <div id="sim-win-rate" class="text-lg sm:text-xl font-black text-emerald-400 mt-0.5">-- %</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">獲利/虧損: <span id="sim-win-loss-count">0勝 0敗</span></div>
+          </div>
+        </div>
+
+        <!-- 帳戶可用現金與持倉市值進度條 -->
+        <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              可用現金：<b id="sim-cash-balance" class="text-white">NT$ 1,000,000</b>
+            </span>
+            <span class="text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+              在倉部位市值：<b id="sim-positions-market-value" class="text-white">NT$ 0</b>
+            </span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden flex">
+            <div id="sim-bar-cash" class="bg-emerald-500 h-full transition-all duration-500" style="width: 100%"></div>
+            <div id="sim-bar-positions" class="bg-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 當前持倉部位清單 (Open Positions) -->
+      <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+            <h3 class="text-sm font-bold text-white">進行中模擬持倉部位 (Open Positions)</h3>
+            <span id="sim-open-positions-badge" class="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">0 檔</span>
+          </div>
+          <span class="text-[11px] text-slate-400">即時按市場收盤價動態結算未實現損益</span>
+        </div>
+
+        <!-- 在倉卡片容器 -->
+        <div id="sim-positions-container" class="space-y-3">
+          <!-- JS 動態生成在倉卡片 -->
+        </div>
+
+        <!-- 空持倉狀態提示 -->
+        <div id="sim-empty-positions-placeholder" class="hidden text-center py-8 text-slate-500 text-xs space-y-2">
+          <i data-lucide="inbox" class="w-8 h-8 mx-auto text-slate-600"></i>
+          <p>目前沒有進行中的模擬持倉部位</p>
+          <button onclick="openNewTradeModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold hover:bg-emerald-600/50 transition-all cursor-pointer">
+            立即依照選股建立第一筆模擬單 🚀
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. 選股策略成效驗證看板 (Strategy Performance Analytics) -->
+      <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+            <h3 class="text-sm font-bold text-white">選股策略成效驗證看板 (Strategy Verification)</h3>
+          </div>
+          <span class="text-[11px] text-slate-400">統計不同選股邏輯的勝率與累積盈虧</span>
+        </div>
+
+        <!-- 各策略成效卡片網格 -->
+        <div id="sim-strategy-analytics-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+          <!-- JS 動態生成策略驗證統計 -->
+        </div>
+      </section>
+
+      <!-- 4. 歷史已平倉交易紀錄與覆盤 (Closed Trades History) -->
+      <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-purple-400"></i>
+            <h3 class="text-sm font-bold text-white">已平倉歷史交易與覆盤筆記 (Closed Trades)</h3>
+            <span id="sim-closed-trades-badge" class="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">0 筆</span>
+          </div>
+          <button onclick="clearHistoryTradesPrompt()" class="text-[11px] text-slate-500 hover:text-slate-300 transition-colors cursor-pointer">清空歷史紀錄</button>
+        </div>
+
+        <!-- 歷史交易清單容器 -->
+        <div id="sim-history-container" class="space-y-2.5">
+          <!-- JS 動態生成已平倉卡片 -->
+        </div>
+
+        <div id="sim-empty-history-placeholder" class="text-center py-6 text-slate-500 text-xs">
+          暫無已平倉歷史交易，平倉後將在此自動生成策略覆盤報告
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 建立模擬交易彈窗 (New Trade Modal) -->
+    <div id="modal-new-trade" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+      <div class="relative w-full max-w-lg bg-cardbg border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4 my-8 text-xs text-slate-200 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-emerald-400 font-bold">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">建立模擬交易單</h3>
+              <p class="text-[11px] text-slate-400">依照 5+1 選股邏輯與均線形態規劃進出場</p>
+            </div>
+          </div>
+          <button onclick="closeNewTradeModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <!-- 標的選擇 -->
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">交易標的 (Stock / ETF)</label>
+            <select id="sim-order-symbol" onchange="onSimSymbolChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+              <!-- 由 JS 動態生成選項 -->
+            </select>
+          </div>
+
+          <!-- 自選標的代號與名稱 (若選擇自選) -->
+          <div id="sim-custom-symbol-row" class="hidden grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1">股票代號</label>
+              <input type="text" id="sim-order-custom-symbol" placeholder="例如: 2330" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs">
+            </div>
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1">股票名稱</label>
+              <input type="text" id="sim-order-custom-name" placeholder="例如: 台積電" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs">
+            </div>
+          </div>
+
+          <!-- 操作方向 -->
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">操作方向 (Position Side)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" id="btn-side-long" onclick="setSimOrderSide('long')" class="py-2 rounded-xl border border-emerald-500 bg-emerald-950/60 text-emerald-300 font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                <i data-lucide="trending-up" class="w-4 h-4 text-twup"></i>
+                <span>買進做多 (LONG)</span>
+              </button>
+              <button type="button" id="btn-side-short" onclick="setSimOrderSide('short')" class="py-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                <i data-lucide="trending-down" class="w-4 h-4 text-twdown"></i>
+                <span>融券做空 (SHORT)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 進場價格與數量 -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">進場價格 (TWD)</label>
+              <input type="number" id="sim-order-price" step="0.01" oninput="calculateSimOrderTotal()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">委託張數 (1張=1000股)</label>
+              <input type="number" id="sim-order-lots" min="1" max="100" value="1" oninput="calculateSimOrderTotal()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <!-- 快捷張數按鈕 -->
+          <div class="flex items-center gap-1.5 text-[11px]">
+            <span class="text-slate-400">快速張數:</span>
+            <button type="button" onclick="setSimLots(1)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer">1張</button>
+            <button type="button" onclick="setSimLots(2)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer">2張</button>
+            <button type="button" onclick="setSimLots(5)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer">5張</button>
+            <button type="button" onclick="setSimLots(10)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer">10張</button>
+          </div>
+
+          <!-- 選股及分析策略依據 (核心功能！) -->
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1 flex items-center justify-between">
+              <span>選股與分析策略依據 (成效驗證核心)</span>
+              <span class="text-[10px] text-amber-400 font-normal">★ 歸納勝率關鍵</span>
+            </label>
+            <select id="sim-order-strategy" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500">
+              <option value="形態1·金叉突破 (5MA/20MA金叉)">形態1·金叉突破 (5MA/20MA金叉)</option>
+              <option value="形態2·線上縮量真洗盤 (回踩守穩)">形態2·線上縮量真洗盤 (回踩守穩)</option>
+              <option value="形態3·均線收斂變盤爆發">形態3·均線收斂變盤爆發</option>
+              <option value="形態7·多頭排列發散 (主升段推進)">形態7·多頭排列發散 (主升段推進)</option>
+              <option value="形態8·均值回歸 (負乖離超跌反彈)">形態8·均值回歸 (負乖離超跌反彈)</option>
+              <option value="45°健康斜率強勢波段">45°健康斜率強勢波段</option>
+              <option value="籌碼·外資投信土洋同買認養">籌碼·外資投信土洋同買認養</option>
+              <option value="籌碼·千張大戶增+散戶融資大退">籌碼·千張大戶增+散戶融資大退</option>
+              <option value="基本面·轉虧為盈/營收成長">基本面·轉虧為盈/營收成長</option>
+              <option value="基本面·PB 1.0倍低估防守">基本面·PB 1.0倍低估防守</option>
+              <option value="題材·反傾銷立案+政策綠能">題材·反傾銷立案+政策綠能</option>
+              <option value="ETF·市值型長期微笑曲線">ETF·市值型長期微笑曲線</option>
+              <option value="ETF·高股息季配息現金流防守">ETF·高股息季配息現金流防守</option>
+              <option value="自訂策略依據">自訂策略依據</option>
+            </select>
+          </div>
+
+          <!-- 風控規劃：目標停利與防守停損 -->
+          <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-bold text-slate-300">
+              <span class="flex items-center gap-1"><i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400"></i> 風控規劃 (R:R 風險報酬比)</span>
+              <span id="sim-order-rr-pill" class="px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 text-[10px]">R:R 2.0 : 1</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="block text-slate-400 text-[10px] mb-0.5">目標停利價 (Target)</label>
+                <input type="number" id="sim-order-target" step="0.01" oninput="calculateSimOrderTotal()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-emerald-400 font-bold text-xs">
+              </div>
+              <div>
+                <label class="block text-slate-400 text-[10px] mb-0.5">防守停損價 (Stop-Loss)</label>
+                <input type="number" id="sim-order-stoploss" step="0.01" oninput="calculateSimOrderTotal()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-rose-400 font-bold text-xs">
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+              <span>預期獲利: <b id="sim-expected-profit-pct" class="text-emerald-400">+0.0%</b></span>
+              <span>預期風險: <b id="sim-expected-loss-pct" class="text-rose-400">-0.0%</b></span>
+            </div>
+          </div>
+
+          <!-- 交易金額與手續費預估 -->
+          <div class="p-2.5 bg-slate-950/50 rounded-xl border border-slate-800 text-[11px] space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
+              <span>股票/ETF 市值：</span>
+              <span id="sim-order-market-value" class="text-white font-bold">NT$ 0</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-400">
+              <span>券商手續費 (0.071%)：</span>
+              <span id="sim-order-fee" class="text-slate-300">NT$ 0</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-200 font-bold border-t border-slate-800 pt-1">
+              <span>預估扣除可用現金：</span>
+              <span id="sim-order-total-cost" class="text-emerald-400 font-black">NT$ 0</span>
+            </div>
+          </div>
+
+          <!-- 操作備忘 -->
+          <div>
+            <label class="block text-slate-400 text-[11px] mb-1">交易心得 / 備忘筆記</label>
+            <textarea id="sim-order-notes" rows="2" placeholder="記錄看盤思路、指標訊號或風控備忘..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeNewTradeModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors cursor-pointer">
+            取消
+          </button>
+          <button type="button" onclick="confirmNewTradeOrder()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold shadow-lg shadow-emerald-900/30 transition-all cursor-pointer">
+            確認模擬買進 🚀
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 平倉結算彈窗 (Close Position Modal) -->
+    <div id="modal-close-trade" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+      <div class="relative w-full max-w-md bg-cardbg border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4 my-8 text-xs text-slate-200 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500 flex items-center justify-center text-blue-400 font-bold">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">模擬部位平倉結算</h3>
+              <p class="text-[11px] text-slate-400">結算損益並進行策略成效驗證覆盤</p>
+            </div>
+          </div>
+          <button onclick="closeCloseTradeModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <input type="hidden" id="sim-close-pos-id">
+
+        <!-- 部位摘要 -->
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+          <div class="flex items-center justify-between font-bold text-white">
+            <span id="sim-close-symbol-name">2002 中鋼</span>
+            <span id="sim-close-strategy-badge" class="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">形態7·多頭排列</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-slate-400 text-[11px] pt-1">
+            <div>進場成本: <b id="sim-close-entry-price" class="text-white">NT$ 19.60</b></div>
+            <div>持有股數: <b id="sim-close-shares" class="text-white">2,000 股</b></div>
+            <div>進場日期: <span id="sim-close-entry-date" class="text-slate-300">2026-10-21</span></div>
+            <div>持股天數: <span id="sim-close-hold-days" class="text-slate-300">1 天</span></div>
+          </div>
+        </div>
+
+        <!-- 平倉設定 -->
+        <div class="space-y-3">
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">平倉賣出價格 (TWD)</label>
+            <input type="number" id="sim-close-price" step="0.01" oninput="calculateSimClosePL()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold mb-1">平倉原因 / 覆盤成果判定</label>
+            <select id="sim-close-reason" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-blue-500">
+              <option value="✅ 達標獲利停利 (符合選股預期)">✅ 達標獲利停利 (符合選股預期)</option>
+              <option value="🛑 觸及停損守點 (果斷停損避險)">🛑 觸及停損守點 (果斷停損避險)</option>
+              <option value="⏳ 均線走平/動能趨緩主動出場">⏳ 均線走平/動能趨緩主動出場</option>
+              <option value="💰 波段分批落袋為安">💰 波段分批落袋為安</option>
+              <option value="🔄 換股操作佈局更強標的">🔄 換股操作佈局更強標的</option>
+            </select>
+          </div>
+
+          <!-- 損益結算預覽 -->
+          <div class="p-3 bg-slate-950/70 rounded-xl border border-slate-800 space-y-1.5 text-center">
+            <div class="text-[11px] text-slate-400">本次結算淨損益 (扣除證交稅與手續費)</div>
+            <div id="sim-close-result-pl" class="text-2xl font-black text-emerald-400">+NT$ 1,800</div>
+            <div id="sim-close-result-pct" class="text-xs font-bold text-emerald-400">+4.59%</div>
+          </div>
+
+          <div>
+            <label class="block text-slate-400 text-[11px] mb-1">覆盤檢討筆記 (作為未來選股驗證)</label>
+            <textarea id="sim-close-notes" rows="2" placeholder="總結這次交易是否確實遵守均線與風控原則..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-blue-500"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeCloseTradeModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors cursor-pointer">
+            取消
+          </button>
+          <button type="button" onclick="confirmClosePosition()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold shadow-lg shadow-blue-900/30 transition-all cursor-pointer">
+            確認結算入帳 💰
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 頁尾說明 -->
     <footer class="text-center text-[11px] text-slate-500 py-4 space-y-1">
       <p>本平台資料每日於證券市場盤後自動彙整，僅供個人研究與教學用途，非任何投資買賣建議。</p>
@@ -736,6 +1138,12 @@
 
     function handleHashChange() {
       const hash = window.location.hash.replace('#', '').trim();
+      if (hash === 'simulation') {
+        currentCategory = 'simulation';
+        updateCategoryTabsUI();
+        renderSimulationView();
+        return;
+      }
       if (hash === 'potential') {
         currentCategory = 'potential';
         updateCategoryTabsUI();
@@ -760,6 +1168,12 @@
     function switchCategory(cat) {
       if (currentCategory === cat) return;
       currentCategory = cat;
+      if (cat === 'simulation') {
+        window.location.hash = 'simulation';
+        updateCategoryTabsUI();
+        renderSimulationView();
+        return;
+      }
       if (cat === 'potential') {
         window.location.hash = 'potential';
         updateCategoryTabsUI();
@@ -795,11 +1209,13 @@
       const etfBtn = document.getElementById('category-tab-etf');
       const stockBtn = document.getElementById('category-tab-stock');
       const potBtn = document.getElementById('category-tab-potential');
+      const simBtn = document.getElementById('category-tab-simulation');
       const hint = document.getElementById('category-status-hint');
       const indicator = document.getElementById('category-status-indicator');
       const tabsContainer = document.getElementById('etf-tabs-container');
       const potView = document.getElementById('potential-category-view');
       const singleView = document.getElementById('single-target-view');
+      const simView = document.getElementById('simulation-category-view');
 
       const etfCount = etfList.filter(i => !isStock(i)).length;
       const stockCount = etfList.filter(i => isStock(i)).length;
@@ -810,19 +1226,30 @@
       if (badgeEtf) badgeEtf.innerText = etfCount;
       if (badgeStock) badgeStock.innerText = stockCount;
       if (badgePot && screenerResults) badgePot.innerText = screenerResults.top_count || 20;
+      updateSimBadge();
 
       const inactiveClass = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40 flex-shrink-0 whitespace-nowrap';
       if (etfBtn) etfBtn.className = inactiveClass;
       if (stockBtn) stockBtn.className = inactiveClass;
       if (potBtn) potBtn.className = inactiveClass;
+      if (simBtn) simBtn.className = inactiveClass;
 
-      if (currentCategory === 'potential') {
+      if (currentCategory === 'simulation') {
+        if (simBtn) simBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-900/30 flex-shrink-0 whitespace-nowrap';
+        if (hint) hint.innerText = '目前模式：模擬操作沙盒 · 依照選股及分析驗證成效';
+        if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        if (tabsContainer) tabsContainer.classList.add('hidden');
+        if (potView) potView.classList.add('hidden');
+        if (singleView) singleView.classList.add('hidden');
+        if (simView) simView.classList.remove('hidden');
+      } else if (currentCategory === 'potential') {
         if (potBtn) potBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-900/30 flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：全市場多因子海選潛力股 TOP 20 榜單';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
         if (tabsContainer) tabsContainer.classList.add('hidden');
         if (potView) potView.classList.remove('hidden');
         if (singleView) singleView.classList.add('hidden');
+        if (simView) simView.classList.add('hidden');
       } else if (currentCategory === 'stock') {
         if (stockBtn) stockBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-purple-600 text-white shadow flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：台股個股 5+1 量化健檢與均線全景診斷';
@@ -830,6 +1257,7 @@
         if (tabsContainer) tabsContainer.classList.remove('hidden');
         if (potView) potView.classList.add('hidden');
         if (singleView) singleView.classList.remove('hidden');
+        if (simView) simView.classList.add('hidden');
       } else {
         if (etfBtn) etfBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-blue-600 text-white shadow flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：熱門指數與高股息 ETF 投資看板';
@@ -837,6 +1265,7 @@
         if (tabsContainer) tabsContainer.classList.remove('hidden');
         if (potView) potView.classList.add('hidden');
         if (singleView) singleView.classList.remove('hidden');
+        if (simView) simView.classList.add('hidden');
       }
     }
 
@@ -1703,6 +2132,831 @@
         `;
         tbody.appendChild(tr);
       });
+    // ==========================================
+    // 💼 模擬操作與策略成效驗證模組 (Simulation Trading Module)
+    // ==========================================
+    const SIM_STORAGE_KEY = 'tw_etf_simulation_v1';
+    let simOrderSide = 'long';
+    let simPriceCache = {
+      '0050': 196.00,
+      '0056': 38.50,
+      '00878': 23.20,
+      '00919': 24.10,
+      '006208': 115.00,
+      '00922': 22.00,
+      '2002': 19.60,
+      '2014': 16.95,
+      '3231': 189.00,
+      '9904': 38.50
+    };
+
+    function getDefaultSimData() {
+      return {
+        initial_cash: 1000000,
+        cash: 921744,
+        positions: [
+          {
+            id: 'pos_2002_sample',
+            symbol: '2002',
+            name: '中鋼',
+            side: 'long',
+            entry_price: 19.60,
+            shares: 2000,
+            entry_date: '2026-10-21',
+            strategy: '形態7·多頭排列發散 (主升段推進)',
+            target_price: 20.50,
+            stoploss_price: 18.20,
+            notes: '20MA金叉年線季線，外資投信土洋同步大買，散戶融資大退場。',
+            fee: 28
+          },
+          {
+            id: 'pos_0050_sample',
+            symbol: '0050',
+            name: '元大台灣50',
+            side: 'long',
+            entry_price: 195.00,
+            shares: 1000,
+            entry_date: '2026-10-15',
+            strategy: 'ETF·市值型長期微笑曲線',
+            target_price: 215.00,
+            stoploss_price: 185.00,
+            notes: '短中長均線多頭排列，守穩月線生命線分批佈局。',
+            fee: 28
+          }
+        ],
+        history: [
+          {
+            id: 'hist_3231_sample',
+            symbol: '3231',
+            name: '緯創',
+            side: 'long',
+            entry_price: 180.00,
+            exit_price: 189.00,
+            shares: 1000,
+            entry_date: '2026-10-12',
+            exit_date: '2026-10-21',
+            hold_days: 9,
+            strategy: '形態1·金叉突破 (5MA/20MA金叉)',
+            reason: '✅ 達標獲利停利 (符合選股預期)',
+            profit_loss: 8464,
+            return_pct: 4.70,
+            notes: '帶量突破頸線進場，到達第一波段壓力順利獲利了結。'
+          }
+        ]
+      };
+    }
+
+    function loadSimData() {
+      try {
+        const str = localStorage.getItem(SIM_STORAGE_KEY);
+        if (str) {
+          const parsed = JSON.parse(str);
+          if (parsed && Array.isArray(parsed.positions)) return parsed;
+        }
+      } catch (e) {
+        console.error('Error loading simulation data', e);
+      }
+      const def = getDefaultSimData();
+      saveSimData(def);
+      return def;
+    }
+
+    function saveSimData(data) {
+      try {
+        localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error('Error saving simulation data', e);
+      }
+      updateSimBadge();
+    }
+
+    function updateSimBadge() {
+      const data = loadSimData();
+      const badge = document.getElementById('badge-count-simulation');
+      if (badge) {
+        badge.innerText = `${data.positions.length}單`;
+      }
+    }
+
+    function getSimPrice(symbol) {
+      if (etfData && etfData.metadata && etfData.metadata.symbol === symbol && etfData.quote) {
+        simPriceCache[symbol] = etfData.quote.price;
+        return etfData.quote.price;
+      }
+      if (simPriceCache[symbol]) return simPriceCache[symbol];
+      if (screenerResults && screenerResults.top_picks) {
+        const found = screenerResults.top_picks.find(p => p.code === symbol);
+        if (found) {
+          simPriceCache[symbol] = found.close;
+          return found.close;
+        }
+      }
+      return null;
+    }
+
+    async function refreshSimPrices() {
+      const data = loadSimData();
+      const symbols = [...new Set(data.positions.map(p => p.symbol))];
+      for (const sym of symbols) {
+        try {
+          const res = await fetch(`./data/${sym}.json?t=${Date.now()}`);
+          if (res.ok) {
+            const d = await res.json();
+            if (d.quote && d.quote.price) {
+              simPriceCache[sym] = d.quote.price;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch price for', sym);
+        }
+      }
+      renderSimulationView();
+    }
+
+    function renderSimulationView() {
+      const data = loadSimData();
+      updateSimBadge();
+
+      let totalPositionsMarketValue = 0;
+      let totalUnrealizedPL = 0;
+      let totalCost = 0;
+
+      const posContainer = document.getElementById('sim-positions-container');
+      const emptyPos = document.getElementById('sim-empty-positions-placeholder');
+      posContainer.innerHTML = '';
+
+      if (data.positions.length === 0) {
+        emptyPos.classList.remove('hidden');
+      } else {
+        emptyPos.classList.add('hidden');
+      }
+
+      data.positions.forEach(pos => {
+        const curPrice = getSimPrice(pos.symbol) || pos.entry_price;
+        const mktVal = curPrice * pos.shares;
+        totalPositionsMarketValue += mktVal;
+
+        const isLong = pos.side === 'long';
+        let pl = 0;
+        if (isLong) {
+          pl = (curPrice - pos.entry_price) * pos.shares - (pos.fee || 0);
+        } else {
+          pl = (pos.entry_price - curPrice) * pos.shares - (pos.fee || 0);
+        }
+        totalUnrealizedPL += pl;
+        totalCost += (pos.entry_price * pos.shares);
+
+        const retPct = ((pl / (pos.entry_price * pos.shares)) * 100);
+        const isUp = pl > 0;
+        const isDown = pl < 0;
+        const sign = isUp ? '+' : '';
+        const plColor = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-300';
+
+        const target = pos.target_price || (isLong ? pos.entry_price * 1.08 : pos.entry_price * 0.92);
+        const stoploss = pos.stoploss_price || (isLong ? pos.entry_price * 0.95 : pos.entry_price * 1.05);
+
+        let targetDistPct = 0;
+        let stopDistPct = 0;
+        let alertStatus = '⏳ 策略執行中';
+        let alertClass = 'bg-slate-800 text-slate-300 border-slate-700';
+
+        if (isLong) {
+          targetDistPct = ((target - curPrice) / curPrice * 100);
+          stopDistPct = ((curPrice - stoploss) / curPrice * 100);
+          if (curPrice >= target) {
+            alertStatus = '🎉 已達停利目標！建議分批平倉';
+            alertClass = 'bg-emerald-950 text-emerald-300 border-emerald-700 animate-pulse';
+          } else if (curPrice <= stoploss) {
+            alertStatus = '🛑 已觸及防守停損價！請依紀律止損';
+            alertClass = 'bg-rose-950 text-rose-300 border-rose-700 animate-pulse';
+          } else if (stopDistPct < 2.0) {
+            alertStatus = '⚠️ 逼近停損點警戒！';
+            alertClass = 'bg-amber-950 text-amber-300 border-amber-700';
+          }
+        } else {
+          targetDistPct = ((curPrice - target) / curPrice * 100);
+          stopDistPct = ((stoploss - curPrice) / curPrice * 100);
+          if (curPrice <= target) {
+            alertStatus = '🎉 空單已達停利目標！';
+            alertClass = 'bg-emerald-950 text-emerald-300 border-emerald-700 animate-pulse';
+          } else if (curPrice >= stoploss) {
+            alertStatus = '🛑 空單已觸及停損！請停損回補';
+            alertClass = 'bg-rose-950 text-rose-300 border-rose-700 animate-pulse';
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/90 rounded-xl p-4 border border-slate-800 hover:border-slate-700 transition-all space-y-3';
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs px-2 py-0.5 rounded font-bold ${isLong ? 'bg-red-950/80 text-twup border border-red-800' : 'bg-emerald-950/80 text-twdown border border-emerald-800'}">
+                ${isLong ? '做多 (LONG)' : '放空 (SHORT)'}
+              </span>
+              <span class="text-base font-bold text-white tracking-wide cursor-pointer hover:text-blue-400 transition-colors" onclick="switchETF('${pos.symbol}')">
+                ${pos.symbol} ${pos.name}
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800 font-semibold max-w-[200px] truncate" title="${pos.strategy}">
+                ${pos.strategy}
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] px-2 py-0.5 rounded border font-bold ${alertClass}">
+                ${alertStatus}
+              </span>
+              <button onclick="openCloseTradeModal('${pos.id}')" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow flex items-center gap-1 transition-all cursor-pointer">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                <span>平倉結算</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 價位與損益數據格 -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
+              <div class="text-[10px] text-slate-400">進場成本</div>
+              <div class="text-sm font-bold text-white mt-0.5">NT$ ${pos.entry_price.toFixed(2)}</div>
+              <div class="text-[10px] text-slate-500">${pos.entry_date}</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
+              <div class="text-[10px] text-slate-400">目前市價</div>
+              <div class="text-sm font-bold text-white mt-0.5">NT$ ${curPrice.toFixed(2)}</div>
+              <div class="text-[10px] text-slate-500">持有 ${(pos.shares / 1000).toFixed(1)} 張 (${pos.shares.toLocaleString()} 股)</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
+              <div class="text-[10px] text-slate-400">持倉市值</div>
+              <div class="text-sm font-bold text-white mt-0.5">NT$ ${Math.round(mktVal).toLocaleString()}</div>
+              <div class="text-[10px] text-slate-500">本金 NT$ ${Math.round(pos.entry_price * pos.shares).toLocaleString()}</div>
+            </div>
+            <div class="bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
+              <div class="text-[10px] text-slate-400">未實現損益</div>
+              <div class="text-sm font-black mt-0.5 ${plColor}">
+                ${sign}${Math.round(pl).toLocaleString()} 元
+              </div>
+              <div class="text-[10px] font-bold ${plColor}">
+                ${sign}${retPct.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+
+          <!-- 風控停利停損進度條 -->
+          <div class="p-2.5 bg-slate-950/40 rounded-lg border border-slate-800/60 space-y-1.5 text-[11px]">
+            <div class="flex items-center justify-between">
+              <span class="text-rose-400 font-medium">🛑 防守停損: NT$ ${stoploss.toFixed(2)}</span>
+              <span class="text-slate-400 font-bold">現價: NT$ ${curPrice.toFixed(2)}</span>
+              <span class="text-emerald-400 font-medium">🎯 目標停利: NT$ ${target.toFixed(2)}</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-slate-500">
+              <span>距停損: <b class="text-slate-300">${isLong ? (curPrice - stoploss).toFixed(2) : (stoploss - curPrice).toFixed(2)} 元 (${stopDistPct.toFixed(1)}%)</b></span>
+              <span>距停利: <b class="text-slate-300">${isLong ? (target - curPrice).toFixed(2) : (curPrice - target).toFixed(2)} 元 (${targetDistPct.toFixed(1)}%)</b></span>
+            </div>
+          </div>
+
+          ${pos.notes ? `
+          <div class="text-[11px] text-slate-400 flex items-start gap-1 bg-slate-950/30 p-2 rounded border border-slate-800/40">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 mt-0.5"></i>
+            <span>${pos.notes}</span>
+          </div>` : ''}
+        `;
+        posContainer.appendChild(card);
+      });
+
+      // KPI Update
+      const totalEquity = data.cash + totalPositionsMarketValue;
+      document.getElementById('sim-total-equity').innerText = `NT$ ${Math.round(totalEquity).toLocaleString()}`;
+      document.getElementById('sim-initial-capital').innerText = `NT$ ${Math.round(data.initial_cash).toLocaleString()}`;
+      document.getElementById('sim-cash-balance').innerText = `NT$ ${Math.round(data.cash).toLocaleString()}`;
+      document.getElementById('sim-positions-market-value').innerText = `NT$ ${Math.round(totalPositionsMarketValue).toLocaleString()}`;
+
+      const unPlEl = document.getElementById('sim-unrealized-pl');
+      const unPctEl = document.getElementById('sim-unrealized-pct');
+      const isUp = totalUnrealizedPL > 0;
+      const isDown = totalUnrealizedPL < 0;
+      const sign = isUp ? '+' : '';
+      const color = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-200';
+      unPlEl.className = `text-lg sm:text-xl font-black mt-0.5 ${color}`;
+      unPlEl.innerText = `${sign}NT$ ${Math.round(totalUnrealizedPL).toLocaleString()}`;
+      const totalUnrealizedPct = totalCost > 0 ? (totalUnrealizedPL / totalCost * 100) : 0;
+      unPctEl.className = `text-[11px] font-bold mt-0.5 ${color}`;
+      unPctEl.innerText = `${sign}${totalUnrealizedPct.toFixed(2)}%`;
+
+      // Cash vs Positions Bar
+      const cashPct = totalEquity > 0 ? Math.max(0, Math.min(100, (data.cash / totalEquity) * 100)) : 100;
+      const posPct = 100 - cashPct;
+      document.getElementById('sim-bar-cash').style.width = `${cashPct}%`;
+      document.getElementById('sim-bar-positions').style.width = `${posPct}%`;
+
+      // Realized P&L & Win Rate from History
+      const hist = data.history || [];
+      let totalRealized = 0;
+      let wins = 0;
+      hist.forEach(h => {
+        totalRealized += (h.profit_loss || 0);
+        if (h.profit_loss > 0) wins++;
+      });
+      const realPlEl = document.getElementById('sim-realized-pl');
+      const isRealUp = totalRealized > 0;
+      const isRealDown = totalRealized < 0;
+      const rSign = isRealUp ? '+' : '';
+      const rColor = isRealUp ? 'text-twup' : isRealDown ? 'text-twdown' : 'text-slate-200';
+      realPlEl.className = `text-lg sm:text-xl font-black mt-0.5 ${rColor}`;
+      realPlEl.innerText = `${rSign}NT$ ${Math.round(totalRealized).toLocaleString()}`;
+      document.getElementById('sim-closed-count').innerText = `${hist.length} 次`;
+
+      const winRate = hist.length > 0 ? ((wins / hist.length) * 100).toFixed(1) : '--';
+      document.getElementById('sim-win-rate').innerText = `${winRate}%`;
+      document.getElementById('sim-win-loss-count').innerText = `${wins}勝 ${hist.length - wins}敗`;
+
+      document.getElementById('sim-open-positions-badge').innerText = `${data.positions.length} 檔`;
+      document.getElementById('sim-closed-trades-badge').innerText = `${hist.length} 筆`;
+
+      renderStrategyAnalytics(hist);
+      renderHistoryList(hist);
+      lucide.createIcons();
+    }
+
+    function renderStrategyAnalytics(hist) {
+      const container = document.getElementById('sim-strategy-analytics-container');
+      container.innerHTML = '';
+      if (!hist || hist.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-4 text-slate-500 text-xs">
+            平倉後將在此統計各選股策略（如金叉突破、線上縮量洗盤等）的歷史勝率與實戰成效
+          </div>`;
+        return;
+      }
+      const stats = {};
+      hist.forEach(h => {
+        const strat = h.strategy || '未分類策略';
+        if (!stats[strat]) {
+          stats[strat] = { total: 0, wins: 0, total_pl: 0, returns: [] };
+        }
+        stats[strat].total++;
+        if (h.profit_loss > 0) stats[strat].wins++;
+        stats[strat].total_pl += h.profit_loss;
+        stats[strat].returns.push(h.return_pct || 0);
+      });
+
+      Object.keys(stats).forEach(strat => {
+        const s = stats[strat];
+        const winRate = ((s.wins / s.total) * 100).toFixed(1);
+        const avgRet = (s.returns.reduce((a, b) => a + b, 0) / s.returns.length).toFixed(2);
+        const isUp = s.total_pl > 0;
+        const color = isUp ? 'text-twup' : 'text-twdown';
+        const sign = isUp ? '+' : '';
+
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs';
+        card.innerHTML = `
+          <div class="flex items-center justify-between font-bold text-white">
+            <span class="truncate" title="${strat}">${strat}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-normal">${s.total} 筆</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
+            <div>勝率: <b class="text-emerald-400 font-bold">${winRate}%</b> (${s.wins}/${s.total})</div>
+            <div>平均報酬: <b class="${color} font-bold">${sign}${avgRet}%</b></div>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center justify-between border-t border-slate-800/80 pt-1 mt-1">
+            <span>累計盈虧:</span>
+            <b class="${color} font-black">${sign}NT$ ${Math.round(s.total_pl).toLocaleString()}</b>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderHistoryList(hist) {
+      const container = document.getElementById('sim-history-container');
+      const emptyEl = document.getElementById('sim-empty-history-placeholder');
+      container.innerHTML = '';
+      if (!hist || hist.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+      hist.slice().reverse().forEach(h => {
+        const isUp = h.profit_loss > 0;
+        const color = isUp ? 'text-twup' : 'text-twdown';
+        const sign = isUp ? '+' : '';
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/70 p-3 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs';
+        card.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+              <span class="font-bold text-white">${h.symbol} ${h.name}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">${h.strategy}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-semibold">${h.reason}</span>
+            </div>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2">
+              <span>進: NT$ ${h.entry_price.toFixed(2)} (${h.entry_date})</span>
+              <span>➔ 出: NT$ ${h.exit_price.toFixed(2)} (${h.exit_date})</span>
+              <span>· 持股 ${h.hold_days} 天</span>
+            </div>
+            ${h.notes ? `<div class="text-[10px] text-slate-500 italic">“${h.notes}”</div>` : ''}
+          </div>
+          <div class="text-right sm:flex-shrink-0">
+            <div class="text-sm font-black ${color}">${sign}NT$ ${Math.round(h.profit_loss).toLocaleString()}</div>
+            <div class="text-[11px] font-bold ${color}">${sign}${h.return_pct.toFixed(2)}%</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Modal Operations
+    function openNewTradeModal(preSymbol, prePrice, preTarget, preStoploss, preStrategy) {
+      const select = document.getElementById('sim-order-symbol');
+      select.innerHTML = '';
+
+      const etfGroup = document.createElement('optgroup');
+      etfGroup.label = '熱門追蹤 ETF';
+      const stockGroup = document.createElement('optgroup');
+      stockGroup.label = '個股健檢標的';
+
+      etfList.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.symbol;
+        opt.innerText = `${item.symbol} ${item.short_name} (${item.category})`;
+        if (isStock(item)) {
+          stockGroup.appendChild(opt);
+        } else {
+          etfGroup.appendChild(opt);
+        }
+      });
+      select.appendChild(etfGroup);
+      select.appendChild(stockGroup);
+
+      if (screenerResults && screenerResults.top_picks) {
+        const potGroup = document.createElement('optgroup');
+        potGroup.label = '海選潛力股 TOP 20';
+        screenerResults.top_picks.forEach(p => {
+          if (!etfList.some(i => i.symbol === p.code)) {
+            const opt = document.createElement('option');
+            opt.value = p.code;
+            opt.innerText = `${p.code} ${p.name} (評分 ${p.score}分 · 現價 NT$ ${p.close})`;
+            potGroup.appendChild(opt);
+          }
+        });
+        select.appendChild(potGroup);
+      }
+
+      const customOpt = document.createElement('option');
+      customOpt.value = 'CUSTOM';
+      customOpt.innerText = '➕ 自行輸入其他台股代號...';
+      select.appendChild(customOpt);
+
+      if (preSymbol) {
+        select.value = preSymbol;
+      } else if (currentETF && etfList.some(i => i.symbol === currentETF)) {
+        select.value = currentETF;
+      }
+
+      onSimSymbolChange();
+
+      if (prePrice !== undefined && prePrice !== null) {
+        document.getElementById('sim-order-price').value = prePrice;
+      }
+      if (preTarget !== undefined && preTarget !== null) {
+        document.getElementById('sim-order-target').value = preTarget;
+      }
+      if (preStoploss !== undefined && preStoploss !== null) {
+        document.getElementById('sim-order-stoploss').value = preStoploss;
+      }
+      if (preStrategy) {
+        const stratEl = document.getElementById('sim-order-strategy');
+        let matched = false;
+        for (let i = 0; i < stratEl.options.length; i++) {
+          if (stratEl.options[i].value.includes(preStrategy) || preStrategy.includes(stratEl.options[i].value)) {
+            stratEl.selectedIndex = i;
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          stratEl.value = '自訂策略依據';
+          document.getElementById('sim-order-notes').value = `策略備註: ${preStrategy}`;
+        }
+      }
+
+      calculateSimOrderTotal();
+      document.getElementById('modal-new-trade').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeNewTradeModal() {
+      document.getElementById('modal-new-trade').classList.add('hidden');
+    }
+
+    function setSimOrderSide(side) {
+      simOrderSide = side;
+      const btnLong = document.getElementById('btn-side-long');
+      const btnShort = document.getElementById('btn-side-short');
+      if (side === 'long') {
+        btnLong.className = 'py-2 rounded-xl border border-emerald-500 bg-emerald-950/60 text-emerald-300 font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer';
+        btnShort.className = 'py-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer';
+      } else {
+        btnShort.className = 'py-2 rounded-xl border border-rose-500 bg-rose-950/60 text-rose-300 font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer';
+        btnLong.className = 'py-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-400 font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer';
+      }
+      calculateSimOrderTotal();
+    }
+
+    function setSimLots(lots) {
+      document.getElementById('sim-order-lots').value = lots;
+      calculateSimOrderTotal();
+    }
+
+    function onSimSymbolChange() {
+      const sym = document.getElementById('sim-order-symbol').value;
+      const customRow = document.getElementById('sim-custom-symbol-row');
+      if (sym === 'CUSTOM') {
+        customRow.classList.remove('hidden');
+        return;
+      }
+      customRow.classList.add('hidden');
+
+      const price = getSimPrice(sym);
+      if (price) {
+        document.getElementById('sim-order-price').value = price.toFixed(2);
+        document.getElementById('sim-order-target').value = (price * 1.08).toFixed(2);
+        document.getElementById('sim-order-stoploss').value = (price * 0.95).toFixed(2);
+      }
+      calculateSimOrderTotal();
+    }
+
+    function calculateSimOrderTotal() {
+      const price = parseFloat(document.getElementById('sim-order-price').value) || 0;
+      const lots = parseInt(document.getElementById('sim-order-lots').value) || 1;
+      const target = parseFloat(document.getElementById('sim-order-target').value) || (price * 1.08);
+      const stoploss = parseFloat(document.getElementById('sim-order-stoploss').value) || (price * 0.95);
+
+      const shares = lots * 1000;
+      const mktVal = price * shares;
+      const fee = Math.max(20, Math.round(mktVal * 0.001425 * 0.5));
+      const totalCost = mktVal + fee;
+
+      document.getElementById('sim-order-market-value').innerText = `NT$ ${Math.round(mktVal).toLocaleString()}`;
+      document.getElementById('sim-order-fee').innerText = `NT$ ${fee.toLocaleString()}`;
+      document.getElementById('sim-order-total-cost').innerText = `NT$ ${Math.round(totalCost).toLocaleString()}`;
+
+      // R:R calculation
+      let expProfitPct = 0;
+      let expLossPct = 0;
+      if (price > 0) {
+        if (simOrderSide === 'long') {
+          expProfitPct = ((target - price) / price * 100);
+          expLossPct = ((price - stoploss) / price * 100);
+        } else {
+          expProfitPct = ((price - target) / price * 100);
+          expLossPct = ((stoploss - price) / price * 100);
+        }
+      }
+      document.getElementById('sim-expected-profit-pct').innerText = `+${Math.max(0, expProfitPct).toFixed(1)}%`;
+      document.getElementById('sim-expected-loss-pct').innerText = `-${Math.max(0, expLossPct).toFixed(1)}%`;
+
+      const rrRatio = expLossPct > 0 ? (expProfitPct / expLossPct).toFixed(1) : '2.0';
+      document.getElementById('sim-order-rr-pill').innerText = `R:R ${rrRatio} : 1`;
+    }
+
+    function confirmNewTradeOrder() {
+      const symSelect = document.getElementById('sim-order-symbol').value;
+      let symbol = symSelect;
+      let name = '';
+
+      if (symSelect === 'CUSTOM') {
+        symbol = document.getElementById('sim-order-custom-symbol').value.trim();
+        name = document.getElementById('sim-order-custom-name').value.trim() || symbol;
+        if (!symbol) {
+          alert('請輸入自選股票代號！');
+          return;
+        }
+      } else {
+        const item = etfList.find(i => i.symbol === symSelect);
+        if (item) {
+          name = item.short_name;
+        } else if (screenerResults && screenerResults.top_picks) {
+          const p = screenerResults.top_picks.find(x => x.code === symSelect);
+          if (p) name = p.name;
+        }
+        if (!name) name = symbol;
+      }
+
+      const price = parseFloat(document.getElementById('sim-order-price').value);
+      const lots = parseInt(document.getElementById('sim-order-lots').value) || 1;
+      const target = parseFloat(document.getElementById('sim-order-target').value) || (price * 1.08);
+      const stoploss = parseFloat(document.getElementById('sim-order-stoploss').value) || (price * 0.95);
+      const strategy = document.getElementById('sim-order-strategy').value;
+      const notes = document.getElementById('sim-order-notes').value.trim();
+
+      if (!price || price <= 0) {
+        alert('請輸入有效的進場價格！');
+        return;
+      }
+
+      const shares = lots * 1000;
+      const mktVal = price * shares;
+      const fee = Math.max(20, Math.round(mktVal * 0.001425 * 0.5));
+      const totalCost = mktVal + fee;
+
+      const data = loadSimData();
+      if (totalCost > data.cash) {
+        if (!confirm(`可用現金不足！當前可用現金為 NT$ ${Math.round(data.cash).toLocaleString()}，委託總額需 NT$ ${Math.round(totalCost).toLocaleString()}。\n是否仍要強行買進？`)) {
+          return;
+        }
+      }
+
+      data.cash -= totalCost;
+      const nowStr = new Date().toISOString().split('T')[0];
+      const newPos = {
+        id: 'pos_' + Date.now(),
+        symbol: symbol,
+        name: name,
+        side: simOrderSide,
+        entry_price: price,
+        shares: shares,
+        entry_date: nowStr,
+        strategy: strategy,
+        target_price: target,
+        stoploss_price: stoploss,
+        notes: notes,
+        fee: fee
+      };
+
+      data.positions.unshift(newPos);
+      saveSimData(data);
+      closeNewTradeModal();
+      renderSimulationView();
+    }
+
+    function openCloseTradeModal(posId) {
+      const data = loadSimData();
+      const pos = data.positions.find(p => p.id === posId);
+      if (!pos) return;
+
+      document.getElementById('sim-close-pos-id').value = posId;
+      document.getElementById('sim-close-symbol-name').innerText = `${pos.symbol} ${pos.name} (${pos.side === 'long' ? '做多' : '做空'})`;
+      document.getElementById('sim-close-strategy-badge').innerText = pos.strategy;
+      document.getElementById('sim-close-entry-price').innerText = `NT$ ${pos.entry_price.toFixed(2)}`;
+      document.getElementById('sim-close-shares').innerText = `${(pos.shares / 1000).toFixed(1)} 張 (${pos.shares.toLocaleString()} 股)`;
+      document.getElementById('sim-close-entry-date').innerText = pos.entry_date;
+
+      const curPrice = getSimPrice(pos.symbol) || pos.entry_price;
+      document.getElementById('sim-close-price').value = curPrice.toFixed(2);
+
+      const entryTime = new Date(pos.entry_date).getTime();
+      const nowTime = new Date().getTime();
+      const holdDays = Math.max(1, Math.round((nowTime - entryTime) / (1000 * 3600 * 24)));
+      document.getElementById('sim-close-hold-days').innerText = `${holdDays} 天`;
+
+      calculateSimClosePL();
+      document.getElementById('modal-close-trade').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeCloseTradeModal() {
+      document.getElementById('modal-close-trade').classList.add('hidden');
+    }
+
+    function calculateSimClosePL() {
+      const posId = document.getElementById('sim-close-pos-id').value;
+      const data = loadSimData();
+      const pos = data.positions.find(p => p.id === posId);
+      if (!pos) return;
+
+      const exitPrice = parseFloat(document.getElementById('sim-close-price').value) || 0;
+      const isLong = pos.side === 'long';
+      const mktVal = exitPrice * pos.shares;
+      const fee = Math.max(20, Math.round(mktVal * 0.001425 * 0.5));
+      const isEtf = pos.symbol.startsWith('00');
+      const taxRate = isEtf ? 0.001 : 0.003;
+      const tax = Math.round(mktVal * taxRate);
+
+      let netPL = 0;
+      if (isLong) {
+        netPL = (exitPrice - pos.entry_price) * pos.shares - (pos.fee || 0) - fee - tax;
+      } else {
+        netPL = (pos.entry_price - exitPrice) * pos.shares - (pos.fee || 0) - fee - tax;
+      }
+
+      const retPct = ((netPL / (pos.entry_price * pos.shares)) * 100);
+      const isUp = netPL > 0;
+      const sign = isUp ? '+' : '';
+      const color = isUp ? 'text-twup' : 'text-twdown';
+
+      const plEl = document.getElementById('sim-close-result-pl');
+      const pctEl = document.getElementById('sim-close-result-pct');
+      plEl.className = `text-2xl font-black ${color}`;
+      plEl.innerText = `${sign}NT$ ${Math.round(netPL).toLocaleString()}`;
+      pctEl.className = `text-xs font-bold ${color}`;
+      pctEl.innerText = `${sign}${retPct.toFixed(2)}%`;
+    }
+
+    function confirmClosePosition() {
+      const posId = document.getElementById('sim-close-pos-id').value;
+      const data = loadSimData();
+      const posIndex = data.positions.findIndex(p => p.id === posId);
+      if (posIndex === -1) return;
+
+      const pos = data.positions[posIndex];
+      const exitPrice = parseFloat(document.getElementById('sim-close-price').value) || pos.entry_price;
+      const reason = document.getElementById('sim-close-reason').value;
+      const notes = document.getElementById('sim-close-notes').value.trim();
+
+      const isLong = pos.side === 'long';
+      const mktVal = exitPrice * pos.shares;
+      const fee = Math.max(20, Math.round(mktVal * 0.001425 * 0.5));
+      const isEtf = pos.symbol.startsWith('00');
+      const tax = Math.round(mktVal * (isEtf ? 0.001 : 0.003));
+
+      let netPL = 0;
+      if (isLong) {
+        netPL = (exitPrice - pos.entry_price) * pos.shares - (pos.fee || 0) - fee - tax;
+      } else {
+        netPL = (pos.entry_price - exitPrice) * pos.shares - (pos.fee || 0) - fee - tax;
+      }
+      const retPct = ((netPL / (pos.entry_price * pos.shares)) * 100);
+
+      const entryTime = new Date(pos.entry_date).getTime();
+      const nowTime = new Date().getTime();
+      const holdDays = Math.max(1, Math.round((nowTime - entryTime) / (1000 * 3600 * 24)));
+      const exitDate = new Date().toISOString().split('T')[0];
+
+      // Return net proceeds to cash
+      data.cash += (mktVal - fee - tax);
+
+      const histItem = {
+        id: 'hist_' + Date.now(),
+        symbol: pos.symbol,
+        name: pos.name,
+        side: pos.side,
+        entry_price: pos.entry_price,
+        exit_price: exitPrice,
+        shares: pos.shares,
+        entry_date: pos.entry_date,
+        exit_date: exitDate,
+        hold_days: holdDays,
+        strategy: pos.strategy,
+        reason: reason,
+        profit_loss: Math.round(netPL),
+        return_pct: parseFloat(retPct.toFixed(2)),
+        notes: notes || pos.notes
+      };
+
+      data.positions.splice(posIndex, 1);
+      if (!Array.isArray(data.history)) data.history = [];
+      data.history.push(histItem);
+
+      saveSimData(data);
+      closeCloseTradeModal();
+      renderSimulationView();
+    }
+
+    function quickOpenSimulationTrade() {
+      if (!etfData || !etfData.metadata) {
+        switchCategory('simulation');
+        return;
+      }
+      const m = etfData.metadata;
+      const q = etfData.quote || {};
+      const sc = etfData.screener_analysis || {};
+      const act = sc.action_plan || {};
+
+      const symbol = m.symbol;
+      const price = q.price || 0;
+      let target = null;
+      let stoploss = null;
+
+      if (act.resistance_price) {
+        const matches = act.resistance_price.match(/(\d+\.?\d*)/g);
+        if (matches && matches.length > 0) target = parseFloat(matches[matches.length - 1]);
+      }
+      if (act.stop_loss_price) {
+        const matches = act.stop_loss_price.match(/(\d+\.?\d*)/g);
+        if (matches && matches.length > 0) stoploss = parseFloat(matches[0]);
+      }
+      const strategy = sc.status || '5+1 健檢策略佈局';
+
+      switchCategory('simulation');
+      setTimeout(() => {
+        openNewTradeModal(symbol, price, target, stoploss, strategy);
+      }, 100);
+    }
+
+    function resetSimAccountPrompt() {
+      if (confirm('確定要重設模擬帳戶嗎？\n此動作將清空所有持倉與自訂記錄，並重置為 100 萬起始本金。')) {
+        const def = getDefaultSimData();
+        saveSimData(def);
+        renderSimulationView();
+      }
+    }
+
+    function clearHistoryTradesPrompt() {
+      if (confirm('確定要清空已平倉的歷史交易紀錄嗎？')) {
+        const data = loadSimData();
+        data.history = [];
+        saveSimData(data);
+        renderSimulationView();
+      }
     }
   </script>
 </body>

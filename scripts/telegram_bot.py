@@ -181,11 +181,11 @@ def run_agent_turn(chat_id, prompt, is_new=False):
             stderr=subprocess.STDOUT,
             text=True
         )
-        stdout, _ = proc.communicate(timeout=240)
+        stdout, _ = proc.communicate(timeout=600)
         output = stdout.strip() if stdout else "✅ 任務完成（無額外輸出）。"
     except subprocess.TimeoutExpired:
         proc.kill()
-        output = "⚠️ 任務執行逾時（超過 4 分鐘）。已自動終止行程。"
+        output = "⚠️ 任務執行逾時（超過 10 分鐘）。已自動終止行程。"
     except Exception as e:
         output = f"❌ 執行發生異常：{e}"
     finally:

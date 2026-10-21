@@ -12,7 +12,7 @@
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 16:14:02",
+    "updated_at": "2026-10-21 16:42:02",
     "total_records": 1213
   },
   "quote": {
@@ -33,10 +33,10 @@
     "nav": 108.27,
     "prev_nav": 107.11,
     "discount_percent": -0.11,
-    "market_cap_billion_ntd": 24961.65,
+    "market_cap_billion_ntd": 25019.03,
     "market_cap_display": "2.50 兆",
-    "shares_units": 23055000000,
-    "creation_redemption_shares": 41500000
+    "shares_units": 23108000000,
+    "creation_redemption_shares": 53000000
   },
   "institutional": {
     "date": "2026-10-21",

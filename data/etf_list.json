@@ -88,5 +88,15 @@
     "has_warning": false,
     "warning_badge": null,
     "type": "stock"
+  },
+  {
+    "symbol": "2002",
+    "short_name": "中鋼",
+    "name": "中國鋼鐵股份有限公司",
+    "category": "鋼鐵工業 (景氣循環 / 龍頭健檢)",
+    "dividend_frequency": "年配息",
+    "has_warning": true,
+    "warning_badge": "⚠️ 週期築底復甦",
+    "type": "stock"
   }
 ]

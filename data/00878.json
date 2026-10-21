@@ -12,7 +12,7 @@
     "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 16:14:02",
+    "updated_at": "2026-10-21 16:42:02",
     "total_records": 1213
   },
   "quote": {
@@ -30,11 +30,11 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 35.48,
+    "nav": 35.47,
     "prev_nav": 34.8,
-    "discount_percent": -0.25,
-    "market_cap_billion_ntd": 6731.9,
-    "market_cap_display": "6,732 億",
+    "discount_percent": -0.23,
+    "market_cap_billion_ntd": 6730.0,
+    "market_cap_display": "6,730 億",
     "shares_units": 18973790000,
     "creation_redemption_shares": 14000000
   },

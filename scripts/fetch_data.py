@@ -221,6 +221,35 @@ KNOWN_ETF_PROFILES = {
             {"code": "9904-RETAIL", "name": "運動用品零售與品牌代理 (寶勝國際)", "sector": "運動通路", "weight": 26.0},
             {"code": "9904-INS", "name": "轉投資潤成投資與南山人壽獲利貢獻", "sector": "金融轉投資", "weight": 16.0}
         ]
+    },
+    "2002": {
+        "symbol": "2002",
+        "name": "中國鋼鐵股份有限公司",
+        "short_name": "中鋼",
+        "category": "鋼鐵工業 (景氣循環 / 龍頭健檢)",
+        "type": "stock",
+        "benchmark": "鋼鐵工業指數 / 臺灣50指數",
+        "tracking_method": "5+1 面向篩選體系診斷",
+        "expense_ratio": "0.3% (一般股票證交稅)",
+        "inception_date": "1971-12-03",
+        "dividend_frequency": "年配息",
+        "warning": {
+            "has_warning": True,
+            "badge": "⚠️ 週期築底復甦",
+            "title": "大宗鋼鐵景氣循環打底與全球供需結構風險警示",
+            "short_reason": "受中國房市低迷與低價鋼材外溢影響，獲利處於歷史谷底修復期；PB 1.0倍具資產防守，靜待全球基建利差修復。",
+            "details": [
+                "原物料利差風險：獲利高度取決於熱軋/冷軋售價與進口鐵礦砂、焦煤成本利差。",
+                "中國傾銷防範：亞洲多國發起反傾銷調查，台灣主管機關立案有助內銷盤價回穩。",
+                "均線多頭排列：5MA > 10MA > 20MA > 60MA，均線金叉發散，突破年線與季線強支撐。"
+            ]
+        },
+        "constituents_base": [
+            {"code": "2002-HR", "name": "熱軋鋼捲/鋼板 (基礎工業用鋼)", "sector": "核心鋼品", "weight": 38.5},
+            {"code": "2002-CR", "name": "冷軋鋼捲/鍍鋅鋼品 (車用/家電)", "sector": "精緻鋼品", "weight": 26.2},
+            {"code": "2002-BAR", "name": "棒線/型鋼/特殊合金鋼", "sector": "特用鋼品", "weight": 18.3},
+            {"code": "2002-SUB", "name": "中龍鋼鐵/興達海基離岸風電/轉投資", "sector": "綠能與轉投資", "weight": 17.0}
+        ]
     }
 }
 

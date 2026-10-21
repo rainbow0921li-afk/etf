@@ -10,18 +10,19 @@
     "expense_ratio": "0.43%",
     "inception_date": "2003-06-25",
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
+    "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 06:45:54",
+    "updated_at": "2026-10-21 15:18:51",
     "total_records": 1213
   },
   "quote": {
-    "price": 107.25,
-    "change": -1.75,
-    "change_percent": -1.61,
-    "prev_close": 109.0,
-    "open": 107.45,
-    "high": 108.3,
-    "low": 107.1,
+    "price": 108.15,
+    "change": 0.0,
+    "change_percent": 0.0,
+    "prev_close": 108.15,
+    "open": 108.8,
+    "high": 109.2,
+    "low": 107.6,
     "volume_shares": 123086544,
     "trade_value_ntd": 13246672426,
     "high_52w": 116.6,
@@ -29,11 +30,11 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 107.11,
-    "prev_nav": 108.24,
-    "discount_percent": 0.13,
-    "market_cap_billion_ntd": 24694.21,
-    "market_cap_display": "2.47 兆",
+    "nav": 108.27,
+    "prev_nav": 107.11,
+    "discount_percent": -0.11,
+    "market_cap_billion_ntd": 24961.65,
+    "market_cap_display": "2.50 兆",
     "shares_units": 23055000000,
     "creation_redemption_shares": 41500000
   },
@@ -51,12 +52,12 @@
     "total_shares": -82414987
   },
   "returns": {
-    "1M": 1.17,
-    "3M": 9.69,
-    "6M": 29.3,
-    "1Y": 86.4,
-    "3Y": 267.86,
-    "5Y": 266.11
+    "1M": 0.09,
+    "3M": 5.51,
+    "6M": 28.69,
+    "1Y": 83.74,
+    "3Y": 271.27,
+    "5Y": 267.48
   },
   "dividends": [
     {
@@ -368,15 +369,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-06",
-      "open": 31.65,
-      "high": 31.67,
-      "low": 31.46,
-      "close": 31.5,
-      "adj_close": 29.4,
-      "volume": 29338084
-    },
     {
       "date": "2023-09-07",
       "open": 31.33,
@@ -7171,6 +7163,15 @@
       "close": 108.15,
       "adj_close": 108.15,
       "volume": 143680197
+    },
+    {
+      "date": "2026-10-21",
+      "open": 108.8,
+      "high": 109.2,
+      "low": 107.6,
+      "close": 108.15,
+      "adj_close": 108.15,
+      "volume": 81691981
     }
   ]
 }

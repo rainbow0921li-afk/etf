@@ -169,6 +169,17 @@ KNOWN_ETF_PROFILES = {
         "expense_ratio": "N/A (個股)",
         "inception_date": "1992-05-18",
         "dividend_frequency": "年配息",
+        "warning": {
+            "has_warning": True,
+            "badge": "⚠️ 週期打底",
+            "title": "鋼鐵景氣循環打底與原物料利差風險警示",
+            "short_reason": "受全球鋼市供需調整與中國鋼品出口壓力，目前處於虧損轉微利打底期，波動受原物料報價主導。",
+            "details": [
+                "原物料利差風險：獲利高度依賴熱軋鋼捲售價與進口鐵礦砂、焦煤成本利差。",
+                "外資波段短打：法人以短線區間價差操作為主，投信長期持股比低於 0.1%，缺乏內資連續認養動能。",
+                "均線極度收斂：5MA/10MA/20MA/60MA 均線糾結於 16.9 元附近，成交量處於窒息量階段。"
+            ]
+        },
         "constituents_base": [
             {"code": "2014-HR", "name": "熱軋鋼品", "sector": "鋼品產銷", "weight": 52.4},
             {"code": "2014-CR", "name": "冷軋鋼品", "sector": "鋼品產銷", "weight": 30.8},
@@ -554,7 +565,8 @@ def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "expense_ratio": cfg["expense_ratio"],
             "inception_date": cfg["inception_date"],
             "dividend_frequency": cfg["dividend_frequency"],
-            "warning": evaluate_etf_warning(symbol, cfg, enriched_constituents, {"dividend_yield": twse_val.get('yield', 0)}),
+            "type": cfg.get("type", "stock" if symbol == "2014" or "個股" in cfg.get("category", "") or not symbol.startswith("00") else "etf"),
+            "warning": cfg.get("warning") or evaluate_etf_warning(symbol, cfg, enriched_constituents, {"dividend_yield": twse_val.get('yield', 0)}),
             "updated_at": now_tw.strftime('%Y-%m-%d %H:%M:%S'),
             "total_records": len(price_records)
         },

@@ -10,18 +10,19 @@
     "expense_ratio": "0.22% (低內扣費用率)",
     "inception_date": "2023-03-27",
     "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
+    "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 06:45:54",
-    "total_records": 873
+    "updated_at": "2026-10-21 15:18:51",
+    "total_records": 874
   },
   "quote": {
-    "price": 39.56,
-    "change": -2.92,
-    "change_percent": -6.87,
-    "prev_close": 42.48,
-    "open": 39.95,
-    "high": 40.08,
-    "low": 39.51,
+    "price": 39.98,
+    "change": -0.08,
+    "change_percent": -0.2,
+    "prev_close": 40.06,
+    "open": 40.08,
+    "high": 40.38,
+    "low": 39.8,
     "volume_shares": 12754702,
     "trade_value_ntd": 507113370,
     "high_52w": 45.36,
@@ -29,13 +30,13 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 39.5,
-    "prev_nav": 39.97,
-    "discount_percent": 0.15,
-    "market_cap_billion_ntd": 899.69,
-    "market_cap_display": "900 億",
-    "shares_units": 2277686000,
-    "creation_redemption_shares": 2000000
+    "nav": 39.99,
+    "prev_nav": 39.5,
+    "discount_percent": -0.03,
+    "market_cap_billion_ntd": 911.85,
+    "market_cap_display": "912 億",
+    "shares_units": 2280186000,
+    "creation_redemption_shares": 2500000
   },
   "institutional": {
     "date": "2026-10-20",
@@ -51,12 +52,12 @@
     "total_shares": -7587857
   },
   "returns": {
-    "1M": 1.29,
-    "3M": 12.37,
-    "6M": 34.34,
-    "1Y": 89.59,
-    "3Y": 232.17,
-    "5Y": 260.25
+    "1M": 0.23,
+    "3M": 7.68,
+    "6M": 32.56,
+    "1Y": 86.74,
+    "3Y": 233.17,
+    "5Y": 259.53
   },
   "dividends": [
     {
@@ -340,15 +341,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-06",
-      "open": 16.28,
-      "high": 16.31,
-      "low": 16.25,
-      "close": 16.26,
-      "adj_close": 12.06,
-      "volume": 1521316
-    },
     {
       "date": "2023-09-07",
       "open": 16.22,
@@ -7143,6 +7135,15 @@
       "close": 40.06,
       "adj_close": 40.06,
       "volume": 25405581
+    },
+    {
+      "date": "2026-10-21",
+      "open": 40.08,
+      "high": 40.38,
+      "low": 39.8,
+      "close": 39.98,
+      "adj_close": 39.98,
+      "volume": 8910551
     }
   ]
 }

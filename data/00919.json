@@ -22,7 +22,7 @@
         "提醒：切勿落入「只看高配息、忽視淨值虧損」的陷阱，請以『含息總報酬率』與『實質填息力』為核心評估指標！"
       ]
     },
-    "updated_at": "2026-10-21 15:57:28",
+    "updated_at": "2026-10-21 16:09:02",
     "total_records": 973
   },
   "quote": {
@@ -49,17 +49,17 @@
     "creation_redemption_shares": 500000
   },
   "institutional": {
-    "date": "2026-10-20",
-    "foreign_lots": -15905,
+    "date": "2026-10-21",
+    "foreign_lots": 5804,
     "trust_lots": 0,
-    "dealer_self_lots": -501,
-    "dealer_hedge_lots": -30942,
-    "dealer_total_lots": -31443,
-    "total_lots": -47348,
-    "foreign_shares": -15904828,
+    "dealer_self_lots": 513,
+    "dealer_hedge_lots": 8824,
+    "dealer_total_lots": 9337,
+    "total_lots": 15142,
+    "foreign_shares": 5804194,
     "trust_shares": 0,
-    "dealer_total_shares": -31443470,
-    "total_shares": -47348298
+    "dealer_total_shares": 9337483,
+    "total_shares": 15141677
   },
   "margin": {
     "date": "2026-10-20",

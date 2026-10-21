@@ -22,7 +22,7 @@
         "均線極度收斂：5MA/10MA/20MA/60MA 均線糾結於 16.9 元附近，成交量處於窒息量階段。"
       ]
     },
-    "updated_at": "2026-10-21 15:57:28",
+    "updated_at": "2026-10-21 16:09:02",
     "total_records": 1213
   },
   "quote": {
@@ -49,17 +49,17 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-10-20",
-    "foreign_lots": -39,
+    "date": "2026-10-21",
+    "foreign_lots": -478,
     "trust_lots": 0,
-    "dealer_self_lots": -34,
+    "dealer_self_lots": 0,
     "dealer_hedge_lots": 0,
-    "dealer_total_lots": -34,
-    "total_lots": -74,
-    "foreign_shares": -39217,
-    "trust_shares": -393,
-    "dealer_total_shares": -34466,
-    "total_shares": -74076
+    "dealer_total_lots": 0,
+    "total_lots": -478,
+    "foreign_shares": -477540,
+    "trust_shares": 0,
+    "dealer_total_shares": 0,
+    "total_shares": -477540
   },
   "margin": {
     "date": "2026-10-20",

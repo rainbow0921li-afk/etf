@@ -12,7 +12,7 @@
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 15:57:28",
+    "updated_at": "2026-10-21 16:09:02",
     "total_records": 1213
   },
   "quote": {
@@ -39,17 +39,17 @@
     "creation_redemption_shares": 41500000
   },
   "institutional": {
-    "date": "2026-10-20",
-    "foreign_lots": -49031,
-    "trust_lots": 660,
-    "dealer_self_lots": -1885,
-    "dealer_hedge_lots": -32159,
-    "dealer_total_lots": -34044,
-    "total_lots": -82415,
-    "foreign_shares": -49031125,
-    "trust_shares": 660000,
-    "dealer_total_shares": -34043862,
-    "total_shares": -82414987
+    "date": "2026-10-21",
+    "foreign_lots": -17720,
+    "trust_lots": 2350,
+    "dealer_self_lots": 2446,
+    "dealer_hedge_lots": -13551,
+    "dealer_total_lots": -11105,
+    "total_lots": -26475,
+    "foreign_shares": -17720116,
+    "trust_shares": 2350000,
+    "dealer_total_shares": -11104549,
+    "total_shares": -26474665
   },
   "margin": {
     "date": "2026-10-20",

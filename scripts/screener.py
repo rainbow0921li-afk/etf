@@ -36,7 +36,7 @@ def fetch_json(url):
     with urllib.request.urlopen(req, timeout=15) as res:
         return json.loads(res.read().decode('utf-8'))
 
-def run_screener(top_n=10):
+def run_screener(top_n=20):
     print("🚀 [Step 1/4] 抓取臺灣證券交易所當日所有個股成交量價 (STOCK_DAY_ALL)...")
     stocks_raw = fetch_json('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL')
 
@@ -245,5 +245,5 @@ def run_screener(top_n=10):
     return result_payload
 
 if __name__ == '__main__':
-    count = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 10
+    count = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 20
     run_screener(top_n=count)

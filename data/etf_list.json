@@ -78,5 +78,15 @@
     "has_warning": false,
     "warning_badge": null,
     "type": "stock"
+  },
+  {
+    "symbol": "9904",
+    "short_name": "寶成",
+    "name": "寶成工業股份有限公司",
+    "category": "其他業 / 運動休閒 (全球製鞋龍頭)",
+    "dividend_frequency": "年配息",
+    "has_warning": false,
+    "warning_badge": null,
+    "type": "stock"
   }
 ]

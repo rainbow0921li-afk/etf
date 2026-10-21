@@ -204,6 +204,23 @@ KNOWN_ETF_PROFILES = {
             {"code": "3231-NET", "name": "企業通訊與邊緣網路交換器", "sector": "網通設備", "weight": 12.0},
             {"code": "3231-IND", "name": "車用與智慧工業解決方案", "sector": "車用/工業", "weight": 8.0}
         ]
+    },
+    "9904": {
+        "symbol": "9904",
+        "name": "寶成工業股份有限公司",
+        "short_name": "寶成",
+        "category": "其他業 / 運動休閒 (全球製鞋龍頭)",
+        "type": "stock",
+        "benchmark": "其他業指數 / 運動休閒奧運概念股",
+        "tracking_method": "5+1 面向篩選體系診斷",
+        "expense_ratio": "0.3% (一般股票證交稅)",
+        "inception_date": "1969-09-02",
+        "dividend_frequency": "年配息",
+        "constituents_base": [
+            {"code": "9904-SHOE", "name": "運動鞋與休閒鞋製造產銷 (裕元工業)", "sector": "鞋類製造", "weight": 58.0},
+            {"code": "9904-RETAIL", "name": "運動用品零售與品牌代理 (寶勝國際)", "sector": "運動通路", "weight": 26.0},
+            {"code": "9904-INS", "name": "轉投資潤成投資與南山人壽獲利貢獻", "sector": "金融轉投資", "weight": 16.0}
+        ]
     }
 }
 

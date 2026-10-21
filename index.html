@@ -68,17 +68,22 @@
   <!-- 分類主頁籤：ETF 與 個股 切換 -->
   <div class="max-w-4xl mx-auto px-4 pt-3 pb-1 space-y-2">
     <div class="flex items-center justify-between">
-      <!-- 頂部頁籤開關 (ETF 專區 vs 個股專區) -->
+      <!-- 頂部頁籤開關 (ETF 專區 vs 個股健檢 vs 潛力股海選) -->
       <div class="inline-flex p-1 bg-slate-900/90 rounded-xl border border-slate-800 shadow-inner">
-        <button id="category-tab-etf" onclick="switchCategory('etf')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow">
+        <button id="category-tab-etf" onclick="switchCategory('etf')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow">
           <i data-lucide="layers" class="w-3.5 h-3.5"></i>
           <span>ETF 專區</span>
           <span id="badge-count-etf" class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/30 text-blue-200">--</span>
         </button>
-        <button id="category-tab-stock" onclick="switchCategory('stock')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+        <button id="category-tab-stock" onclick="switchCategory('stock')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
           <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-          <span>個股專區</span>
+          <span>個股健檢</span>
           <span id="badge-count-stock" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">--</span>
+        </button>
+        <button id="category-tab-potential" onclick="switchCategory('potential')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+          <i data-lucide="crosshair" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>🎯 潛力股</span>
+          <span id="badge-count-potential" class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-bold">20</span>
         </button>
       </div>
 
@@ -96,6 +101,49 @@
   </div>
 
   <main class="max-w-4xl mx-auto px-4 py-3 space-y-4">
+
+    <!-- 🎯 潛力股全景專區 (TOP 20 海選榜單) -->
+    <div id="potential-category-view" class="hidden space-y-4">
+      <section class="bg-gradient-to-b from-cardbg to-slate-900 rounded-2xl p-4 sm:p-5 border border-amber-500/40 shadow-2xl space-y-4">
+        <!-- 頂部海選標題 -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500 flex items-center justify-center text-amber-400 font-black text-sm">
+              <i data-lucide="crosshair" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="text-base font-black text-white">全市場多因子海選潛力股 (TOP 20)</h2>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700 font-bold" id="potential-scan-badge">最新盤後掃描</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">流動性 > 1,000張 · 投信/外資土洋同買 · 融資退場浮額沉澱 · 券資比軋空 · 估值安全量化評分</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-slate-400">市場母體掃描</div>
+            <div class="text-xs font-bold text-amber-400" id="potential-summary-stat">1,383 檔全市場初篩</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div class="text-slate-400 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>依多因子量化評分由高至低嚴格排序</span>
+          </div>
+          <div class="text-[11px] text-slate-500">
+            點擊可查看或切換至該標的 5+1 深度報告
+          </div>
+        </div>
+
+        <!-- 20 支潛力股卡片網格 -->
+        <div id="potential-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- JS 動態生成 20 支潛力股卡片 -->
+        </div>
+      </section>
+    </div>
+
+    <!-- 標的詳細資訊區塊 (ETF 與 個股共用) -->
+    <div id="single-target-view" class="space-y-4">
 
     <!-- 投資風險警示橫幅 (高配息/景氣循環陷阱動態提示) -->
     <section id="etf-warning-banner" class="hidden bg-rose-950/40 border border-rose-500/50 rounded-2xl p-4 text-xs text-rose-200 space-y-2.5 shadow-xl backdrop-blur-sm transition-all">
@@ -177,33 +225,6 @@
         <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden relative">
           <div id="range-52w-bar" class="bg-gradient-to-r from-blue-500 to-indigo-400 h-full rounded-full transition-all duration-700" style="width: 50%"></div>
         </div>
-      </div>
-    </section>
-
-    <!-- 🚀 每日盤後全市場多因子海選榜單 (Screener Top Picks) -->
-    <section id="daily-screener-section" class="hidden bg-gradient-to-b from-cardbg to-slate-900 rounded-2xl p-4 sm:p-5 border border-amber-500/30 shadow-xl space-y-3">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-        <div class="flex items-center space-x-2">
-          <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-400 font-bold text-xs">
-            <i data-lucide="crosshair" class="w-4 h-4 text-amber-400"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h2 class="text-sm font-bold text-white">盤後多因子海選潛力榜 (Top 10 籌碼突破)</h2>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700/60 font-semibold" id="screener-scan-date">最新盤後</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-0.5">流動性 > 1000張 · 投信/外資土洋同買 · 融資退場浮額沉澱 · 估值安全量化評分</p>
-          </div>
-        </div>
-        <button onclick="toggleScreenerCollapse()" id="btn-toggle-screener" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1 transition-all">
-          <span id="screener-toggle-text">收合</span>
-          <i data-lucide="chevron-up" id="screener-toggle-icon" class="w-3.5 h-3.5"></i>
-        </button>
-      </div>
-
-      <!-- 海選標的卡片清單容器 -->
-      <div id="screener-picks-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <!-- 由 JavaScript 動態生成 -->
       </div>
     </section>
 
@@ -568,6 +589,7 @@
         <div><span id="meta-benchmark-label">追蹤指數</span>: <span class="text-slate-200 font-medium" id="meta-benchmark">--</span></div>
       </div>
     </section>
+    </div> <!-- /single-target-view -->
 
     <!-- 頁尾說明 -->
     <footer class="text-center text-[11px] text-slate-500 py-4 space-y-1">
@@ -592,13 +614,13 @@
     function isStock(item) {
       if (!item) return false;
       if (item.type === 'stock') return true;
-      if (item.symbol === '2014' || item.symbol === '3231') return true;
+      if (item.symbol === '2014' || item.symbol === '3231' || item.symbol === '9904') return true;
       if (item.category && item.category.includes('個股')) return true;
       if (/^[1-9][0-9]{3}$/.test(item.symbol)) return true;
       return false;
     }
 
-    // 啟動載入：讀取清單並檢查網址 Hash (如 #00878 或 #2014)
+    // 啟動載入：讀取清單並檢查網址 Hash (如 #00878, #2014 或 #potential)
     document.addEventListener('DOMContentLoaded', async () => {
       await loadETFList();
       await loadScreenerResults();
@@ -626,6 +648,12 @@
 
     function handleHashChange() {
       const hash = window.location.hash.replace('#', '').trim();
+      if (hash === 'potential') {
+        currentCategory = 'potential';
+        updateCategoryTabsUI();
+        renderPotentialView();
+        return;
+      }
       const matched = etfList.find(item => item.symbol === hash);
       if (matched) {
         currentETF = matched.symbol;
@@ -644,9 +672,17 @@
     function switchCategory(cat) {
       if (currentCategory === cat) return;
       currentCategory = cat;
+      if (cat === 'potential') {
+        window.location.hash = 'potential';
+        updateCategoryTabsUI();
+        renderPotentialView();
+        return;
+      }
       const pool = etfList.filter(item => cat === 'stock' ? isStock(item) : !isStock(item));
       if (pool.length > 0 && !pool.some(i => i.symbol === currentETF)) {
         currentETF = pool[0].symbol;
+        window.location.hash = currentETF;
+      } else if (pool.length > 0) {
         window.location.hash = currentETF;
       }
       updateCategoryTabsUI();
@@ -670,44 +706,49 @@
     function updateCategoryTabsUI() {
       const etfBtn = document.getElementById('category-tab-etf');
       const stockBtn = document.getElementById('category-tab-stock');
+      const potBtn = document.getElementById('category-tab-potential');
       const hint = document.getElementById('category-status-hint');
       const indicator = document.getElementById('category-status-indicator');
+      const tabsContainer = document.getElementById('etf-tabs-container');
+      const potView = document.getElementById('potential-category-view');
+      const singleView = document.getElementById('single-target-view');
 
       const etfCount = etfList.filter(i => !isStock(i)).length;
       const stockCount = etfList.filter(i => isStock(i)).length;
 
       const badgeEtf = document.getElementById('badge-count-etf');
       const badgeStock = document.getElementById('badge-count-stock');
+      const badgePot = document.getElementById('badge-count-potential');
       if (badgeEtf) badgeEtf.innerText = etfCount;
       if (badgeStock) badgeStock.innerText = stockCount;
+      if (badgePot && screenerResults) badgePot.innerText = screenerResults.top_count || 20;
 
-      if (currentCategory === 'stock') {
-        if (stockBtn) {
-          stockBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-purple-600 text-white shadow';
-        }
-        if (etfBtn) {
-          etfBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40';
-        }
-        if (hint) hint.innerText = '目前模式：台股個股 5+1 量化健檢與基本面';
+      const inactiveClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40';
+      if (etfBtn) etfBtn.className = inactiveClass;
+      if (stockBtn) stockBtn.className = inactiveClass;
+      if (potBtn) potBtn.className = inactiveClass;
+
+      if (currentCategory === 'potential') {
+        if (potBtn) potBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-900/30';
+        if (hint) hint.innerText = '目前模式：全市場多因子海選潛力股 TOP 20 榜單';
+        if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+        if (tabsContainer) tabsContainer.classList.add('hidden');
+        if (potView) potView.classList.remove('hidden');
+        if (singleView) singleView.classList.add('hidden');
+      } else if (currentCategory === 'stock') {
+        if (stockBtn) stockBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-purple-600 text-white shadow';
+        if (hint) hint.innerText = '目前模式：台股個股 5+1 量化健檢與均線全景診斷';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-purple-400 animate-pulse';
+        if (tabsContainer) tabsContainer.classList.remove('hidden');
+        if (potView) potView.classList.add('hidden');
+        if (singleView) singleView.classList.remove('hidden');
       } else {
-        if (etfBtn) {
-          etfBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow';
-        }
-        if (stockBtn) {
-          stockBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40';
-        }
+        if (etfBtn) etfBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow';
         if (hint) hint.innerText = '目前模式：熱門指數與高股息 ETF 投資看板';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-blue-400';
-      }
-
-      const dailyScreenerSec = document.getElementById('daily-screener-section');
-      if (dailyScreenerSec) {
-        if (currentCategory === 'stock') {
-          dailyScreenerSec.classList.remove('hidden');
-        } else {
-          dailyScreenerSec.classList.add('hidden');
-        }
+        if (tabsContainer) tabsContainer.classList.remove('hidden');
+        if (potView) potView.classList.add('hidden');
+        if (singleView) singleView.classList.remove('hidden');
       }
     }
 
@@ -716,44 +757,37 @@
         const res = await fetch(`./data/screener_results.json?t=${Date.now()}`);
         if (res.ok) {
           screenerResults = await res.json();
-          renderScreenerPicks();
+          const badgePot = document.getElementById('badge-count-potential');
+          if (badgePot) badgePot.innerText = screenerResults.top_count || 20;
+          if (currentCategory === 'potential') {
+            renderPotentialView();
+          }
         }
       } catch (e) {
         console.error('Failed to load screener_results.json', e);
       }
     }
 
-    function toggleScreenerCollapse() {
-      isScreenerCollapsed = !isScreenerCollapsed;
-      const container = document.getElementById('screener-picks-container');
-      const toggleText = document.getElementById('screener-toggle-text');
-      const toggleIcon = document.getElementById('screener-toggle-icon');
-      if (container) {
-        if (isScreenerCollapsed) {
-          container.classList.add('hidden');
-          if (toggleText) toggleText.innerText = '展開';
-          if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'chevron-down');
-        } else {
-          container.classList.remove('hidden');
-          if (toggleText) toggleText.innerText = '收合';
-          if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'chevron-up');
-        }
-        lucide.createIcons();
-      }
-    }
-
-    function renderScreenerPicks() {
+    function renderPotentialView() {
       if (!screenerResults || !screenerResults.top_picks) return;
-      const dateEl = document.getElementById('screener-scan-date');
-      if (dateEl) dateEl.innerText = `${screenerResults.generated_at} 掃描`;
+      const dateEl = document.getElementById('potential-scan-badge');
+      if (dateEl) dateEl.innerText = `${screenerResults.generated_at} 盤後掃描`;
 
-      const container = document.getElementById('screener-picks-container');
+      const statEl = document.getElementById('potential-summary-stat');
+      if (statEl) statEl.innerText = `${screenerResults.total_scanned} 檔活絡股初篩 · 取前 ${screenerResults.top_count} 強`;
+
+      const container = document.getElementById('potential-grid-container');
       if (!container) return;
       container.innerHTML = '';
 
       screenerResults.top_picks.forEach((p, idx) => {
         const rank = idx + 1;
-        const rankColor = rank === 1 ? 'bg-amber-500 text-slate-950 font-black' : (rank <= 3 ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-400');
+        let rankBadge = '';
+        if (rank === 1) rankBadge = '<span class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center justify-center shadow">🥇1</span>';
+        else if (rank === 2) rankBadge = '<span class="w-6 h-6 rounded-lg bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center shadow">🥈2</span>';
+        else if (rank === 3) rankBadge = '<span class="w-6 h-6 rounded-lg bg-amber-700 text-white font-black text-xs flex items-center justify-center shadow">🥉3</span>';
+        else rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center border border-slate-700">${rank}</span>`;
+
         const isUp = p.change > 0;
         const isDown = p.change < 0;
         const chgColor = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-300';
@@ -761,41 +795,80 @@
         const isTracked = etfList.some(item => item.symbol === p.code);
 
         const card = document.createElement('div');
-        card.className = `p-3 rounded-xl bg-slate-900/90 border ${isTracked && currentETF === p.code ? 'border-amber-400 bg-amber-950/20' : 'border-slate-800 hover:border-slate-700'} flex flex-col justify-between transition-all cursor-pointer`;
-        card.onclick = () => {
-          if (isTracked) {
-            switchETF(p.code);
-          } else {
-            alert(`標的【${p.code} ${p.name}】在本日海選得分 ${p.score} 分！\\n法人買超：+${p.institutional.total_lots} 張\\n融資增減：${p.margin.margin_change} 張\\n\\n可透過指令 python scripts/fetch_data.py add ${p.code} 加入看板深度追蹤！`);
-          }
-        };
+        card.className = `p-4 rounded-2xl bg-cardbg/95 border ${isTracked ? 'border-purple-500/50 shadow-lg shadow-purple-950/20' : 'border-slate-800 hover:border-slate-700'} flex flex-col justify-between transition-all`;
 
-        const topReasons = p.reasons.slice(0, 3).map(r => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">${r}</span>`).join('');
+        const topReasons = p.reasons.map(r => {
+          let tagClass = 'bg-slate-800/80 text-slate-300 border border-slate-700/60';
+          if (r.includes('土洋')) tagClass = 'bg-rose-950 text-rose-300 border border-rose-800 font-bold';
+          else if (r.includes('投信')) tagClass = 'bg-sky-950 text-sky-300 border border-sky-800';
+          else if (r.includes('融資')) tagClass = 'bg-emerald-950 text-emerald-300 border border-emerald-800';
+          else if (r.includes('券資比')) tagClass = 'bg-amber-950 text-amber-300 border border-amber-800 font-bold';
+          return `<span class="text-[10px] px-2 py-0.5 rounded-md ${tagClass}">${r}</span>`;
+        }).join('');
+
+        const mChg = p.margin.margin_change || 0;
+        const mChgColor = mChg < 0 ? 'text-emerald-400 font-bold' : (mChg > 0 ? 'text-rose-400 font-bold' : 'text-slate-400');
+        const mSign = mChg > 0 ? '+' : '';
 
         card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-5 h-5 rounded-md ${rankColor} text-[11px] flex items-center justify-center">${rank}</span>
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2.5">
+              ${rankBadge}
               <div>
-                <span class="text-xs font-bold text-white">${p.code} ${p.name}</span>
-                ${isTracked ? '<span class="ml-1 text-[9px] px-1 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">已追蹤</span>' : ''}
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-black text-white">${p.code} ${p.name}</span>
+                  ${isTracked ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">已建立健檢</span>' : ''}
+                </div>
+                <div class="text-[11px] text-slate-400 mt-0.5">
+                  成交量 <b class="text-slate-200">${p.volume_lots.toLocaleString()}</b> 張
+                </div>
               </div>
             </div>
             <div class="text-right">
-              <span class="text-xs font-black text-amber-400">${p.score} 分</span>
+              <div class="text-[10px] text-slate-400">量化評分</div>
+              <div class="text-base font-black text-amber-400">${p.score} 分</div>
             </div>
           </div>
-          <div class="flex items-baseline justify-between mt-2 pt-2 border-t border-slate-800/60 text-xs">
+
+          <!-- 價格與籌碼核心數據網格 -->
+          <div class="grid grid-cols-3 gap-2 my-2.5 p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/80 text-xs">
             <div>
-              <span class="font-bold text-white">NT$ ${p.close.toFixed(2)}</span>
-              <span class="text-[11px] font-semibold ${chgColor} ml-1">(${sign}${p.change_percent.toFixed(2)}%)</span>
+              <div class="text-[10px] text-slate-500">收盤現價</div>
+              <div class="font-bold text-white mt-0.5">NT$ ${p.close.toFixed(2)}</div>
+              <div class="text-[10px] ${chgColor} font-semibold">${sign}${p.change_percent.toFixed(2)}%</div>
             </div>
-            <div class="text-[10px] text-slate-400">
-              法人 <b class="text-sky-400 font-bold">+${p.institutional.total_lots.toLocaleString()}</b> 張
+            <div>
+              <div class="text-[10px] text-slate-500">法人買超</div>
+              <div class="font-bold text-sky-400 mt-0.5">${p.institutional.total_lots > 0 ? '+' : ''}${p.institutional.total_lots.toLocaleString()} 張</div>
+              <div class="text-[9px] text-slate-400">投信+${p.institutional.trust_lots} / 外資+${p.institutional.foreign_lots}</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-slate-500">融資增減</div>
+              <div class="font-bold mt-0.5 ${mChgColor}">${mSign}${mChg.toLocaleString()} 張</div>
+              <div class="text-[9px] text-slate-400">券資比 ${p.margin.short_margin_ratio ? p.margin.short_margin_ratio.toFixed(1) : 0}%</div>
             </div>
           </div>
-          <div class="flex flex-wrap gap-1 mt-2">
+
+          <!-- 核心特徵標籤 -->
+          <div class="flex flex-wrap gap-1 mb-3">
             ${topReasons}
+          </div>
+
+          <!-- 動作按鈕 -->
+          <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">
+              ${p.valuation && p.valuation.pe ? `PE: ${p.valuation.pe.toFixed(1)}倍 ｜ 殖利率: ${p.valuation.dividend_yield.toFixed(1)}%` : '估值安全區間'}
+            </span>
+            ${isTracked ? 
+              `<button onclick="switchCategory('stock'); switchETF('${p.code}')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition-all flex items-center gap-1 shadow">
+                <span>檢視 5+1 深度報告</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>` :
+              `<button onclick="alert('【${p.code} ${p.name}】為本日盤後精選潛力股！\\n\\n可於伺服器執行：python scripts/fetch_data.py add ${p.code}\\n或直接告知我，我將立即為您建立 5+1 均線全景健檢！')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all flex items-center gap-1">
+                <span>關注標的</span>
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              </button>`
+            }
           </div>
         `;
         container.appendChild(card);

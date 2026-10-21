@@ -21,16 +21,17 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Fetch Latest ETF Data (0050 & 0056)
+      - name: Fetch Latest ETF & Stock Data & Run Screener
         run: |
           python scripts/fetch_data.py
+          python scripts/screener.py
 
       - name: Commit and Push if changed
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(data): auto-update ETF market data (0050 & 0056) [skip ci]" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(data): auto-update ETF & screener market data [skip ci]" && git push)
 
       - name: Push Telegram Daily Closing Report
         run: |
@@ -57,7 +58,17 @@ jobs:
           • 外資：\`{inst.get('foreign_lots', 0):,} 張\` ｜ 投信：\`{inst.get('trust_lots', 0):,} 張\`
           • 法人合計：\`{inst.get('total_lots', 0):,} 張\`''')
 
-              text = f'''📢 *ETF 今日盤後日報 ({report_date})*
+              if os.path.exists('data/screener_results.json'):
+                  with open('data/screener_results.json') as sf:
+                      s_data = json.load(sf)
+                      top3 = s_data.get('top_picks', [])[:3]
+                      if top3:
+                          s_lines = ['🎯 *盤後多因子海選 TOP 3 突破標的*']
+                          for p in top3:
+                              s_lines.append(f\"• *{p['code']} {p['name']}* (\`NT$ {p['close']}\` / {p['score']}分) 法人+{p['institutional']['total_lots']:,}張, 融資{p['margin']['margin_change']:+,d}張\")
+                          cards.append('\n'.join(s_lines))
+
+              text = f'''📢 *ETF & 個股盤後日報 ({report_date})*
           ━━━━━━━━━━━━━━━━━━
           ''' + '\n\n'.join(cards) + '''
 

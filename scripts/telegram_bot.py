@@ -214,8 +214,14 @@ def agent_worker_loop():
 # --- System & Quick Features ---
 
 def get_main_keyboard():
+    site_url = f"https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/"
     return {
-        "keyboard": [[{"text": "🖥️ 伺服器狀態"}]],
+        "keyboard": [
+            [
+                {"text": "🌐 ETF 看板網站", "web_app": {"url": site_url}},
+                {"text": "🖥️ 伺服器狀態"}
+            ]
+        ],
         "resize_keyboard": True,
         "persistent": True
     }
@@ -501,14 +507,26 @@ def handle_message(msg):
         send_message(chat_id, res, reply_markup=get_main_keyboard())
         return
 
-    if text in ['/web', '/site', '網頁', '🌐 開啟專屬看板網頁']:
+    if text in ['/web', '/site', '網頁', '網站', '網站連結', '🌐 開啟專屬看板網頁', '🌐 ETF 看板網站', '🌐 開啟網站', '🌐 看板網站']:
+        site_url = f"https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/"
         link_msg = f"""
-📱 *您的專屬 ETF 看板網站：*
-👉 [點此開啟手機儀表板](https://{GITHUB_OWNER}.github.io/{GITHUB_REPO}/)
+🌐 *您的專屬 ETF 投資看板網站：*
+👉 [{site_url}]({site_url})
 
-支援手機加入主畫面、自選 ETF 切換、即時淨值折溢價、互動走勢圖與法人籌碼動向！
+📱 *功能亮點*：
+• 支援 iPhone / Android 手機全螢幕體驗
+• 0050、0056、00878、00919、006208、00922 即時行情
+• 互動走勢圖、歷年配息與填息天數、定期定額回測試算機
+• 標記高股息浮誇殖利率風險提示警語
+
+點擊下方按鈕或上方連結即可開啟瀏覽！🚀
 """.strip()
-        send_message(chat_id, link_msg, reply_markup=get_main_keyboard())
+        inline_kb = {
+            "inline_keyboard": [
+                [{"text": "🚀 點此在瀏覽器開啟看板", "url": site_url}]
+            ]
+        }
+        send_message(chat_id, link_msg, reply_markup=inline_kb)
         return
 
     # 5. 【純代理模式核心】：任何自然語言指令與對話全部委託給 Antigravity Agent (agy) 執行！

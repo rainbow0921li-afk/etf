@@ -180,6 +180,33 @@
       </div>
     </section>
 
+    <!-- 🚀 每日盤後全市場多因子海選榜單 (Screener Top Picks) -->
+    <section id="daily-screener-section" class="hidden bg-gradient-to-b from-cardbg to-slate-900 rounded-2xl p-4 sm:p-5 border border-amber-500/30 shadow-xl space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-400 font-bold text-xs">
+            <i data-lucide="crosshair" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h2 class="text-sm font-bold text-white">盤後多因子海選潛力榜 (Top 10 籌碼突破)</h2>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700/60 font-semibold" id="screener-scan-date">最新盤後</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">流動性 > 1000張 · 投信/外資土洋同買 · 融資退場浮額沉澱 · 估值安全量化評分</p>
+          </div>
+        </div>
+        <button onclick="toggleScreenerCollapse()" id="btn-toggle-screener" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1 transition-all">
+          <span id="screener-toggle-text">收合</span>
+          <i data-lucide="chevron-up" id="screener-toggle-icon" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- 海選標的卡片清單容器 -->
+      <div id="screener-picks-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <!-- 由 JavaScript 動態生成 -->
+      </div>
+    </section>
+
     <!-- 🎯 5+1 面向個股多維度量化健檢卡 (tw-stock-screener) -->
     <section id="screener-section" class="hidden bg-gradient-to-b from-cardbg to-slate-900 rounded-2xl p-5 border border-indigo-500/40 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -559,11 +586,13 @@
     let priceChartInstance = null;
     let currentRange = '1Y';
     let dcaYears = 3;
+    let screenerResults = null;
+    let isScreenerCollapsed = false;
 
     function isStock(item) {
       if (!item) return false;
       if (item.type === 'stock') return true;
-      if (item.symbol === '2014') return true;
+      if (item.symbol === '2014' || item.symbol === '3231') return true;
       if (item.category && item.category.includes('個股')) return true;
       if (/^[1-9][0-9]{3}$/.test(item.symbol)) return true;
       return false;
@@ -572,6 +601,7 @@
     // 啟動載入：讀取清單並檢查網址 Hash (如 #00878 或 #2014)
     document.addEventListener('DOMContentLoaded', async () => {
       await loadETFList();
+      await loadScreenerResults();
       handleHashChange();
       window.addEventListener('hashchange', handleHashChange);
     });
@@ -670,6 +700,107 @@
         if (hint) hint.innerText = '目前模式：熱門指數與高股息 ETF 投資看板';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-blue-400';
       }
+
+      const dailyScreenerSec = document.getElementById('daily-screener-section');
+      if (dailyScreenerSec) {
+        if (currentCategory === 'stock') {
+          dailyScreenerSec.classList.remove('hidden');
+        } else {
+          dailyScreenerSec.classList.add('hidden');
+        }
+      }
+    }
+
+    async function loadScreenerResults() {
+      try {
+        const res = await fetch(`./data/screener_results.json?t=${Date.now()}`);
+        if (res.ok) {
+          screenerResults = await res.json();
+          renderScreenerPicks();
+        }
+      } catch (e) {
+        console.error('Failed to load screener_results.json', e);
+      }
+    }
+
+    function toggleScreenerCollapse() {
+      isScreenerCollapsed = !isScreenerCollapsed;
+      const container = document.getElementById('screener-picks-container');
+      const toggleText = document.getElementById('screener-toggle-text');
+      const toggleIcon = document.getElementById('screener-toggle-icon');
+      if (container) {
+        if (isScreenerCollapsed) {
+          container.classList.add('hidden');
+          if (toggleText) toggleText.innerText = '展開';
+          if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'chevron-down');
+        } else {
+          container.classList.remove('hidden');
+          if (toggleText) toggleText.innerText = '收合';
+          if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'chevron-up');
+        }
+        lucide.createIcons();
+      }
+    }
+
+    function renderScreenerPicks() {
+      if (!screenerResults || !screenerResults.top_picks) return;
+      const dateEl = document.getElementById('screener-scan-date');
+      if (dateEl) dateEl.innerText = `${screenerResults.generated_at} 掃描`;
+
+      const container = document.getElementById('screener-picks-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      screenerResults.top_picks.forEach((p, idx) => {
+        const rank = idx + 1;
+        const rankColor = rank === 1 ? 'bg-amber-500 text-slate-950 font-black' : (rank <= 3 ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-800 text-slate-400');
+        const isUp = p.change > 0;
+        const isDown = p.change < 0;
+        const chgColor = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-300';
+        const sign = isUp ? '+' : '';
+        const isTracked = etfList.some(item => item.symbol === p.code);
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-xl bg-slate-900/90 border ${isTracked && currentETF === p.code ? 'border-amber-400 bg-amber-950/20' : 'border-slate-800 hover:border-slate-700'} flex flex-col justify-between transition-all cursor-pointer`;
+        card.onclick = () => {
+          if (isTracked) {
+            switchETF(p.code);
+          } else {
+            alert(`標的【${p.code} ${p.name}】在本日海選得分 ${p.score} 分！\\n法人買超：+${p.institutional.total_lots} 張\\n融資增減：${p.margin.margin_change} 張\\n\\n可透過指令 python scripts/fetch_data.py add ${p.code} 加入看板深度追蹤！`);
+          }
+        };
+
+        const topReasons = p.reasons.slice(0, 3).map(r => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">${r}</span>`).join('');
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-md ${rankColor} text-[11px] flex items-center justify-center">${rank}</span>
+              <div>
+                <span class="text-xs font-bold text-white">${p.code} ${p.name}</span>
+                ${isTracked ? '<span class="ml-1 text-[9px] px-1 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">已追蹤</span>' : ''}
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-black text-amber-400">${p.score} 分</span>
+            </div>
+          </div>
+          <div class="flex items-baseline justify-between mt-2 pt-2 border-t border-slate-800/60 text-xs">
+            <div>
+              <span class="font-bold text-white">NT$ ${p.close.toFixed(2)}</span>
+              <span class="text-[11px] font-semibold ${chgColor} ml-1">(${sign}${p.change_percent.toFixed(2)}%)</span>
+            </div>
+            <div class="text-[10px] text-slate-400">
+              法人 <b class="text-sky-400 font-bold">+${p.institutional.total_lots.toLocaleString()}</b> 張
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-1 mt-2">
+            ${topReasons}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
     }
 
     function renderTabs() {

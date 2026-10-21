@@ -186,6 +186,24 @@ KNOWN_ETF_PROFILES = {
             {"code": "2014-GI", "name": "鍍鋅鋼品", "sector": "鋼品產銷", "weight": 10.6},
             {"code": "2014-PIPE", "name": "鋼管及其他", "sector": "鋼品產銷", "weight": 6.2}
         ]
+    },
+    "3231": {
+        "symbol": "3231",
+        "name": "緯創資通股份有限公司",
+        "short_name": "緯創",
+        "category": "電腦及週邊設備業 (AI 伺服器龍頭)",
+        "type": "stock",
+        "benchmark": "電腦及週邊設備指數 / AI 概念股",
+        "tracking_method": "5+1 面向篩選體系診斷",
+        "expense_ratio": "0.3% (一般股票證交稅)",
+        "inception_date": "2001-05-30",
+        "dividend_frequency": "年配息",
+        "constituents_base": [
+            {"code": "3231-SRV", "name": "AI 伺服器與高效能運算 (GPU Baseboard)", "sector": "AI 伺服器", "weight": 52.0},
+            {"code": "3231-PC", "name": "筆記型電腦與終端運算 (PC/NB)", "sector": "終端設備", "weight": 28.0},
+            {"code": "3231-NET", "name": "企業通訊與邊緣網路交換器", "sector": "網通設備", "weight": 12.0},
+            {"code": "3231-IND", "name": "車用與智慧工業解決方案", "sector": "車用/工業", "weight": 8.0}
+        ]
     }
 }
 

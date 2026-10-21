@@ -16,8 +16,12 @@ url = f"https://api.telegram.org/bot{token}/sendMessage"
 payload = {
     "chat_id": 5709621345,
     "text": "🤖 Telegram Bot 已完成熱重載更新！現已全面支援「圖片與截圖多模態解讀」。請直接在 Telegram 重新傳送您的圖片，我會立即為您分析解讀！",
-    "reply_markup": {
-        "keyboard": [[{"text": "🖥️ 伺服器狀態"}]],
+        "keyboard": [
+            [
+                {"text": "🌐 ETF 看板網站", "web_app": {"url": "https://rainbow0921li-afk.github.io/etf/"}},
+                {"text": "🖥️ 伺服器狀態"}
+            ]
+        ],
         "resize_keyboard": True,
         "persistent": True
     }

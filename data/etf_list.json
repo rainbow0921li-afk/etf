@@ -68,5 +68,15 @@
     "has_warning": true,
     "warning_badge": "⚠️ 週期打底",
     "type": "stock"
+  },
+  {
+    "symbol": "3231",
+    "short_name": "緯創",
+    "name": "緯創資通股份有限公司",
+    "category": "電腦及週邊 (AI 伺服器)",
+    "dividend_frequency": "年配息",
+    "has_warning": false,
+    "warning_badge": null,
+    "type": "stock"
   }
 ]

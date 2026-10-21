@@ -2,7 +2,7 @@
 <html lang="zh-TW" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>台灣熱門 ETF 投資看板 (0050 / 0056)</title>
   <meta name="description" content="台灣熱門 ETF 投資平台，提供 0050 元大台灣50 與 0056 元大高股息即時行情、淨值、折溢價、市值規模、三大法人買賣超、走勢圖與定期定額回測試算。">
   <meta name="theme-color" content="#0f172a">
@@ -39,6 +39,94 @@
     }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 手機觀看文字全面放大與舒適閱讀排版 (Mobile Typography Optimization) */
+    @media (max-width: 640px) {
+      body {
+        font-size: 15px;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* 核心文字階層微調 (微字體全面放大，消滅過小難以辨識的 9px/10px 字體) */
+      .text-\[9px\] {
+        font-size: 11.5px !important;
+        line-height: 1.35 !important;
+      }
+      .text-\[10px\] {
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+      }
+      .text-\[11px\] {
+        font-size: 12.5px !important;
+        line-height: 1.45 !important;
+      }
+      .text-xs {
+        font-size: 13.5px !important;
+        line-height: 1.5 !important;
+      }
+      .text-sm {
+        font-size: 15px !important;
+        line-height: 1.55 !important;
+      }
+      .text-base {
+        font-size: 17px !important;
+        line-height: 1.55 !important;
+      }
+
+      /* 頁首標題與狀態文字 */
+      #header-etf-title {
+        font-size: 17.5px !important;
+      }
+      #update-time-text {
+        font-size: 12.5px !important;
+      }
+
+      /* 5+1 健檢面向與診斷內文強化易讀性 */
+      #screener-dimensions-container p {
+        font-size: 13.5px !important;
+        line-height: 1.6 !important;
+      }
+      #screener-dimensions-container .text-xs {
+        font-size: 14px !important;
+      }
+
+      /* 進出場策略與風控指引內文 */
+      #plan-strategy {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+      }
+
+      /* 潛力股卡片說明與標籤 */
+      #potential-grid-container .text-sm {
+        font-size: 15.5px !important;
+      }
+      #potential-grid-container .text-\[10px\] {
+        font-size: 12px !important;
+      }
+
+      /* 歷年配息表格加大字體與舒適行高 */
+      table th {
+        font-size: 13px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+      }
+      table td {
+        font-size: 13.5px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+      }
+
+      /* 定期定額計算機結果文字 */
+      #dca-total-asset {
+        font-size: 1.75rem !important;
+      }
+
+      /* 底部免責與版權說明 */
+      footer p {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-darkbg text-slate-100 min-h-screen pb-16 antialiased selection:bg-blue-600 selection:text-white">
@@ -69,18 +157,18 @@
   <div class="max-w-4xl mx-auto px-4 pt-3 pb-1 space-y-2">
     <div class="flex items-center justify-between">
       <!-- 頂部頁籤開關 (ETF 專區 vs 個股健檢 vs 潛力股海選) -->
-      <div class="inline-flex p-1 bg-slate-900/90 rounded-xl border border-slate-800 shadow-inner">
-        <button id="category-tab-etf" onclick="switchCategory('etf')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow">
+      <div class="inline-flex max-w-full overflow-x-auto scrollbar-none p-1 bg-slate-900/90 rounded-xl border border-slate-800 shadow-inner">
+        <button id="category-tab-etf" onclick="switchCategory('etf')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-blue-600 text-white shadow flex-shrink-0 whitespace-nowrap">
           <i data-lucide="layers" class="w-3.5 h-3.5"></i>
           <span>ETF 專區</span>
           <span id="badge-count-etf" class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-500/30 text-blue-200">--</span>
         </button>
-        <button id="category-tab-stock" onclick="switchCategory('stock')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+        <button id="category-tab-stock" onclick="switchCategory('stock')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white flex-shrink-0 whitespace-nowrap">
           <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
           <span>個股健檢</span>
           <span id="badge-count-stock" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">--</span>
         </button>
-        <button id="category-tab-potential" onclick="switchCategory('potential')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+        <button id="category-tab-potential" onclick="switchCategory('potential')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white flex-shrink-0 whitespace-nowrap">
           <i data-lucide="crosshair" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>🎯 潛力股</span>
           <span id="badge-count-potential" class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-bold">20</span>
@@ -723,27 +811,27 @@
       if (badgeStock) badgeStock.innerText = stockCount;
       if (badgePot && screenerResults) badgePot.innerText = screenerResults.top_count || 20;
 
-      const inactiveClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40';
+      const inactiveClass = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white hover:bg-slate-800/40 flex-shrink-0 whitespace-nowrap';
       if (etfBtn) etfBtn.className = inactiveClass;
       if (stockBtn) stockBtn.className = inactiveClass;
       if (potBtn) potBtn.className = inactiveClass;
 
       if (currentCategory === 'potential') {
-        if (potBtn) potBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-900/30';
+        if (potBtn) potBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-lg shadow-amber-900/30 flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：全市場多因子海選潛力股 TOP 20 榜單';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
         if (tabsContainer) tabsContainer.classList.add('hidden');
         if (potView) potView.classList.remove('hidden');
         if (singleView) singleView.classList.add('hidden');
       } else if (currentCategory === 'stock') {
-        if (stockBtn) stockBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-purple-600 text-white shadow';
+        if (stockBtn) stockBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-purple-600 text-white shadow flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：台股個股 5+1 量化健檢與均線全景診斷';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-purple-400 animate-pulse';
         if (tabsContainer) tabsContainer.classList.remove('hidden');
         if (potView) potView.classList.add('hidden');
         if (singleView) singleView.classList.remove('hidden');
       } else {
-        if (etfBtn) etfBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow';
+        if (etfBtn) etfBtn.className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 bg-blue-600 text-white shadow flex-shrink-0 whitespace-nowrap';
         if (hint) hint.innerText = '目前模式：熱門指數與高股息 ETF 投資看板';
         if (indicator) indicator.className = 'w-2 h-2 rounded-full bg-blue-400';
         if (tabsContainer) tabsContainer.classList.remove('hidden');
@@ -1404,6 +1492,8 @@
               borderColor: '#334155',
               borderWidth: 1,
               padding: 10,
+              bodyFont: { size: window.innerWidth < 640 ? 13 : 12 },
+              titleFont: { size: window.innerWidth < 640 ? 12 : 11 },
               displayColors: false,
               callbacks: {
                 label: (ctx) => `收盤價: NT$ ${ctx.parsed.y.toFixed(2)}`
@@ -1415,7 +1505,7 @@
               grid: { display: false, drawBorder: false },
               ticks: {
                 color: '#64748b',
-                font: { size: 10 },
+                font: { size: window.innerWidth < 640 ? 11 : 10 },
                 maxTicksLimit: 6
               }
             },
@@ -1423,7 +1513,7 @@
               grid: { color: 'rgba(51, 65, 85, 0.4)' },
               ticks: {
                 color: '#64748b',
-                font: { size: 10 },
+                font: { size: window.innerWidth < 640 ? 11 : 10 },
                 callback: (val) => `$${val}`
               }
             }

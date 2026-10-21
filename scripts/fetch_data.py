@@ -157,6 +157,24 @@ KNOWN_ETF_PROFILES = {
             {"code": "2412", "name": "中華電", "sector": "通信網路業", "weight": 2.20},
             {"code": "2886", "name": "兆豐金", "sector": "金融保險業", "weight": 2.10}
         ]
+    },
+    "2014": {
+        "symbol": "2014",
+        "name": "中鴻鋼鐵股份有限公司",
+        "short_name": "中鴻",
+        "category": "鋼鐵工業 (個股健檢)",
+        "type": "stock",
+        "benchmark": "鋼鐵工業指數 / 中鋼集團",
+        "tracking_method": "5+1 面向篩選體系診斷",
+        "expense_ratio": "N/A (個股)",
+        "inception_date": "1992-05-18",
+        "dividend_frequency": "年配息",
+        "constituents_base": [
+            {"code": "2014-HR", "name": "熱軋鋼品", "sector": "鋼品產銷", "weight": 52.4},
+            {"code": "2014-CR", "name": "冷軋鋼品", "sector": "鋼品產銷", "weight": 30.8},
+            {"code": "2014-GI", "name": "鍍鋅鋼品", "sector": "鋼品產銷", "weight": 10.6},
+            {"code": "2014-PIPE", "name": "鋼管及其他", "sector": "鋼品產銷", "weight": 6.2}
+        ]
     }
 }
 
@@ -617,12 +635,22 @@ def main():
         dataset = process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
         if dataset:
             output_file = os.path.join(DATA_DIR, f"{symbol}.json")
+            if os.path.exists(output_file):
+                try:
+                    with open(output_file, 'r', encoding='utf-8') as ef:
+                        prev_d = json.load(ef)
+                        if 'screener_analysis' in prev_d and 'screener_analysis' not in dataset:
+                            dataset['screener_analysis'] = prev_d['screener_analysis']
+                except Exception:
+                    pass
+
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(dataset, f, ensure_ascii=False, indent=2)
             print(f"[{symbol}] Generated {output_file} ({os.path.getsize(output_file) / 1024:.1f} KB)")
             
             m = dataset['metadata']
             w = m.get('warning')
+            is_stock = m.get("type") == "stock" or "個股" in m.get("category", "") or not m["symbol"].startswith("00")
             summary_list.append({
                 "symbol": m["symbol"],
                 "short_name": m["short_name"],
@@ -630,7 +658,8 @@ def main():
                 "category": m["category"],
                 "dividend_frequency": m["dividend_frequency"],
                 "has_warning": bool(w and w.get("has_warning")),
-                "warning_badge": w.get("badge") if w else None
+                "warning_badge": w.get("badge") if w else None,
+                "type": "stock" if is_stock else "etf"
             })
 
     list_file = os.path.join(DATA_DIR, "etf_list.json")

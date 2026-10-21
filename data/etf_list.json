@@ -6,7 +6,8 @@
     "category": "市值型 ETF",
     "dividend_frequency": "半年配 (通常每年 1 月及 7 月)",
     "has_warning": false,
-    "warning_badge": null
+    "warning_badge": null,
+    "type": "etf"
   },
   {
     "symbol": "0056",
@@ -15,7 +16,8 @@
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 1, 4, 7, 10 月)",
     "has_warning": false,
-    "warning_badge": null
+    "warning_badge": null,
+    "type": "etf"
   },
   {
     "symbol": "00878",
@@ -24,7 +26,8 @@
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)",
     "has_warning": false,
-    "warning_badge": null
+    "warning_badge": null,
+    "type": "etf"
   },
   {
     "symbol": "00919",
@@ -33,7 +36,8 @@
     "category": "高股息型 ETF",
     "dividend_frequency": "季配息 (每年 3, 6, 9, 12 月)",
     "has_warning": true,
-    "warning_badge": "⚠️ 高配息風險警示"
+    "warning_badge": "⚠️ 高配息風險警示",
+    "type": "etf"
   },
   {
     "symbol": "006208",
@@ -42,7 +46,8 @@
     "category": "市值型 ETF",
     "dividend_frequency": "半年配 (通常每年 7 月及 11 月)",
     "has_warning": false,
-    "warning_badge": null
+    "warning_badge": null,
+    "type": "etf"
   },
   {
     "symbol": "00922",
@@ -51,6 +56,17 @@
     "category": "市值型 ETF",
     "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
     "has_warning": false,
-    "warning_badge": null
+    "warning_badge": null,
+    "type": "etf"
+  },
+  {
+    "symbol": "2014",
+    "short_name": "中鴻",
+    "name": "中鴻鋼鐵股份有限公司",
+    "category": "鋼鐵工業 (個股健檢)",
+    "dividend_frequency": "年配息",
+    "has_warning": true,
+    "warning_badge": "週期打底",
+    "type": "stock"
   }
 ]

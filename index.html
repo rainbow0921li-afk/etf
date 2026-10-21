@@ -226,56 +226,113 @@
       </div>
     </section>
 
-    <!-- 2. 三大法人買賣超動向卡片 (籌碼面) -->
-    <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
+    <!-- 2. 籌碼面動向卡片 (三大法人 & 融資融券 MI_MARGN) -->
+    <section class="bg-cardbg rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-lg space-y-4">
+      <div class="flex items-center justify-between">
         <div>
           <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
             <i data-lucide="users" class="w-4 h-4 text-sky-400"></i>
-            三大法人買賣超動向 (籌碼面)
+            籌碼面全景動向 (三大法人 & 信用交易融資融券)
           </h2>
           <p class="text-[11px] text-slate-400 mt-0.5" id="institutional-date-text">臺灣證券交易所盤後公佈</p>
         </div>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">單位: 張</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">單位: 張 (Lots)</span>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <!-- 外資 -->
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-          <div class="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>外資及陸資</span>
-            <span class="text-[10px] text-slate-500">Foreign</span>
-          </div>
-          <div id="inst-foreign" class="text-base font-black mt-1">--</div>
+      <!-- 三大法人買賣超動向 -->
+      <div>
+        <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+          <i data-lucide="landmark" class="w-3.5 h-3.5 text-sky-400"></i>
+          三大法人買賣超 (Institutional)
         </div>
-        <!-- 投信 -->
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-          <div class="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>投信</span>
-            <span class="text-[10px] text-slate-500">Trust</span>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- 外資 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>外資及陸資</span>
+              <span class="text-[10px] text-slate-500">Foreign</span>
+            </div>
+            <div id="inst-foreign" class="text-base font-black mt-1">--</div>
           </div>
-          <div id="inst-trust" class="text-base font-black mt-1">--</div>
-        </div>
-        <!-- 自營商 -->
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-          <div class="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>自營商 (總計)</span>
-            <span class="text-[10px] text-slate-500">Dealer</span>
+          <!-- 投信 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>投信</span>
+              <span class="text-[10px] text-slate-500">Trust</span>
+            </div>
+            <div id="inst-trust" class="text-base font-black mt-1">--</div>
           </div>
-          <div id="inst-dealer" class="text-base font-black mt-1">--</div>
-          <div id="inst-dealer-detail" class="text-[10px] text-slate-500 mt-0.5">自行 -- / 避險 --</div>
-        </div>
-        <!-- 合計 -->
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-          <div class="text-[11px] text-slate-400 flex items-center justify-between">
-            <span>三大法人合計</span>
-            <span class="text-[10px] text-slate-500">Total</span>
+          <!-- 自營商 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>自營商 (總計)</span>
+              <span class="text-[10px] text-slate-500">Dealer</span>
+            </div>
+            <div id="inst-dealer" class="text-base font-black mt-1">--</div>
+            <div id="inst-dealer-detail" class="text-[10px] text-slate-500 mt-0.5">自行 -- / 避險 --</div>
           </div>
-          <div id="inst-total" class="text-base font-black mt-1">--</div>
+          <!-- 合計 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>三大法人合計</span>
+              <span class="text-[10px] text-slate-500">Total</span>
+            </div>
+            <div id="inst-total" class="text-base font-black mt-1">--</div>
+          </div>
         </div>
       </div>
-      <p class="text-[10px] text-slate-500 mt-2.5">
-        * 註：自營商包含「自行買賣」與「避險」部位，ETF 自營商避險通常反映造市套利及權證發行避險需求。
+
+      <!-- 融資融券與券資比 (MI_MARGN) -->
+      <div class="pt-3 border-t border-slate-800/80">
+        <div class="text-xs font-semibold text-slate-400 mb-2 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="scale" class="w-3.5 h-3.5 text-amber-400"></i>
+            信用交易動向 (融資融券 & 券資比)
+          </span>
+          <span class="text-[10px] text-slate-500 font-mono" id="margin-date-text">TWSE MI_MARGN</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- 融資餘額 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>融資餘額</span>
+              <span class="text-[10px] text-slate-500">Margin</span>
+            </div>
+            <div id="margin-balance" class="text-base font-black mt-1 text-slate-200">--</div>
+            <div id="margin-change-detail" class="text-[10px] text-slate-400 mt-0.5">增減: --</div>
+          </div>
+          <!-- 融券餘額 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>融券餘額</span>
+              <span class="text-[10px] text-slate-500">Short</span>
+            </div>
+            <div id="short-balance" class="text-base font-black mt-1 text-slate-200">--</div>
+            <div id="short-change-detail" class="text-[10px] text-slate-400 mt-0.5">增減: --</div>
+          </div>
+          <!-- 券資比 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>券資比</span>
+              <span class="text-[10px] text-slate-500">Ratio</span>
+            </div>
+            <div id="short-margin-ratio" class="text-base font-black mt-1 text-amber-400">--</div>
+            <div id="short-margin-status" class="text-[10px] text-slate-400 mt-0.5">空單佔比水位</div>
+          </div>
+          <!-- 融資買賣態勢 -->
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>融資增減態勢</span>
+              <span class="text-[10px] text-slate-500">Action</span>
+            </div>
+            <div id="margin-flow-status" class="text-sm font-bold mt-1 text-slate-300">--</div>
+            <div id="margin-flow-detail" class="text-[10px] text-slate-500 mt-0.5">買進 -- / 賣出 --</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[10px] text-slate-500 pt-1 leading-relaxed">
+        * 註：三大法人資料取自 TWSE T86，信用交易取自 TWSE MI_MARGN (融資融券彙總)。券資比 = (融券餘額 ÷ 融資餘額) × 100%，一般高於 30% 具潛在軋空動能，低於 10% 屬常態散戶融資或空單極少。
       </p>
     </section>
 
@@ -927,9 +984,10 @@
       }
     }
 
-    // 2. 渲染三大法人買賣超
+    // 2. 渲染三大法人買賣超與融資融券信用交易
     function renderInstitutional() {
       const inst = etfData.institutional || {};
+      const margin = etfData.margin || {};
       const dateText = document.getElementById('institutional-date-text');
       dateText.innerText = inst.date ? `${inst.date} 臺灣證券交易所盤後公佈` : '臺灣證券交易所盤後公佈';
 
@@ -950,6 +1008,86 @@
       const selfLots = inst.dealer_self_lots ? (inst.dealer_self_lots > 0 ? `+${inst.dealer_self_lots}` : inst.dealer_self_lots) : 0;
       const hedgeLots = inst.dealer_hedge_lots ? (inst.dealer_hedge_lots > 0 ? `+${inst.dealer_hedge_lots}` : inst.dealer_hedge_lots) : 0;
       document.getElementById('inst-dealer-detail').innerText = `自行 ${selfLots} / 避險 ${hedgeLots}`;
+
+      // 信用交易 (MI_MARGN)
+      const marginDateEl = document.getElementById('margin-date-text');
+      if (marginDateEl) marginDateEl.innerText = margin.date ? `${margin.date} TWSE MI_MARGN` : 'TWSE MI_MARGN';
+
+      const mBalEl = document.getElementById('margin-balance');
+      const mChgEl = document.getElementById('margin-change-detail');
+      const sBalEl = document.getElementById('short-balance');
+      const sChgEl = document.getElementById('short-change-detail');
+      const ratioEl = document.getElementById('short-margin-ratio');
+      const ratioStatusEl = document.getElementById('short-margin-status');
+      const flowStatusEl = document.getElementById('margin-flow-status');
+      const flowDetailEl = document.getElementById('margin-flow-detail');
+
+      if (mBalEl) {
+        if (margin.margin_balance !== undefined) {
+          mBalEl.innerText = `${margin.margin_balance.toLocaleString('zh-TW')} 張`;
+          const mChg = margin.margin_change || 0;
+          const mColor = mChg > 0 ? 'text-twup' : (mChg < 0 ? 'text-twdown' : 'text-slate-400');
+          const mSign = mChg > 0 ? '+' : '';
+          mChgEl.innerHTML = `增減: <span class="${mColor} font-bold">${mSign}${mChg.toLocaleString('zh-TW')}</span>`;
+        } else {
+          mBalEl.innerText = '--';
+          mChgEl.innerText = '增減: --';
+        }
+      }
+
+      if (sBalEl) {
+        if (margin.short_balance !== undefined) {
+          sBalEl.innerText = `${margin.short_balance.toLocaleString('zh-TW')} 張`;
+          const sChg = margin.short_change || 0;
+          const sColor = sChg > 0 ? 'text-twup' : (sChg < 0 ? 'text-twdown' : 'text-slate-400');
+          const sSign = sChg > 0 ? '+' : '';
+          sChgEl.innerHTML = `增減: <span class="${sColor} font-bold">${sSign}${sChg.toLocaleString('zh-TW')}</span>`;
+        } else {
+          sBalEl.innerText = '--';
+          sChgEl.innerText = '增減: --';
+        }
+      }
+
+      if (ratioEl) {
+        if (margin.short_margin_ratio !== undefined) {
+          const ratio = margin.short_margin_ratio;
+          ratioEl.innerText = `${ratio.toFixed(2)}%`;
+          if (ratioStatusEl) {
+            if (ratio >= 30) {
+              ratioStatusEl.innerText = '⚠️ 券資比偏高 (具軋空條件)';
+              ratioStatusEl.className = 'text-[10px] text-amber-400 font-bold mt-0.5';
+            } else if (ratio >= 15) {
+              ratioStatusEl.innerText = '⚡ 空單比率適中';
+              ratioStatusEl.className = 'text-[10px] text-sky-400 mt-0.5';
+            } else {
+              ratioStatusEl.innerText = '常態或空單極少';
+              ratioStatusEl.className = 'text-[10px] text-slate-500 mt-0.5';
+            }
+          }
+        } else {
+          ratioEl.innerText = '--';
+          if (ratioStatusEl) ratioStatusEl.innerText = '空單佔比水位';
+        }
+      }
+
+      if (flowStatusEl) {
+        const mBuy = margin.margin_buy || 0;
+        const mSell = margin.margin_sell || 0;
+        const mChg = margin.margin_change || 0;
+        if (mChg > 0) {
+          flowStatusEl.innerText = '融資加碼 (散戶偏多)';
+          flowStatusEl.className = 'text-xs font-bold mt-1 text-rose-400';
+        } else if (mChg < 0) {
+          flowStatusEl.innerText = '融資退場 (籌碼沈澱)';
+          flowStatusEl.className = 'text-xs font-bold mt-1 text-emerald-400';
+        } else {
+          flowStatusEl.innerText = '融資持平觀望';
+          flowStatusEl.className = 'text-xs font-bold mt-1 text-slate-400';
+        }
+        if (flowDetailEl) {
+          flowDetailEl.innerText = `買 ${mBuy.toLocaleString()} / 賣 ${mSell.toLocaleString()}`;
+        }
+      }
     }
 
     // 3. 渲染累積報酬率

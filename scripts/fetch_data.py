@@ -332,6 +332,66 @@ def get_institutional_data():
         print(f"Warning: Failed to fetch institutional trading (T86): {e}")
     return inst_map
 
+def get_margin_data():
+    """
+    Fetches TWSE Margin Trading Balances (融資融券彙總 - MI_MARGN)
+    Table 1 contains all listed stocks margin & short selling balances.
+    """
+    margin_map = {}
+    try:
+        url = 'https://www.twse.com.tw/rwd/zh/marginTrading/MI_MARGN?response=json&selectType=ALL'
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=10) as res:
+            data = json.loads(res.read().decode('utf-8'))
+            raw_date = data.get('date', '')
+            formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:]}" if len(raw_date) == 8 else raw_date
+            
+            def parse_lots(val):
+                if not val:
+                    return 0
+                return int(str(val).replace(',', '').strip())
+
+            target_table = None
+            for t in data.get('tables', []):
+                if t.get('title') and '融資融券彙總' in t.get('title'):
+                    target_table = t
+                    break
+            
+            if target_table:
+                for r in target_table.get('data', []):
+                    code = r[0].strip()
+                    margin_buy = parse_lots(r[2])
+                    margin_sell = parse_lots(r[3])
+                    margin_cash_repay = parse_lots(r[4])
+                    margin_prev_balance = parse_lots(r[5])
+                    margin_balance = parse_lots(r[6])
+                    margin_change = margin_balance - margin_prev_balance
+
+                    short_buy = parse_lots(r[8])
+                    short_sell = parse_lots(r[9])
+                    short_stock_repay = parse_lots(r[10])
+                    short_prev_balance = parse_lots(r[11])
+                    short_balance = parse_lots(r[12])
+                    short_change = short_balance - short_prev_balance
+
+                    short_margin_ratio = round((short_balance / margin_balance) * 100, 2) if margin_balance > 0 else 0.0
+
+                    margin_map[code] = {
+                        "date": formatted_date,
+                        "margin_balance": margin_balance,
+                        "margin_change": margin_change,
+                        "margin_buy": margin_buy,
+                        "margin_sell": margin_sell,
+                        "short_balance": short_balance,
+                        "short_change": short_change,
+                        "short_buy": short_buy,
+                        "short_sell": short_sell,
+                        "short_margin_ratio": short_margin_ratio
+                    }
+    except Exception as e:
+        print(f"Warning: Failed to fetch margin trading data (MI_MARGN): {e}")
+    return margin_map
+
 def get_or_create_etf_profile(symbol, twse_stocks, nav_info):
     if symbol in KNOWN_ETF_PROFILES:
         return KNOWN_ETF_PROFILES[symbol]
@@ -427,7 +487,7 @@ def evaluate_etf_warning(symbol, profile, constituents, quote_data=None):
         }
     return None
 
-def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw):
+def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, margin_map, now_tw):
     nav_info = nav_map.get(symbol, {})
     cfg = get_or_create_etf_profile(symbol, twse_stocks, nav_info)
     
@@ -441,6 +501,7 @@ def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
     twse_info = twse_stocks.get(symbol, {})
     twse_val = twse_valuations.get(symbol, {})
     inst_info = inst_map.get(symbol, {})
+    margin_info = margin_map.get(symbol, {})
 
     price_records = []
     date_to_idx = {}
@@ -594,6 +655,7 @@ def process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
             "creation_redemption_shares": nav_info.get('creation_redemption_shares', 0)
         },
         "institutional": inst_info,
+        "margin": margin_info,
         "returns": returns,
         "dividends": dividends_list,
         "sectors": sorted_sectors,
@@ -640,11 +702,14 @@ def main():
     print("Fetching Institutional Investors Trading (T86)...")
     inst_map = get_institutional_data()
 
+    print("Fetching Margin Trading Balances (MI_MARGN)...")
+    margin_map = get_margin_data()
+
     os.makedirs(DATA_DIR, exist_ok=True)
 
     summary_list = []
     for symbol in tracked:
-        dataset = process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, now_tw)
+        dataset = process_etf(symbol, twse_stocks, twse_valuations, nav_map, inst_map, margin_map, now_tw)
         if dataset:
             output_file = os.path.join(DATA_DIR, f"{symbol}.json")
             if os.path.exists(output_file):

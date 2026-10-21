@@ -22,7 +22,7 @@
         "提醒：切勿落入「只看高配息、忽視淨值虧損」的陷阱，請以『含息總報酬率』與『實質填息力』為核心評估指標！"
       ]
     },
-    "updated_at": "2026-10-21 15:18:51",
+    "updated_at": "2026-10-21 15:41:34",
     "total_records": 973
   },
   "quote": {
@@ -60,6 +60,18 @@
     "trust_shares": 0,
     "dealer_total_shares": -31443470,
     "total_shares": -47348298
+  },
+  "margin": {
+    "date": "2026-10-20",
+    "margin_balance": 13871,
+    "margin_change": -233,
+    "margin_buy": 207,
+    "margin_sell": 439,
+    "short_balance": 117,
+    "short_change": 69,
+    "short_buy": 5,
+    "short_sell": 74,
+    "short_margin_ratio": 0.84
   },
   "returns": {
     "1M": 1.31,

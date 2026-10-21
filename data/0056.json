@@ -12,7 +12,7 @@
     "dividend_frequency": "季配息 (每年 1, 4, 7, 10 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-21 15:18:51",
+    "updated_at": "2026-10-21 15:41:34",
     "total_records": 1213
   },
   "quote": {
@@ -50,6 +50,18 @@
     "trust_shares": 173000,
     "dealer_total_shares": -76040229,
     "total_shares": -87876972
+  },
+  "margin": {
+    "date": "2026-10-20",
+    "margin_balance": 8905,
+    "margin_change": 647,
+    "margin_buy": 957,
+    "margin_sell": 309,
+    "short_balance": 0,
+    "short_change": 0,
+    "short_buy": 0,
+    "short_sell": 0,
+    "short_margin_ratio": 0.0
   },
   "returns": {
     "1M": 4.35,
@@ -3847,7 +3859,7 @@
       "high": 33.23,
       "low": 32.72,
       "close": 33.14,
-      "adj_close": 28.35,
+      "adj_close": 28.36,
       "volume": 69163587
     },
     {

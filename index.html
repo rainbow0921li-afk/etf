@@ -1342,6 +1342,7 @@
     // 啟動載入：讀取清單並檢查網址 Hash (如 #00878, #2014, #potential 或 #tracking)
     document.addEventListener('DOMContentLoaded', async () => {
       await loadETFList();
+      preloadAllPrices();
       await loadScreenerResults();
       await loadPotentialTracking();
       initCloudSync();
@@ -2612,16 +2613,16 @@
 
     let simOrderSide = 'long';
     let simPriceCache = {
-      '0050': 196.00,
-      '0056': 38.50,
-      '00878': 23.20,
-      '00919': 24.10,
-      '006208': 115.00,
-      '00922': 22.00,
+      '0050': 108.15,
+      '0056': 58.75,
+      '00878': 35.39,
+      '00919': 32.53,
+      '006208': 247.60,
+      '00922': 39.98,
       '2002': 19.60,
       '2014': 16.95,
-      '3231': 189.00,
-      '9904': 38.50
+      '3231': 195.00,
+      '9904': 26.40
     };
 
     function getDefaultSimData() {
@@ -2736,7 +2737,6 @@
         simPriceCache[symbol] = etfData.quote.price;
         return etfData.quote.price;
       }
-      if (simPriceCache[symbol]) return simPriceCache[symbol];
       if (screenerResults && screenerResults.top_picks) {
         const found = screenerResults.top_picks.find(p => p.code === symbol);
         if (found) {
@@ -2744,7 +2744,40 @@
           return found.close;
         }
       }
+      if (simPriceCache[symbol]) return simPriceCache[symbol];
       return null;
+    }
+
+    async function fetchRealPrice(symbol) {
+      if (!symbol || symbol === 'CUSTOM') return null;
+      try {
+        const res = await fetch(`./data/${symbol}.json?t=${Date.now()}`);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.quote && d.quote.price) {
+            simPriceCache[symbol] = d.quote.price;
+            return d.quote.price;
+          }
+        }
+      } catch (e) {
+        console.warn('fetchRealPrice error for', symbol, e);
+      }
+      return getSimPrice(symbol);
+    }
+
+    async function preloadAllPrices() {
+      if (!Array.isArray(etfList)) return;
+      for (const item of etfList) {
+        try {
+          const res = await fetch(`./data/${item.symbol}.json?t=${Date.now()}`);
+          if (res.ok) {
+            const d = await res.json();
+            if (d.quote && d.quote.price) {
+              simPriceCache[item.symbol] = d.quote.price;
+            }
+          }
+        } catch (e) {}
+      }
     }
 
     async function refreshSimPrices() {
@@ -2853,13 +2886,21 @@
                 ${pos.strategy}
               </span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 flex-wrap justify-end">
               <span class="text-[10px] px-2 py-0.5 rounded border font-bold ${alertClass}">
                 ${alertStatus}
               </span>
-              <button onclick="openCloseTradeModal('${pos.id}')" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow flex items-center gap-1 transition-all cursor-pointer">
+              <button onclick="editSimPositionPrice('${pos.id}')" title="修正進場價格" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>改價</span>
+              </button>
+              <button onclick="openCloseTradeModal('${pos.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow flex items-center gap-1 transition-all cursor-pointer">
                 <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                <span>平倉結算</span>
+                <span>平倉</span>
+              </button>
+              <button onclick="deleteSimPosition('${pos.id}')" title="作廢刪除此單並全額退款" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-300 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>作廢</span>
               </button>
             </div>
           </div>
@@ -3058,7 +3099,7 @@
     }
 
     // Modal Operations
-    function openNewTradeModal(preSymbol, prePrice, preTarget, preStoploss, preStrategy) {
+    async function openNewTradeModal(preSymbol, prePrice, preTarget, preStoploss, preStrategy) {
       const select = document.getElementById('sim-order-symbol');
       select.innerHTML = '';
 
@@ -3105,7 +3146,7 @@
         select.value = currentETF;
       }
 
-      onSimSymbolChange();
+      await onSimSymbolChange();
 
       if (prePrice !== undefined && prePrice !== null) {
         document.getElementById('sim-order-price').value = prePrice;
@@ -3160,7 +3201,7 @@
       calculateSimOrderTotal();
     }
 
-    function onSimSymbolChange() {
+    async function onSimSymbolChange() {
       const sym = document.getElementById('sim-order-symbol').value;
       const customRow = document.getElementById('sim-custom-symbol-row');
       if (sym === 'CUSTOM') {
@@ -3169,7 +3210,7 @@
       }
       customRow.classList.add('hidden');
 
-      const price = getSimPrice(sym);
+      const price = await fetchRealPrice(sym);
       if (price) {
         document.getElementById('sim-order-price').value = price.toFixed(2);
         document.getElementById('sim-order-target').value = (price * 1.08).toFixed(2);
@@ -3434,6 +3475,57 @@
       setTimeout(() => {
         openNewTradeModal(symbol, price, target, stoploss, strategy);
       }, 100);
+    }
+
+    function editSimPositionPrice(posId) {
+      const data = loadSimData();
+      const pos = data.positions.find(p => p.id === posId);
+      if (!pos) return;
+
+      const currentPrice = getSimPrice(pos.symbol) || pos.entry_price;
+      const input = prompt(
+        `【${pos.symbol} ${pos.name}】修正進場成本價：\n\n` +
+        `目前建倉價格: NT$ ${pos.entry_price.toFixed(2)}\n` +
+        `最新真實市價: NT$ ${currentPrice.toFixed(2)}\n\n` +
+        `請輸入修正後的進場價格 (若輸入 ${currentPrice}，多扣的本金將全額補回至可用資金)：`,
+        currentPrice.toString()
+      );
+      if (input === null) return;
+
+      const newPrice = parseFloat(input);
+      if (!newPrice || isNaN(newPrice) || newPrice <= 0) {
+        alert('請輸入有效數值！');
+        return;
+      }
+
+      const oldCost = pos.entry_price * pos.shares;
+      const newCost = newPrice * pos.shares;
+      const diff = oldCost - newCost; // 若新價格較低，差額退回可用現金
+
+      pos.entry_price = newPrice;
+      pos.target_price = Math.round(newPrice * 1.08 * 100) / 100;
+      pos.stoploss_price = Math.round(newPrice * 0.95 * 100) / 100;
+      data.cash += diff;
+
+      saveSimData(data);
+      renderSimulationView();
+      alert(`🎉 修正成功！\n\n已將【${pos.symbol} ${pos.name}】進場價校正為 NT$ ${newPrice.toFixed(2)}！\n可用資金已自動調節補回 NT$ ${Math.round(diff).toLocaleString()} 元。`);
+    }
+
+    function deleteSimPosition(posId) {
+      const data = loadSimData();
+      const pos = data.positions.find(p => p.id === posId);
+      if (!pos) return;
+
+      const refundAmount = Math.round(pos.entry_price * pos.shares + (pos.fee || 0));
+      if (!confirm(`確定要作廢並刪除【${pos.symbol} ${pos.name}】這筆模擬持倉嗎？\n\n系統將全額退回下單本金與手續費 NT$ ${refundAmount.toLocaleString()} 至可用資金。`)) {
+        return;
+      }
+
+      data.cash += refundAmount;
+      data.positions = data.positions.filter(p => p.id !== posId);
+      saveSimData(data);
+      renderSimulationView();
     }
 
     function resetSimAccountPrompt() {

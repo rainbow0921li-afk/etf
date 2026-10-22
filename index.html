@@ -1028,14 +1028,14 @@
         <!-- 部位摘要 -->
         <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
           <div class="flex items-center justify-between font-bold text-white">
-            <span id="sim-close-symbol-name">2002 中鋼</span>
-            <span id="sim-close-strategy-badge" class="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">形態7·多頭排列</span>
+            <span id="sim-close-symbol-name">--</span>
+            <span id="sim-close-strategy-badge" class="text-[10px] px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">--</span>
           </div>
           <div class="grid grid-cols-2 gap-2 text-slate-400 text-[11px] pt-1">
-            <div>進場成本: <b id="sim-close-entry-price" class="text-white">NT$ 19.60</b></div>
-            <div>持有股數: <b id="sim-close-shares" class="text-white">2,000 股</b></div>
-            <div>進場日期: <span id="sim-close-entry-date" class="text-slate-300">2026-10-21</span></div>
-            <div>持股天數: <span id="sim-close-hold-days" class="text-slate-300">1 天</span></div>
+            <div>進場成本: <b id="sim-close-entry-price" class="text-white">--</b></div>
+            <div>持有股數: <b id="sim-close-shares" class="text-white">--</b></div>
+            <div>進場日期: <span id="sim-close-entry-date" class="text-slate-300">--</span></div>
+            <div>持股天數: <span id="sim-close-hold-days" class="text-slate-300">--</span></div>
           </div>
         </div>
 
@@ -2157,56 +2157,9 @@
     function getDefaultSimData() {
       return {
         initial_cash: 1000000,
-        cash: 921744,
-        positions: [
-          {
-            id: 'pos_2002_sample',
-            symbol: '2002',
-            name: '中鋼',
-            side: 'long',
-            entry_price: 19.60,
-            shares: 2000,
-            entry_date: '2026-10-21',
-            strategy: '形態7·多頭排列發散 (主升段推進)',
-            target_price: 20.50,
-            stoploss_price: 18.20,
-            notes: '20MA金叉年線季線，外資投信土洋同步大買，散戶融資大退場。',
-            fee: 28
-          },
-          {
-            id: 'pos_0050_sample',
-            symbol: '0050',
-            name: '元大台灣50',
-            side: 'long',
-            entry_price: 195.00,
-            shares: 1000,
-            entry_date: '2026-10-15',
-            strategy: 'ETF·市值型長期微笑曲線',
-            target_price: 215.00,
-            stoploss_price: 185.00,
-            notes: '短中長均線多頭排列，守穩月線生命線分批佈局。',
-            fee: 28
-          }
-        ],
-        history: [
-          {
-            id: 'hist_3231_sample',
-            symbol: '3231',
-            name: '緯創',
-            side: 'long',
-            entry_price: 180.00,
-            exit_price: 189.00,
-            shares: 1000,
-            entry_date: '2026-10-12',
-            exit_date: '2026-10-21',
-            hold_days: 9,
-            strategy: '形態1·金叉突破 (5MA/20MA金叉)',
-            reason: '✅ 達標獲利停利 (符合選股預期)',
-            profit_loss: 8464,
-            return_pct: 4.70,
-            notes: '帶量突破頸線進場，到達第一波段壓力順利獲利了結。'
-          }
-        ]
+        cash: 1000000,
+        positions: [],
+        history: []
       };
     }
 
@@ -2215,7 +2168,49 @@
         const str = localStorage.getItem(SIM_STORAGE_KEY);
         if (str) {
           const parsed = JSON.parse(str);
-          if (parsed && Array.isArray(parsed.positions)) return parsed;
+          if (parsed && Array.isArray(parsed.positions)) {
+            let modified = false;
+            // 清除非使用者自身建立之範例部位與歷史紀錄
+            const origPosLen = parsed.positions.length;
+            parsed.positions = parsed.positions.filter(p => !p.id || !p.id.includes('sample'));
+            if (parsed.positions.length !== origPosLen) modified = true;
+
+            if (Array.isArray(parsed.history)) {
+              const origHistLen = parsed.history.length;
+              parsed.history = parsed.history.filter(h => !h.id || !h.id.includes('sample'));
+              if (parsed.history.length !== origHistLen) modified = true;
+            } else {
+              parsed.history = [];
+              modified = true;
+            }
+
+            // 確保初始資本與可用資金為 100 萬（若無在倉持股）
+            if (parsed.initial_cash !== 1000000) {
+              parsed.initial_cash = 1000000;
+              modified = true;
+            }
+            if (parsed.positions.length === 0) {
+              if (parsed.cash !== 1000000) {
+                parsed.cash = 1000000;
+                modified = true;
+              }
+            } else if (modified) {
+              let used = 0;
+              parsed.positions.forEach(p => {
+                used += (p.entry_price * p.shares) + (p.fee || 0);
+              });
+              let realized = 0;
+              parsed.history.forEach(h => {
+                realized += (h.profit_loss || 0);
+              });
+              parsed.cash = 1000000 - used + realized;
+            }
+
+            if (modified) {
+              saveSimData(parsed);
+            }
+            return parsed;
+          }
         }
       } catch (e) {
         console.error('Error loading simulation data', e);

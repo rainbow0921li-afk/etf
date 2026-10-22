@@ -13,6 +13,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -822,14 +823,22 @@
               <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
             </div>
             <div>
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center flex-wrap gap-1.5">
                 <h2 class="text-base font-black text-white">模擬操作與策略成效驗證沙盒</h2>
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold" id="sim-account-badge">虛擬沙盒 (即時連線市價)</span>
+                <span id="sim-cloud-status-badge" onclick="openCloudSyncModal()" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-bold flex items-center gap-1 cursor-pointer hover:border-sky-500 hover:text-sky-300 transition-colors" title="點擊設定雲端同步">
+                  <i data-lucide="cloud" class="w-3 h-3"></i>
+                  <span id="sim-cloud-status-text-pill">未同步 (點擊連線)</span>
+                </span>
               </div>
               <p class="text-[11px] text-slate-400 mt-0.5">依照選股邏輯與 5+1 均線分析模擬下單 · 嚴格執行停損停利 · 追蹤各策略歷史勝率</p>
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-white border border-sky-500/40 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm">
+              <i data-lucide="cloud" class="w-4 h-4 text-sky-400"></i>
+              <span>☁️ 雲端同步</span>
+            </button>
             <button onclick="openNewTradeModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-900/30 transition-all cursor-pointer">
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
               <span>建立模擬下單</span>
@@ -1201,6 +1210,106 @@
       </div>
     </div>
 
+    <!-- ☁️ 模擬操作雲端即時同步設定視窗 (Supabase Cloud Sync) -->
+    <div id="sim-cloud-sync-modal" onclick="if(event.target === this) closeCloudSyncModal()" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+      <div class="bg-cardbg border border-sky-500/50 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-500 flex items-center justify-center text-sky-400 font-bold text-sm">
+              <i data-lucide="cloud" class="w-4 h-4 text-sky-400"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">模擬帳單 · 跨裝置雲端同步</h3>
+              <p class="text-[11px] text-slate-400">手機與電腦雙向即時連動 · 寶成與所有持倉無縫共享</p>
+            </div>
+          </div>
+          <button onclick="closeCloudSyncModal()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- 雲端狀態顯示 -->
+        <div id="sim-cloud-status-banner" class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span id="sim-cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <div>
+              <div id="sim-cloud-status-text" class="font-bold text-white">未連線至雲端 (僅本機儲存)</div>
+              <div id="sim-cloud-status-sub" class="text-[10px] text-slate-400">請輸入同步代號進行配對</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-semibold">Supabase</span>
+        </div>
+
+        <!-- 同步代號與 PIN 輸入 -->
+        <div class="space-y-3">
+          <div>
+            <label class="block text-slate-300 font-semibold text-xs mb-1">
+              專屬同步代號 (Sync ID) <span class="text-twup">*</span>
+            </label>
+            <input type="text" id="sim-sync-id-input" placeholder="例如: my_portfolio 或自訂專屬代號" value="my_portfolio" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-sky-500">
+            <p class="text-[10px] text-slate-500 mt-1">💡 手機與電腦輸入【相同代號】，即可讀取同一個模擬帳戶！</p>
+          </div>
+
+          <div>
+            <label class="block text-slate-300 font-semibold text-xs mb-1">
+              保護密碼 (PIN 碼，選填)
+            </label>
+            <input type="password" id="sim-sync-pin-input" placeholder="4 位數字 (選填，防止他人誤寫)" maxlength="8" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <!-- 核心同步動作按鈕 -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <button type="button" onclick="pushLocalToCloud()" class="p-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-sky-950 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer">
+            <div class="flex items-center gap-1">
+              <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+              <span>上傳至雲端 ⬆️</span>
+            </div>
+            <span class="text-[10px] text-sky-200 font-normal">手機點擊：將現有寶成備份上傳</span>
+          </button>
+
+          <button type="button" onclick="pullCloudToLocal()" class="p-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer">
+            <div class="flex items-center gap-1">
+              <i data-lucide="download-cloud" class="w-4 h-4"></i>
+              <span>從雲端同步 ⬇️</span>
+            </div>
+            <span class="text-[10px] text-emerald-200 font-normal">電腦點擊：拉取雲端寶成與資金</span>
+          </button>
+        </div>
+
+        <!-- 即時自動同步開關 -->
+        <div class="p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="sim-auto-realtime-checkbox" onchange="toggleRealtimeSync()" class="w-4 h-4 rounded text-sky-500 focus:ring-sky-500 bg-slate-800 border-slate-700 cursor-pointer">
+            <label for="sim-auto-realtime-checkbox" class="text-slate-300 font-semibold cursor-pointer">
+              啟用雙向即時自動同步 (Realtime)
+            </label>
+          </div>
+          <span class="text-[10px] text-emerald-400">手機下單 · 電腦秒同步</span>
+        </div>
+
+        <!-- 進階 Supabase 設定 (折疊) -->
+        <details class="text-[11px] text-slate-400 border-t border-slate-800/80 pt-2">
+          <summary class="cursor-pointer text-slate-500 hover:text-slate-300 select-none">⚙️ Supabase 雲端參數 (已預填連線中)</summary>
+          <div class="space-y-2 mt-2 p-2 bg-slate-950/60 rounded-lg border border-slate-800">
+            <div>
+              <span class="text-slate-500">Project URL:</span>
+              <input type="text" id="supabase-url-config" value="https://biihkmllfnzetmvckmrw.supabase.co" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-300 text-[10px]" readonly>
+            </div>
+            <div>
+              <span class="text-slate-500">Anon Key:</span>
+              <input type="password" id="supabase-key-config" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpaWhrbWxsZm56ZXRtdmNrbXJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTgwMDcsImV4cCI6MjEwODE5NDAwN30.QCGUMqOMA76aEfbH_LlOfqAfD4px55WyCVWoLd3MwtE" class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-300 text-[10px]" readonly>
+            </div>
+            <div class="text-right">
+              <button type="button" onclick="testSupabaseConnection()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sky-300 rounded text-[10px] font-bold">
+                測試雲端連線 ⚡
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
     <!-- 頁尾說明 -->
     <footer class="text-center text-[11px] text-slate-500 py-4 space-y-1">
       <p>本平台資料每日於證券市場盤後自動彙整，僅供個人研究與教學用途，非任何投資買賣建議。</p>
@@ -1235,6 +1344,7 @@
       await loadETFList();
       await loadScreenerResults();
       await loadPotentialTracking();
+      initCloudSync();
       handleHashChange();
       window.addEventListener('hashchange', handleHashChange);
     });
@@ -2477,6 +2587,29 @@
     // 💼 模擬操作與策略成效驗證模組 (Simulation Trading Module)
     // ==========================================
     const SIM_STORAGE_KEY = 'tw_etf_simulation_v1';
+    const SIM_SYNC_ID_KEY = 'tw_etf_sync_id';
+    const SIM_SYNC_PIN_KEY = 'tw_etf_sync_pin';
+    const SIM_REALTIME_KEY = 'tw_etf_sync_realtime';
+
+    const SUPABASE_PROJECT_URL = 'https://biihkmllfnzetmvckmrw.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpaWhrbWxsZm56ZXRtdmNrbXJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTgwMDcsImV4cCI6MjEwODE5NDAwN30.QCGUMqOMA76aEfbH_LlOfqAfD4px55WyCVWoLd3MwtE';
+
+    let supabaseClient = null;
+    let realtimeChannel = null;
+
+    function getSupabase() {
+      if (supabaseClient) return supabaseClient;
+      if (window.supabase && window.supabase.createClient) {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY);
+          return supabaseClient;
+        } catch (e) {
+          console.error('Supabase init error:', e);
+        }
+      }
+      return null;
+    }
+
     let simOrderSide = 'long';
     let simPriceCache = {
       '0050': 196.00,
@@ -2564,6 +2697,30 @@
         console.error('Error saving simulation data', e);
       }
       updateSimBadge();
+
+      // 若已設定同步代號且啟用即時同步，背景自動推送到 Supabase 雲端
+      const syncId = localStorage.getItem(SIM_SYNC_ID_KEY);
+      const isRealtime = localStorage.getItem(SIM_REALTIME_KEY) === 'true';
+      if (syncId && isRealtime) {
+        autoPushToCloud(syncId, data);
+      }
+    }
+
+    async function autoPushToCloud(syncId, data) {
+      try {
+        const client = getSupabase();
+        if (!client) return;
+        const pin = localStorage.getItem(SIM_SYNC_PIN_KEY) || null;
+        await client.from('simulation_accounts').upsert({
+          sync_id: syncId,
+          pin: pin,
+          data: data,
+          updated_at: new Date().toISOString()
+        });
+        console.log('[Supabase Cloud] 變更已自動同步至雲端');
+      } catch (e) {
+        console.warn('Auto sync push error:', e);
+      }
     }
 
     function updateSimBadge() {
@@ -2808,6 +2965,7 @@
 
       renderStrategyAnalytics(hist);
       renderHistoryList(hist);
+      updateCloudStatusUI();
       lucide.createIcons();
     }
 
@@ -3292,6 +3450,234 @@
         data.history = [];
         saveSimData(data);
         renderSimulationView();
+      }
+    }
+
+    // ==========================================
+    // ☁️ 跨裝置雲端同步控制器 (Supabase Cloud Sync Controller)
+    // ==========================================
+    function initCloudSync() {
+      const syncId = localStorage.getItem(SIM_SYNC_ID_KEY) || 'my_portfolio';
+      const pin = localStorage.getItem(SIM_SYNC_PIN_KEY) || '';
+      const isRealtime = localStorage.getItem(SIM_REALTIME_KEY) === 'true';
+
+      const syncInput = document.getElementById('sim-sync-id-input');
+      const pinInput = document.getElementById('sim-sync-pin-input');
+      const rtCheck = document.getElementById('sim-auto-realtime-checkbox');
+
+      if (syncInput) syncInput.value = syncId;
+      if (pinInput) pinInput.value = pin;
+      if (rtCheck) rtCheck.checked = isRealtime;
+
+      updateCloudStatusUI();
+
+      if (isRealtime && syncId) {
+        subscribeRealtimeSync(syncId);
+      }
+    }
+
+    function updateCloudStatusUI() {
+      const syncId = localStorage.getItem(SIM_SYNC_ID_KEY);
+      const isRealtime = localStorage.getItem(SIM_REALTIME_KEY) === 'true';
+      const statusPill = document.getElementById('sim-cloud-status-text-pill');
+      const statusDot = document.getElementById('sim-cloud-status-dot');
+      const statusText = document.getElementById('sim-cloud-status-text');
+      const statusSub = document.getElementById('sim-cloud-status-sub');
+      const badge = document.getElementById('sim-cloud-status-badge');
+
+      if (syncId) {
+        if (statusPill) statusPill.innerText = `🟢 雲端同步 (${syncId})`;
+        if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+        if (statusText) statusText.innerText = `已連線同步代號: ${syncId}`;
+        if (statusSub) statusSub.innerText = isRealtime ? '⚡ 雙向即時自動同步中 (Realtime)' : '已啟用手動雲端同步';
+        if (badge) badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700 font-bold flex items-center gap-1 cursor-pointer hover:border-emerald-500 transition-colors';
+      } else {
+        if (statusPill) statusPill.innerText = '未同步 (點擊連線)';
+        if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-500';
+        if (statusText) statusText.innerText = '未連線至雲端 (僅本機儲存)';
+        if (statusSub) statusSub.innerText = '請輸入同步代號進行配對';
+        if (badge) badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 font-bold flex items-center gap-1 cursor-pointer hover:border-sky-500 transition-colors';
+      }
+    }
+
+    async function pushLocalToCloud() {
+      const syncInput = document.getElementById('sim-sync-id-input');
+      const pinInput = document.getElementById('sim-sync-pin-input');
+      const syncId = (syncInput ? syncInput.value : '').trim();
+      const pin = (pinInput ? pinInput.value : '').trim();
+
+      if (!syncId) {
+        alert('請先輸入專屬同步代號 (Sync ID)！');
+        return;
+      }
+
+      const client = getSupabase();
+      if (!client) {
+        alert('⚠️ Supabase SDK 尚未載入完成，請稍候重試。');
+        return;
+      }
+
+      const data = loadSimData();
+
+      try {
+        const { data: existing } = await client
+          .from('simulation_accounts')
+          .select('sync_id, pin')
+          .eq('sync_id', syncId)
+          .maybeSingle();
+
+        if (existing && existing.pin && existing.pin !== pin) {
+          alert('🛑 保護密碼 (PIN) 不符！無法覆蓋此同步代號的雲端資料。');
+          return;
+        }
+
+        const { error: upsertErr } = await client
+          .from('simulation_accounts')
+          .upsert({
+            sync_id: syncId,
+            pin: pin || null,
+            data: data,
+            updated_at: new Date().toISOString()
+          });
+
+        if (upsertErr) {
+          alert('上傳失敗: ' + upsertErr.message);
+          return;
+        }
+
+        localStorage.setItem(SIM_SYNC_ID_KEY, syncId);
+        localStorage.setItem(SIM_SYNC_PIN_KEY, pin);
+        updateCloudStatusUI();
+
+        alert(`🎉 上傳成功！\n\n已將本機所有單據（包含 ${data.positions.length} 筆持倉與可用資金 NT$ ${data.cash.toLocaleString()}）安全備份至雲端。\n\n請在電腦瀏覽器開啟模擬操作，輸入相同代號「${syncId}」，點擊【從雲端同步 ⬇️】即可無縫同步！`);
+        closeCloudSyncModal();
+      } catch (err) {
+        alert('連線失敗: ' + err.message);
+      }
+    }
+
+    async function pullCloudToLocal() {
+      const syncInput = document.getElementById('sim-sync-id-input');
+      const pinInput = document.getElementById('sim-sync-pin-input');
+      const syncId = (syncInput ? syncInput.value : '').trim();
+      const pin = (pinInput ? pinInput.value : '').trim();
+
+      if (!syncId) {
+        alert('請輸入要同步的專屬代號 (Sync ID)！');
+        return;
+      }
+
+      const client = getSupabase();
+      if (!client) {
+        alert('⚠️ Supabase SDK 尚未載入完成，請稍候重試。');
+        return;
+      }
+
+      try {
+        const { data: record, error } = await client
+          .from('simulation_accounts')
+          .select('*')
+          .eq('sync_id', syncId)
+          .maybeSingle();
+
+        if (error) {
+          alert('查詢失敗: ' + error.message);
+          return;
+        }
+
+        if (!record || !record.data) {
+          alert(`⚠️ 雲端尚無代號「${syncId}」的帳單！\n請先在手機端點擊【上傳至雲端 ⬆️】後再試。`);
+          return;
+        }
+
+        if (record.pin && record.pin !== pin) {
+          alert('🛑 保護密碼 (PIN) 不正確！無法下載此帳單。');
+          return;
+        }
+
+        localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify(record.data));
+        localStorage.setItem(SIM_SYNC_ID_KEY, syncId);
+        localStorage.setItem(SIM_SYNC_PIN_KEY, pin);
+
+        renderSimulationView();
+        updateCloudStatusUI();
+
+        const posCount = (record.data.positions || []).length;
+        alert(`🎉 雲端同步完成！\n\n已成功從雲端載入帳單！目前持倉：${posCount} 檔，可用資金：NT$ ${record.data.cash.toLocaleString()}。\n手機與電腦現在完全同步！`);
+        closeCloudSyncModal();
+      } catch (err) {
+        alert('同步連線失敗: ' + err.message);
+      }
+    }
+
+    function toggleRealtimeSync() {
+      const rtCheck = document.getElementById('sim-auto-realtime-checkbox');
+      const isChecked = rtCheck ? rtCheck.checked : false;
+      localStorage.setItem(SIM_REALTIME_KEY, isChecked ? 'true' : 'false');
+      const syncId = localStorage.getItem(SIM_SYNC_ID_KEY) || 'my_portfolio';
+
+      if (isChecked && syncId) {
+        subscribeRealtimeSync(syncId);
+      } else if (realtimeChannel && supabaseClient) {
+        supabaseClient.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+      updateCloudStatusUI();
+    }
+
+    function subscribeRealtimeSync(syncId) {
+      const client = getSupabase();
+      if (!client || !syncId) return;
+
+      if (realtimeChannel) {
+        client.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+
+      try {
+        realtimeChannel = client.channel(`sim_channel_${syncId}`)
+          .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'simulation_accounts',
+            filter: `sync_id=eq.${syncId}`
+          }, payload => {
+            if (payload.new && payload.new.data) {
+              console.log('[Supabase Realtime] 收到遠端同步推播更新');
+              localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify(payload.new.data));
+              renderSimulationView();
+            }
+          })
+          .subscribe();
+      } catch (e) {
+        console.warn('Realtime subscribe error:', e);
+      }
+    }
+
+    function openCloudSyncModal() {
+      const m = document.getElementById('sim-cloud-sync-modal');
+      if (m) m.classList.remove('hidden');
+      initCloudSync();
+      lucide.createIcons();
+    }
+
+    function closeCloudSyncModal() {
+      const m = document.getElementById('sim-cloud-sync-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function testSupabaseConnection() {
+      const client = getSupabase();
+      if (!client) {
+        alert('Supabase 客戶端載入中');
+        return;
+      }
+      try {
+        const { data, error } = await client.from('simulation_accounts').select('sync_id').limit(1);
+        if (error) throw error;
+        alert('⚡ Supabase 雲端連線成功！資料表正常運作！');
+      } catch (e) {
+        alert('連線失敗: ' + e.message);
       }
     }
   </script>

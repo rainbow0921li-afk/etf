@@ -2114,7 +2114,9 @@
     // 8. 渲染歷年配息
     function renderDividends() {
       const tbody = document.getElementById('dividends-tbody');
+      if (!tbody) return;
       tbody.innerHTML = '';
+      if (!etfData || !Array.isArray(etfData.dividends)) return;
       etfData.dividends.slice(0, 10).forEach(d => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-800/40 transition-colors';
@@ -2132,6 +2134,8 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
     // ==========================================
     // 💼 模擬操作與策略成效驗證模組 (Simulation Trading Module)
     // ==========================================

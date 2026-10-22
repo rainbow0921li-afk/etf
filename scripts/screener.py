@@ -234,6 +234,9 @@ def run_screener(top_n=20):
     with open(out_file, 'w', encoding='utf-8') as f:
         json.dump(result_payload, f, ensure_ascii=False, indent=2)
 
+    # 執行潛力股連選追蹤清單更新 (方案 B 寬鬆緩衝機制)
+    update_potential_tracking(top_picks, scored_stocks, now_tw)
+
     print(f"\n🎉 篩選完成！已輸出至 {out_file}")
     print("=" * 65)
     print(f"{'代號':<6} {'名稱':<8} {'現價':<8} {'漲跌%':<8} {'法人合計':<10} {'投信/外資':<16} {'融資增減':<10} {'評分'}")
@@ -243,6 +246,158 @@ def run_screener(top_n=20):
         print(f"{p['code']:<6} {p['name']:<8} {p['close']:<8.2f} {p['change_percent']:<+8.2f} {p['institutional']['total_lots']:<+10,d} {f_t:<16} {p['margin']['margin_change']:<+10,d} {p['score']}")
     print("=" * 65)
     return result_payload
+
+def update_potential_tracking(top_picks, all_scored_stocks, now_tw):
+    """
+    維護潛力股連選追蹤清單 (採用方案 B 寬鬆緩衝機制)：
+    - Top 20 為核心入榜標準
+    - Top 30 為緩衝區 (Buffer Zone)
+    - 跌出 Top 20 但在 Top 30，或連續跌出未滿 2 天，視為緩衝觀察
+    - 連續 2 天跌出 Top 20 且未在 Top 30，才正式結算退榜
+    """
+    tracking_file = os.path.join(DATA_DIR, 'potential_tracking.json')
+    today_str = now_tw.strftime('%Y-%m-%d')
+
+    existing_data = {
+        'items': [],
+        'updated_at': now_tw.strftime('%Y-%m-%d %H:%M:%S')
+    }
+    if os.path.exists(tracking_file):
+        try:
+            with open(tracking_file, 'r', encoding='utf-8') as f:
+                loaded = json.load(f)
+                if isinstance(loaded, dict) and 'items' in loaded:
+                    existing_data = loaded
+        except Exception as e:
+            print(f"Warning reading tracking file: {e}")
+
+    top20_map = {p['code']: p for p in top_picks}
+    # Top 30 緩衝區
+    top30_list = sorted(all_scored_stocks, key=lambda x: x['score'], reverse=True)[:30]
+    top30_map = {p['code']: p for p in top30_list}
+    all_stocks_map = {s['code']: s for s in all_scored_stocks}
+
+    items = existing_data.get('items', [])
+    active_items_by_code = {}
+    for it in items:
+        if it.get('status') in ('active', 'buffer'):
+            active_items_by_code[it['code']] = it
+
+    # 1. 處理今日進入 Top 20 的標的
+    for p in top_picks:
+        code = p['code']
+        close_p = p['close']
+        score = p['score']
+
+        if code in active_items_by_code:
+            # 已在榜中：連選天數累加，重置失誤天數
+            it = active_items_by_code[code]
+            it['current_price'] = close_p
+            it['streak_days'] = it.get('streak_days', 1) + 1
+            it['miss_days'] = 0
+            it['status'] = 'active'
+            it['highest_price'] = max(it.get('highest_price', close_p), close_p)
+            entry_p = it.get('entry_price', close_p)
+            it['return_percent'] = round(((close_p - entry_p) / entry_p) * 100, 2) if entry_p > 0 else 0.0
+            it['last_seen_date'] = today_str
+            it['last_score'] = score
+            it['buffer_reason'] = None
+        else:
+            # 全新進榜標的
+            new_item = {
+                'code': code,
+                'name': p['name'],
+                'entry_date': today_str,
+                'entry_score': score,
+                'entry_price': close_p,
+                'exit_date': None,
+                'current_price': close_p,
+                'streak_days': 1,
+                'miss_days': 0,
+                'status': 'active',  # 'active', 'buffer', 'exited'
+                'highest_price': close_p,
+                'return_percent': 0.0,
+                'last_seen_date': today_str,
+                'last_score': score,
+                'exit_price': None,
+                'buffer_reason': None
+            }
+            items.insert(0, new_item)
+            active_items_by_code[code] = new_item
+
+    # 2. 處理昨日在榜但今日未進 Top 20 的標的 (方案 B 寬鬆緩衝機制)
+    for code, it in list(active_items_by_code.items()):
+        if code not in top20_map:
+            cur_stock = all_stocks_map.get(code)
+            if cur_stock:
+                it['current_price'] = cur_stock['close']
+                it['highest_price'] = max(it.get('highest_price', cur_stock['close']), cur_stock['close'])
+                entry_p = it.get('entry_price', cur_stock['close'])
+                it['return_percent'] = round(((cur_stock['close'] - entry_p) / entry_p) * 100, 2) if entry_p > 0 else 0.0
+
+            if code in top30_map:
+                # 仍守在 Top 30 緩衝區內 -> 受到保護
+                it['status'] = 'buffer'
+                it['miss_days'] = 1
+                rank_idx = [x['code'] for x in top30_list].index(code) + 1
+                it['buffer_reason'] = f"暫退 Top 20，但守在 Top 30 緩衝區 (第 {rank_idx} 名)"
+            else:
+                # 跌出 Top 30
+                it['miss_days'] = it.get('miss_days', 0) + 1
+                if it['miss_days'] < 2:
+                    it['status'] = 'buffer'
+                    it['buffer_reason'] = "暫退緩衝區，具 1 日觀察寬限期"
+                else:
+                    # 連續 2 天未重返 -> 正式退榜結算！
+                    it['status'] = 'exited'
+                    it['exit_date'] = today_str
+                    it['exit_price'] = it.get('current_price', it.get('entry_price', 0))
+                    entry_p = it.get('entry_price', it['exit_price'])
+                    it['return_percent'] = round(((it['exit_price'] - entry_p) / entry_p) * 100, 2) if entry_p > 0 else 0.0
+                    it['buffer_reason'] = None
+
+    # 3. 計算統計看板指標
+    active_or_buffer = [it for it in items if it.get('status') in ('active', 'buffer')]
+    exited = [it for it in items if it.get('status') == 'exited']
+
+    active_returns = [it.get('return_percent', 0.0) for it in active_or_buffer]
+    avg_active_ret = round(sum(active_returns) / len(active_returns), 2) if active_returns else 0.0
+
+    all_positive = [it for it in items if it.get('return_percent', 0.0) > 0]
+    overall_win_rate = round((len(all_positive) / len(items)) * 100, 1) if items else 0.0
+
+    max_streak_item = max(items, key=lambda x: x.get('streak_days', 0)) if items else None
+    max_return_item = max(items, key=lambda x: x.get('return_percent', -999)) if items else None
+
+    # 排序規則：在榜中/緩衝優先，其次依連選天數由大到小、報酬率由大到小
+    def sort_key(x):
+        status_priority = {'active': 0, 'buffer': 1, 'exited': 2}
+        return (status_priority.get(x.get('status', 'exited'), 2), -x.get('streak_days', 0), -x.get('return_percent', 0))
+
+    items.sort(key=sort_key)
+
+    summary = {
+        'total_tracked': len(items),
+        'active_count': len([it for it in items if it.get('status') == 'active']),
+        'buffer_count': len([it for it in items if it.get('status') == 'buffer']),
+        'exited_count': len(exited),
+        'active_avg_return': avg_active_ret,
+        'overall_win_rate': overall_win_rate,
+        'max_streak_stock': f"{max_streak_item['name']} ({max_streak_item['streak_days']}天)" if max_streak_item else "--",
+        'max_return_stock': f"{max_return_item['name']} (+{max_return_item['return_percent']}%)" if max_return_item and max_return_item['return_percent'] > 0 else "--",
+        'updated_at': now_tw.strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    tracking_payload = {
+        'summary': summary,
+        'items': items
+    }
+
+    with open(tracking_file, 'w', encoding='utf-8') as f:
+        json.dump(tracking_payload, f, ensure_ascii=False, indent=2)
+
+    print(f"📊 潛力股連選追蹤清單已更新：共追蹤 {len(items)} 檔 (在榜 {summary['active_count']} 檔，緩衝 {summary['buffer_count']} 檔，退榜 {summary['exited_count']} 檔，平均在榜績效 {avg_active_ret:+0.2f}%)")
+    return tracking_payload
 
 if __name__ == '__main__':
     count = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 20

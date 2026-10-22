@@ -206,10 +206,10 @@
             </div>
             <div>
               <div class="flex items-center space-x-2">
-                <h2 class="text-base font-black text-white">全市場多因子海選潛力股 (TOP 20)</h2>
+                <h2 class="text-base font-black text-white">全市場多因子海選潛力股看板</h2>
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-700 font-bold" id="potential-scan-badge">最新盤後掃描</span>
               </div>
-              <p class="text-[11px] text-slate-400 mt-0.5">流動性 > 1,000張 · 投信/外資土洋同買 · 融資退場浮額沉澱 · 券資比軋空 · 估值安全量化評分</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">流動性 > 1,000張 · 投信/外資土洋同買 · 融資退場浮額沉澱 · 方案 B 寬鬆連選追蹤</p>
             </div>
           </div>
           <div class="text-right">
@@ -218,19 +218,139 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div class="text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>依多因子量化評分由高至低嚴格排序</span>
+        <!-- 子功能切換列：【🎯 今日海選 TOP 20】與【📈 潛力股連選追蹤清單】 -->
+        <div class="flex items-center gap-2 border-b border-slate-800/80 pb-2.5">
+          <button id="potential-subtab-daily" onclick="switchPotentialSubTab('daily')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/50 cursor-pointer">
+            <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+            <span>🎯 今日海選 TOP 20</span>
+          </button>
+          <button id="potential-subtab-tracking" onclick="switchPotentialSubTab('tracking')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white border border-transparent hover:border-slate-700 cursor-pointer">
+            <i data-lucide="list-checks" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>📈 潛力股連選清單與績效 (Track List)</span>
+            <span id="badge-tracking-count" class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">--</span>
+          </button>
+        </div>
+
+        <!-- 1. 今日海選 TOP 20 視圖 -->
+        <div id="potential-subtab-daily-view" class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>依多因子量化評分由高至低嚴格排序</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              點擊可查看或切換至該標的 5+1 深度報告
+            </div>
           </div>
-          <div class="text-[11px] text-slate-500">
-            點擊可查看或切換至該標的 5+1 深度報告
+
+          <!-- 20 支潛力股卡片網格 -->
+          <div id="potential-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- JS 動態生成 20 支潛力股卡片 -->
           </div>
         </div>
 
-        <!-- 20 支潛力股卡片網格 -->
-        <div id="potential-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <!-- JS 動態生成 20 支潛力股卡片 -->
+        <!-- 2. 潛力股連選追蹤清單與績效視圖 (方案 B) -->
+        <div id="potential-subtab-tracking-view" class="hidden space-y-4">
+          <!-- 核心績效 KPI 統計卡 -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                <span>在榜追蹤中</span>
+                <span class="text-[10px] text-slate-500">Active</span>
+              </div>
+              <div id="track-kpi-active" class="text-lg sm:text-xl font-black text-white mt-0.5">-- 檔</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">含緩衝觀察: <span id="track-kpi-buffer" class="text-amber-400">-- 檔</span></div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                <span>在榜平均報酬率</span>
+                <span class="text-[10px] text-slate-500">Avg Return</span>
+              </div>
+              <div id="track-kpi-avg-return" class="text-lg sm:text-xl font-black text-emerald-400 mt-0.5">-- %</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">進榜至目前收盤價</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                <span>總體追蹤勝率</span>
+                <span class="text-[10px] text-slate-500">Win Rate</span>
+              </div>
+              <div id="track-kpi-win-rate" class="text-lg sm:text-xl font-black text-emerald-400 mt-0.5">-- %</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">正報酬標的比例</div>
+            </div>
+
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                <span>最強連選王</span>
+                <span class="text-[10px] text-slate-500">Top Streak</span>
+              </div>
+              <div id="track-kpi-max-streak" class="text-sm sm:text-base font-black text-amber-300 mt-1 truncate">--</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">獲利王: <span id="track-kpi-max-return" class="text-twup font-bold">--</span></div>
+            </div>
+          </div>
+
+          <!-- 方案 B 寬鬆緩衝機制說明條 -->
+          <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <div class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 font-bold border border-indigo-800 text-[10px]">方案 B 規則</span>
+              <span>Top 20 連選累加 · 暫退但守在 Top 30 享緩衝保護 · 連續 2 天未進榜正式退榜</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">每日 15:30 自動比對結算</span>
+          </div>
+
+          <!-- 篩選與排序工具列 -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              <button onclick="filterTrackStatus('all')" id="track-filter-btn-all" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-white border border-slate-700 cursor-pointer">
+                全部 (<span id="track-count-all">0</span>)
+              </button>
+              <button onclick="filterTrackStatus('active')" id="track-filter-btn-active" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-slate-800 cursor-pointer">
+                🟢 在榜中 (<span id="track-count-active">0</span>)
+              </button>
+              <button onclick="filterTrackStatus('buffer')" id="track-filter-btn-buffer" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-slate-800 cursor-pointer">
+                ⚠️ 緩衝中 (<span id="track-count-buffer">0</span>)
+              </button>
+              <button onclick="filterTrackStatus('exited')" id="track-filter-btn-exited" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-slate-800 cursor-pointer">
+                ⚪ 已退榜 (<span id="track-count-exited">0</span>)
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input type="text" id="track-search-input" oninput="onTrackSearchInput()" placeholder="搜尋代號或名稱..." class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-amber-500 w-36">
+              <select id="track-sort-select" onchange="onTrackSortChange()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
+                <option value="streak">依連選天數排序</option>
+                <option value="return_desc">依累積報酬率 (高→低)</option>
+                <option value="score_desc">依進榜評分 (高→低)</option>
+                <option value="date_desc">依進榜日期 (新→舊)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 潛力股連選清單表格 (DataTable) -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 shadow-inner">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead class="bg-slate-900/90 text-slate-400 font-semibold border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="py-2.5 px-3">名稱 (代碼)</th>
+                  <th class="py-2.5 px-3">狀態 / 連選</th>
+                  <th class="py-2.5 px-3">進榜日期</th>
+                  <th class="py-2.5 px-3 text-right">進榜評分</th>
+                  <th class="py-2.5 px-3 text-right">進榜收盤價</th>
+                  <th class="py-2.5 px-3 text-right">目前收盤價</th>
+                  <th class="py-2.5 px-3">退榜日期</th>
+                  <th class="py-2.5 px-3 text-right">連選累積績效</th>
+                  <th class="py-2.5 px-3 text-center">操作</th>
+                </tr>
+              </thead>
+              <tbody id="potential-tracking-tbody" class="divide-y divide-slate-800/60 text-slate-200">
+                <!-- 由 JavaScript 動態渲染資料 -->
+              </tbody>
+            </table>
+          </div>
+          <div id="track-empty-placeholder" class="hidden text-center py-8 text-slate-500 text-xs">
+            查無符合篩選條件的潛力股紀錄
+          </div>
         </div>
       </section>
     </div>
@@ -1110,10 +1230,11 @@
       return false;
     }
 
-    // 啟動載入：讀取清單並檢查網址 Hash (如 #00878, #2014 或 #potential)
+    // 啟動載入：讀取清單並檢查網址 Hash (如 #00878, #2014, #potential 或 #tracking)
     document.addEventListener('DOMContentLoaded', async () => {
       await loadETFList();
       await loadScreenerResults();
+      await loadPotentialTracking();
       handleHashChange();
       window.addEventListener('hashchange', handleHashChange);
     });
@@ -1144,10 +1265,17 @@
         renderSimulationView();
         return;
       }
+      if (hash === 'tracking') {
+        currentCategory = 'potential';
+        potentialSubTab = 'tracking';
+        updateCategoryTabsUI();
+        switchPotentialSubTab('tracking');
+        return;
+      }
       if (hash === 'potential') {
         currentCategory = 'potential';
         updateCategoryTabsUI();
-        renderPotentialView();
+        switchPotentialSubTab(potentialSubTab || 'daily');
         return;
       }
       const matched = etfList.find(item => item.symbol === hash);
@@ -1391,6 +1519,215 @@
         container.appendChild(card);
       });
       lucide.createIcons();
+    }
+
+    // ==========================================
+    // 📈 潛力股連選追蹤清單與績效模組 (方案 B 寬鬆緩衝機制)
+    // ==========================================
+    let potentialTrackingData = null;
+    let potentialSubTab = 'daily'; // 'daily' or 'tracking'
+    let trackStatusFilter = 'all'; // 'all', 'active', 'buffer', 'exited'
+    let trackSearchQuery = '';
+    let trackSortField = 'streak';
+
+    async function loadPotentialTracking() {
+      try {
+        const res = await fetch(`./data/potential_tracking.json?t=${Date.now()}`);
+        if (res.ok) {
+          potentialTrackingData = await res.json();
+          const badge = document.getElementById('badge-tracking-count');
+          if (badge && potentialTrackingData.summary) {
+            badge.innerText = `${potentialTrackingData.summary.total_tracked}檔`;
+          }
+          if (currentCategory === 'potential' && potentialSubTab === 'tracking') {
+            renderPotentialTrackingView();
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load potential_tracking.json', e);
+      }
+    }
+
+    function switchPotentialSubTab(tab) {
+      potentialSubTab = tab;
+      const btnDaily = document.getElementById('potential-subtab-daily');
+      const btnTrack = document.getElementById('potential-subtab-tracking');
+      const viewDaily = document.getElementById('potential-subtab-daily-view');
+      const viewTrack = document.getElementById('potential-subtab-tracking-view');
+
+      if (!btnDaily || !btnTrack || !viewDaily || !viewTrack) return;
+
+      if (tab === 'daily') {
+        btnDaily.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/50 cursor-pointer';
+        btnTrack.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white border border-transparent hover:border-slate-700 cursor-pointer';
+        viewDaily.classList.remove('hidden');
+        viewTrack.classList.add('hidden');
+        renderPotentialView();
+      } else {
+        btnTrack.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 cursor-pointer';
+        btnDaily.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white border border-transparent hover:border-slate-700 cursor-pointer';
+        viewTrack.classList.remove('hidden');
+        viewDaily.classList.add('hidden');
+        renderPotentialTrackingView();
+      }
+      lucide.createIcons();
+    }
+
+    function renderPotentialTrackingView() {
+      if (!potentialTrackingData || !potentialTrackingData.items) return;
+      const s = potentialTrackingData.summary || {};
+      const allItems = potentialTrackingData.items || [];
+
+      // 更新頂部 KPI
+      const kpiActive = document.getElementById('track-kpi-active');
+      const kpiBuffer = document.getElementById('track-kpi-buffer');
+      const kpiAvg = document.getElementById('track-kpi-avg-return');
+      const kpiWin = document.getElementById('track-kpi-win-rate');
+      const kpiStreak = document.getElementById('track-kpi-max-streak');
+      const kpiMaxRet = document.getElementById('track-kpi-max-return');
+
+      if (kpiActive) kpiActive.innerText = `${s.active_count || 0} 檔`;
+      if (kpiBuffer) kpiBuffer.innerText = `${s.buffer_count || 0} 檔`;
+      if (kpiAvg) {
+        const ret = s.active_avg_return || 0;
+        const isUp = ret > 0;
+        const isDown = ret < 0;
+        const color = isUp ? 'text-twup' : isDown ? 'text-twdown' : 'text-slate-300';
+        kpiAvg.className = `text-lg sm:text-xl font-black mt-0.5 ${color}`;
+        kpiAvg.innerText = `${ret > 0 ? '+' : ''}${ret.toFixed(2)}%`;
+      }
+      if (kpiWin) kpiWin.innerText = `${s.overall_win_rate ? s.overall_win_rate.toFixed(1) : 0}%`;
+      if (kpiStreak) kpiStreak.innerText = s.max_streak_stock || '--';
+      if (kpiMaxRet) kpiMaxRet.innerText = s.max_return_stock || '--';
+
+      // 更新篩選器計數
+      const cntAll = document.getElementById('track-count-all');
+      const cntActive = document.getElementById('track-count-active');
+      const cntBuffer = document.getElementById('track-count-buffer');
+      const cntExited = document.getElementById('track-count-exited');
+      if (cntAll) cntAll.innerText = allItems.length;
+      if (cntActive) cntActive.innerText = allItems.filter(x => x.status === 'active').length;
+      if (cntBuffer) cntBuffer.innerText = allItems.filter(x => x.status === 'buffer').length;
+      if (cntExited) cntExited.innerText = allItems.filter(x => x.status === 'exited').length;
+
+      // 篩選
+      let filtered = allItems.filter(item => {
+        if (trackStatusFilter !== 'all' && item.status !== trackStatusFilter) return false;
+        if (trackSearchQuery) {
+          const q = trackSearchQuery.toLowerCase();
+          return item.code.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
+        }
+        return true;
+      });
+
+      // 排序
+      filtered.sort((a, b) => {
+        if (trackSortField === 'streak') {
+          const statusRank = { active: 0, buffer: 1, exited: 2 };
+          if (statusRank[a.status] !== statusRank[b.status]) return statusRank[a.status] - statusRank[b.status];
+          if ((b.streak_days || 0) !== (a.streak_days || 0)) return (b.streak_days || 0) - (a.streak_days || 0);
+          return (b.return_percent || 0) - (a.return_percent || 0);
+        } else if (trackSortField === 'return_desc') {
+          return (b.return_percent || 0) - (a.return_percent || 0);
+        } else if (trackSortField === 'score_desc') {
+          return (b.entry_score || 0) - (a.entry_score || 0);
+        } else if (trackSortField === 'date_desc') {
+          return (b.entry_date || '').localeCompare(a.entry_date || '');
+        }
+        return 0;
+      });
+
+      const tbody = document.getElementById('potential-tracking-tbody');
+      const emptyEl = document.getElementById('track-empty-placeholder');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        return;
+      } else {
+        if (emptyEl) emptyEl.classList.add('hidden');
+      }
+
+      filtered.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition-colors border-b border-slate-800/40';
+
+        // 狀態標籤
+        let statusBadge = '';
+        if (it.status === 'active') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-300 border border-emerald-700 text-[10px] font-bold">🟢 在榜 (🔥${it.streak_days}天)</span>`;
+        } else if (it.status === 'buffer') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-950/90 text-amber-300 border border-amber-700 text-[10px] font-bold" title="${it.buffer_reason || '方案B緩衝中'}">⚠️ 緩衝中 (${it.streak_days}天)</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 text-[10px]">⚪ 已退榜 (歷經${it.streak_days}天)</span>`;
+        }
+
+        const isUp = (it.return_percent || 0) > 0;
+        const isDown = (it.return_percent || 0) < 0;
+        const retColor = isUp ? 'text-twup font-black' : isDown ? 'text-twdown font-black' : 'text-slate-300 font-bold';
+        const sign = isUp ? '+' : '';
+        const exitDateText = it.exit_date ? `<span class="text-slate-400">${it.exit_date}</span>` : `<span class="text-emerald-400 font-semibold">持續在榜中</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-3">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-white hover:text-amber-400 transition-colors cursor-pointer" onclick="switchCategory('stock'); switchETF('${it.code}')">${it.code} ${it.name}</span>
+            </div>
+          </td>
+          <td class="py-3 px-3">${statusBadge}</td>
+          <td class="py-3 px-3 text-slate-300">${it.entry_date}</td>
+          <td class="py-3 px-3 text-right font-bold text-amber-400">${(it.entry_score || 0).toFixed(1)}</td>
+          <td class="py-3 px-3 text-right font-medium text-slate-300">NT$ ${(it.entry_price || 0).toFixed(2)}</td>
+          <td class="py-3 px-3 text-right font-bold text-white">NT$ ${(it.current_price || 0).toFixed(2)}</td>
+          <td class="py-3 px-3">${exitDateText}</td>
+          <td class="py-3 px-3 text-right">
+            <span class="${retColor} text-sm">${sign}${(it.return_percent || 0).toFixed(2)}%</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <button onclick="quickOpenSimulationTradeForStock('${it.code}', '${it.name}', ${it.current_price || it.entry_price})" class="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 font-bold text-[11px] inline-flex items-center gap-1 transition-all cursor-pointer shadow-sm">
+              <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
+              <span>帶入模擬</span>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    function filterTrackStatus(st) {
+      trackStatusFilter = st;
+      const btns = ['all', 'active', 'buffer', 'exited'];
+      btns.forEach(b => {
+        const el = document.getElementById(`track-filter-btn-${b}`);
+        if (!el) return;
+        if (b === st) {
+          el.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-white border border-slate-600 cursor-pointer';
+        } else {
+          el.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white border border-slate-800 cursor-pointer';
+        }
+      });
+      renderPotentialTrackingView();
+    }
+
+    function onTrackSearchInput() {
+      const inp = document.getElementById('track-search-input');
+      trackSearchQuery = inp ? inp.value.trim() : '';
+      renderPotentialTrackingView();
+    }
+
+    function onTrackSortChange() {
+      const sel = document.getElementById('track-sort-select');
+      trackSortField = sel ? sel.value : 'streak';
+      renderPotentialTrackingView();
+    }
+
+    function quickOpenSimulationTradeForStock(symbol, name, price) {
+      switchCategory('simulation');
+      setTimeout(() => {
+        openNewTradeModal(symbol, price, Math.round(price * 1.08 * 100) / 100, Math.round(price * 0.95 * 100) / 100, '潛力股連選動能策略');
+      }, 100);
     }
 
     function renderTabs() {

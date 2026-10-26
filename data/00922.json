@@ -12,31 +12,31 @@
     "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-22 16:10:01",
-    "total_records": 875
+    "updated_at": "2026-10-26 16:17:20",
+    "total_records": 877
   },
   "quote": {
     "price": 39.4,
-    "change": -0.16,
-    "change_percent": -0.4,
-    "prev_close": 39.56,
-    "open": 40.35,
-    "high": 40.36,
-    "low": 39.38,
-    "volume_shares": 8914312,
-    "trade_value_ntd": 357529347,
+    "change": 0.0,
+    "change_percent": 0.0,
+    "prev_close": 39.4,
+    "open": 39.4,
+    "high": 39.4,
+    "low": 39.4,
+    "volume_shares": 11214623,
+    "trade_value_ntd": 445329842,
     "high_52w": 45.36,
     "low_52w": 23.61,
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 39.26,
-    "prev_nav": 39.99,
-    "discount_percent": 0.36,
-    "market_cap_billion_ntd": 897.56,
-    "market_cap_display": "898 億",
-    "shares_units": 2286186000,
-    "creation_redemption_shares": 6000000
+    "nav": 39.4,
+    "prev_nav": 39.4,
+    "discount_percent": 0.0,
+    "market_cap_billion_ntd": 0,
+    "market_cap_display": "--",
+    "shares_units": 0,
+    "creation_redemption_shares": 0
   },
   "institutional": {
     "date": "2026-10-22",
@@ -52,23 +52,23 @@
     "total_shares": -6205343
   },
   "margin": {
-    "date": "2026-10-21",
-    "margin_balance": 2078,
-    "margin_change": -61,
-    "margin_buy": 21,
-    "margin_sell": 67,
-    "short_balance": 2,
-    "short_change": 2,
-    "short_buy": 0,
-    "short_sell": 2,
-    "short_margin_ratio": 0.1
+    "date": "2026-10-22",
+    "margin_balance": 2068,
+    "margin_change": -10,
+    "margin_buy": 63,
+    "margin_sell": 73,
+    "short_balance": 0,
+    "short_change": -2,
+    "short_buy": 2,
+    "short_sell": 0,
+    "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": -2.93,
-    "3M": 4.15,
-    "6M": 28.46,
-    "1Y": 79.91,
-    "3Y": 229.71,
+    "1M": -5.17,
+    "3M": 6.2,
+    "6M": 27.96,
+    "1Y": 80.24,
+    "3Y": 229.98,
     "5Y": 254.32
   },
   "dividends": [
@@ -154,50 +154,50 @@
       "name": "台積電",
       "sector": "半導體業",
       "weight": 30.5,
-      "close": 2420.0,
-      "pe": "28.05",
-      "yield": "0.91",
-      "pb": "9.76"
+      "close": 2385.0,
+      "pe": "27.65",
+      "yield": "0.92",
+      "pb": "9.61"
     },
     {
       "code": "2317",
       "name": "鴻海",
       "sector": "其他電子業",
       "weight": 6.8,
-      "close": 250.0,
-      "pe": "16.48",
-      "yield": "2.87",
-      "pb": "1.84"
+      "close": 245.0,
+      "pe": "16.15",
+      "yield": "2.93",
+      "pb": "1.80"
     },
     {
       "code": "2454",
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 5.2,
-      "close": 4140.0,
-      "pe": "68.37",
-      "yield": "1.29",
-      "pb": "15.58"
+      "close": 4010.0,
+      "pe": "66.23",
+      "yield": "1.33",
+      "pb": "15.09"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 3.8,
-      "close": 328.5,
-      "pe": "14.31",
-      "yield": "4.75",
-      "pb": "5.20"
+      "close": 322.0,
+      "pe": "14.03",
+      "yield": "4.84",
+      "pb": "5.09"
     },
     {
       "code": "2308",
       "name": "台達電",
       "sector": "電子零組件",
       "weight": 3.2,
-      "close": 1625.0,
-      "pe": "51.72",
-      "yield": "0.71",
-      "pb": "14.37"
+      "close": 1560.0,
+      "pe": "49.65",
+      "yield": "0.74",
+      "pb": "13.80"
     },
     {
       "code": "2881",
@@ -214,9 +214,9 @@
       "name": "國泰金",
       "sector": "金融保險業",
       "weight": 2.8,
-      "close": 114.0,
-      "pe": "13.44",
-      "yield": "3.07",
+      "close": 113.5,
+      "pe": "13.38",
+      "yield": "3.08",
       "pb": "1.64"
     },
     {
@@ -224,8 +224,8 @@
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 2.6,
-      "close": 74.8,
-      "pe": "17.89",
+      "close": 74.9,
+      "pe": "17.92",
       "yield": "3.34",
       "pb": "2.14"
     },
@@ -234,20 +234,20 @@
       "name": "中華電",
       "sector": "通信網路業",
       "weight": 2.2,
-      "close": 154.0,
-      "pe": "30.26",
-      "yield": "3.38",
-      "pb": "3.26"
+      "close": 158.0,
+      "pe": "31.04",
+      "yield": "3.29",
+      "pb": "3.34"
     },
     {
       "code": "2886",
       "name": "兆豐金",
       "sector": "金融保險業",
       "weight": 2.1,
-      "close": 53.6,
-      "pe": "20.86",
-      "yield": "3.26",
-      "pb": "1.98"
+      "close": 55.2,
+      "pe": "21.48",
+      "yield": "3.17",
+      "pb": "2.03"
     }
   ],
   "all_constituents": [
@@ -256,50 +256,50 @@
       "name": "台積電",
       "sector": "半導體業",
       "weight": 30.5,
-      "close": 2420.0,
-      "pe": "28.05",
-      "yield": "0.91",
-      "pb": "9.76"
+      "close": 2385.0,
+      "pe": "27.65",
+      "yield": "0.92",
+      "pb": "9.61"
     },
     {
       "code": "2317",
       "name": "鴻海",
       "sector": "其他電子業",
       "weight": 6.8,
-      "close": 250.0,
-      "pe": "16.48",
-      "yield": "2.87",
-      "pb": "1.84"
+      "close": 245.0,
+      "pe": "16.15",
+      "yield": "2.93",
+      "pb": "1.80"
     },
     {
       "code": "2454",
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 5.2,
-      "close": 4140.0,
-      "pe": "68.37",
-      "yield": "1.29",
-      "pb": "15.58"
+      "close": 4010.0,
+      "pe": "66.23",
+      "yield": "1.33",
+      "pb": "15.09"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 3.8,
-      "close": 328.5,
-      "pe": "14.31",
-      "yield": "4.75",
-      "pb": "5.20"
+      "close": 322.0,
+      "pe": "14.03",
+      "yield": "4.84",
+      "pb": "5.09"
     },
     {
       "code": "2308",
       "name": "台達電",
       "sector": "電子零組件",
       "weight": 3.2,
-      "close": 1625.0,
-      "pe": "51.72",
-      "yield": "0.71",
-      "pb": "14.37"
+      "close": 1560.0,
+      "pe": "49.65",
+      "yield": "0.74",
+      "pb": "13.80"
     },
     {
       "code": "2881",
@@ -316,9 +316,9 @@
       "name": "國泰金",
       "sector": "金融保險業",
       "weight": 2.8,
-      "close": 114.0,
-      "pe": "13.44",
-      "yield": "3.07",
+      "close": 113.5,
+      "pe": "13.38",
+      "yield": "3.08",
       "pb": "1.64"
     },
     {
@@ -326,8 +326,8 @@
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 2.6,
-      "close": 74.8,
-      "pe": "17.89",
+      "close": 74.9,
+      "pe": "17.92",
       "yield": "3.34",
       "pb": "2.14"
     },
@@ -336,41 +336,23 @@
       "name": "中華電",
       "sector": "通信網路業",
       "weight": 2.2,
-      "close": 154.0,
-      "pe": "30.26",
-      "yield": "3.38",
-      "pb": "3.26"
+      "close": 158.0,
+      "pe": "31.04",
+      "yield": "3.29",
+      "pb": "3.34"
     },
     {
       "code": "2886",
       "name": "兆豐金",
       "sector": "金融保險業",
       "weight": 2.1,
-      "close": 53.6,
-      "pe": "20.86",
-      "yield": "3.26",
-      "pb": "1.98"
+      "close": 55.2,
+      "pe": "21.48",
+      "yield": "3.17",
+      "pb": "2.03"
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-08",
-      "open": 16.09,
-      "high": 16.12,
-      "low": 16.04,
-      "close": 16.11,
-      "adj_close": 11.95,
-      "volume": 2767000
-    },
-    {
-      "date": "2023-09-11",
-      "open": 16.11,
-      "high": 16.11,
-      "low": 15.9,
-      "close": 15.97,
-      "adj_close": 11.84,
-      "volume": 5204340
-    },
     {
       "date": "2023-09-12",
       "open": 15.99,
@@ -7149,13 +7131,31 @@
       "volume": 11911014
     },
     {
+      "date": "2026-10-21",
+      "open": 40.08,
+      "high": 40.38,
+      "low": 39.8,
+      "close": 39.98,
+      "adj_close": 39.98,
+      "volume": 8696761
+    },
+    {
       "date": "2026-10-22",
       "open": 40.35,
       "high": 40.36,
       "low": 39.38,
       "close": 39.4,
       "adj_close": 39.4,
-      "volume": 11189481
+      "volume": 10591142
+    },
+    {
+      "date": "2026-10-23",
+      "open": 39.4,
+      "high": 39.4,
+      "low": 39.4,
+      "close": 39.4,
+      "adj_close": 39.4,
+      "volume": 0
     }
   ]
 }

@@ -22,7 +22,7 @@
         "均線極度收斂：5MA/10MA/20MA/60MA 均線糾結於 16.9 元附近，成交量處於窒息量階段。"
       ]
     },
-    "updated_at": "2026-10-22 16:10:01",
+    "updated_at": "2026-10-26 16:17:20",
     "total_records": 1213
   },
   "quote": {
@@ -31,10 +31,10 @@
     "change_percent": 0.0,
     "prev_close": 16.95,
     "open": 16.95,
-    "high": 17.05,
-    "low": 16.9,
-    "volume_shares": 1043780,
-    "trade_value_ntd": 17620023,
+    "high": 16.95,
+    "low": 16.95,
+    "volume_shares": 2159027,
+    "trade_value_ntd": 36647320,
     "high_52w": 20.9,
     "low_52w": 13.95,
     "dividend_yield": "",
@@ -62,7 +62,7 @@
     "total_shares": 876755
   },
   "margin": {
-    "date": "2026-10-21",
+    "date": "2026-10-22",
     "margin_balance": 520,
     "margin_change": 0,
     "margin_buy": 0,
@@ -74,12 +74,12 @@
     "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": 2.42,
-    "3M": -2.31,
-    "6M": -6.09,
-    "1Y": 6.27,
-    "3Y": -26.11,
-    "5Y": -43.2
+    "1M": 2.11,
+    "3M": -2.59,
+    "6M": -2.31,
+    "1Y": 6.6,
+    "3Y": -26.75,
+    "5Y": -45.39
   },
   "dividends": [
     {
@@ -195,15 +195,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-08",
-      "open": 23.15,
-      "high": 23.2,
-      "low": 23.0,
-      "close": 23.05,
-      "adj_close": 22.94,
-      "volume": 1759570
-    },
     {
       "date": "2023-09-11",
       "open": 23.2,
@@ -6997,7 +6988,16 @@
       "low": 16.9,
       "close": 16.95,
       "adj_close": 16.95,
-      "volume": 2157286
+      "volume": 2148741
+    },
+    {
+      "date": "2026-10-23",
+      "open": 16.95,
+      "high": 16.95,
+      "low": 16.95,
+      "close": 16.95,
+      "adj_close": 16.95,
+      "volume": 0
     }
   ],
   "screener_analysis": {

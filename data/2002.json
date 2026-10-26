@@ -22,24 +22,24 @@
         "均線多頭排列：5MA > 10MA > 20MA > 60MA，均線金叉發散，突破年線與季線強支撐。"
       ]
     },
-    "updated_at": "2026-10-22 16:10:01",
+    "updated_at": "2026-10-26 16:17:20",
     "total_records": 1213
   },
   "quote": {
     "price": 19.55,
-    "change": -0.05,
-    "change_percent": -0.26,
-    "prev_close": 19.6,
-    "open": 19.65,
-    "high": 19.7,
-    "low": 19.5,
-    "volume_shares": 40273888,
-    "trade_value_ntd": 788690752,
+    "change": 0.0,
+    "change_percent": 0.0,
+    "prev_close": 19.55,
+    "open": 19.55,
+    "high": 19.55,
+    "low": 19.55,
+    "volume_shares": 48252972,
+    "trade_value_ntd": 945862317,
     "high_52w": 21.6,
     "low_52w": 17.6,
     "dividend_yield": "0.77",
     "pe": "",
-    "pb": "1.00",
+    "pb": "0.99",
     "nav": 19.55,
     "prev_nav": 19.55,
     "discount_percent": 0.0,
@@ -62,23 +62,23 @@
     "total_shares": 24927823
   },
   "margin": {
-    "date": "2026-10-21",
-    "margin_balance": 38665,
-    "margin_change": -270,
-    "margin_buy": 806,
-    "margin_sell": 1068,
-    "short_balance": 215,
-    "short_change": 97,
+    "date": "2026-10-22",
+    "margin_balance": 38126,
+    "margin_change": -539,
+    "margin_buy": 782,
+    "margin_sell": 1291,
+    "short_balance": 262,
+    "short_change": 47,
     "short_buy": 0,
-    "short_sell": 102,
-    "short_margin_ratio": 0.56
+    "short_sell": 47,
+    "short_margin_ratio": 0.69
   },
   "returns": {
     "1M": 4.83,
-    "3M": 3.17,
-    "6M": 0.77,
+    "3M": 2.09,
+    "6M": 2.89,
     "1Y": 3.71,
-    "3Y": -22.79,
+    "3Y": -22.51,
     "5Y": -29.8
   },
   "dividends": [
@@ -221,15 +221,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-08",
-      "open": 26.5,
-      "high": 26.5,
-      "low": 26.3,
-      "close": 26.35,
-      "adj_close": 25.32,
-      "volume": 14344143
-    },
     {
       "date": "2023-09-11",
       "open": 26.35,
@@ -7023,7 +7014,16 @@
       "low": 19.5,
       "close": 19.55,
       "adj_close": 19.55,
-      "volume": 48162401
+      "volume": 48077571
+    },
+    {
+      "date": "2026-10-23",
+      "open": 19.55,
+      "high": 19.55,
+      "low": 19.55,
+      "close": 19.55,
+      "adj_close": 19.55,
+      "volume": 0
     }
   ],
   "screener_analysis": {

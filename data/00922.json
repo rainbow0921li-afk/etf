@@ -12,17 +12,17 @@
     "dividend_frequency": "半年配 (通常每年 3 月及 10 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-10-26 16:17:20",
-    "total_records": 877
+    "updated_at": "2026-10-27 16:12:12",
+    "total_records": 878
   },
   "quote": {
-    "price": 39.4,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 39.26,
+    "change": -0.14,
+    "change_percent": -0.36,
     "prev_close": 39.4,
-    "open": 39.4,
-    "high": 39.4,
-    "low": 39.4,
+    "open": 39.56,
+    "high": 39.75,
+    "low": 38.98,
     "volume_shares": 11214623,
     "trade_value_ntd": 445329842,
     "high_52w": 45.36,
@@ -30,26 +30,26 @@
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 39.4,
-    "prev_nav": 39.4,
-    "discount_percent": 0.0,
-    "market_cap_billion_ntd": 0,
-    "market_cap_display": "--",
-    "shares_units": 0,
-    "creation_redemption_shares": 0
+    "nav": 39.25,
+    "prev_nav": 39.26,
+    "discount_percent": 0.03,
+    "market_cap_billion_ntd": 899.68,
+    "market_cap_display": "900 億",
+    "shares_units": 2292186000,
+    "creation_redemption_shares": 6000000
   },
   "institutional": {
-    "date": "2026-10-22",
-    "foreign_lots": -1208,
+    "date": "2026-10-27",
+    "foreign_lots": -768,
     "trust_lots": 0,
-    "dealer_self_lots": 0,
-    "dealer_hedge_lots": -4998,
-    "dealer_total_lots": -4998,
-    "total_lots": -6205,
-    "foreign_shares": -1207540,
+    "dealer_self_lots": 2879,
+    "dealer_hedge_lots": -9151,
+    "dealer_total_lots": -6272,
+    "total_lots": -7040,
+    "foreign_shares": -768489,
     "trust_shares": 0,
-    "dealer_total_shares": -4997803,
-    "total_shares": -6205343
+    "dealer_total_shares": -6271705,
+    "total_shares": -7040194
   },
   "margin": {
     "date": "2026-10-22",
@@ -64,12 +64,12 @@
     "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": -5.17,
-    "3M": 6.2,
-    "6M": 27.96,
-    "1Y": 80.24,
-    "3Y": 229.98,
-    "5Y": 254.32
+    "1M": -5.69,
+    "3M": 5.99,
+    "6M": 22.65,
+    "1Y": 82.52,
+    "3Y": 228.81,
+    "5Y": 253.06
   },
   "dividends": [
     {
@@ -353,15 +353,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-12",
-      "open": 15.99,
-      "high": 16.11,
-      "low": 15.97,
-      "close": 16.1,
-      "adj_close": 11.94,
-      "volume": 1637036
-    },
     {
       "date": "2023-09-13",
       "open": 16.18,
@@ -7156,6 +7147,15 @@
       "close": 39.4,
       "adj_close": 39.4,
       "volume": 0
+    },
+    {
+      "date": "2026-10-27",
+      "open": 39.56,
+      "high": 39.75,
+      "low": 38.98,
+      "close": 39.26,
+      "adj_close": 39.26,
+      "volume": 14108736
     }
   ]
 }

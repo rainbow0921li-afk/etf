@@ -12,17 +12,17 @@
     "dividend_frequency": "年配息",
     "type": "stock",
     "warning": null,
-    "updated_at": "2026-10-26 16:17:20",
-    "total_records": 1213
+    "updated_at": "2026-10-27 16:12:12",
+    "total_records": 1212
   },
   "quote": {
-    "price": 26.35,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 25.9,
+    "change": -0.45,
+    "change_percent": -1.71,
     "prev_close": 26.35,
-    "open": 26.35,
-    "high": 26.35,
-    "low": 26.35,
+    "open": 26.55,
+    "high": 26.55,
+    "low": 25.9,
     "volume_shares": 11370191,
     "trade_value_ntd": 299680291,
     "high_52w": 32.4,
@@ -30,8 +30,8 @@
     "dividend_yield": "4.93",
     "pe": "5.58",
     "pb": "0.42",
-    "nav": 26.35,
-    "prev_nav": 26.35,
+    "nav": 25.9,
+    "prev_nav": 25.9,
     "discount_percent": 0.0,
     "market_cap_billion_ntd": 0,
     "market_cap_display": "--",
@@ -39,17 +39,17 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-10-22",
-    "foreign_lots": 4952,
-    "trust_lots": -1358,
-    "dealer_self_lots": -168,
-    "dealer_hedge_lots": 598,
-    "dealer_total_lots": 430,
-    "total_lots": 4024,
-    "foreign_shares": 4951987,
-    "trust_shares": -1358000,
-    "dealer_total_shares": 429666,
-    "total_shares": 4023653
+    "date": "2026-10-27",
+    "foreign_lots": 943,
+    "trust_lots": -76,
+    "dealer_self_lots": 19,
+    "dealer_hedge_lots": -46,
+    "dealer_total_lots": -27,
+    "total_lots": 840,
+    "foreign_shares": 942560,
+    "trust_shares": -75741,
+    "dealer_total_shares": -27088,
+    "total_shares": 839731
   },
   "margin": {
     "date": "2026-10-22",
@@ -64,12 +64,12 @@
     "short_margin_ratio": 0.57
   },
   "returns": {
-    "1M": 7.11,
-    "3M": 7.99,
-    "6M": 3.9,
-    "1Y": -6.43,
-    "3Y": 3.82,
-    "5Y": -1.46
+    "1M": 4.02,
+    "3M": 6.58,
+    "6M": 2.7,
+    "1Y": -5.78,
+    "3Y": 1.37,
+    "5Y": -7.14
   },
   "dividends": [
     {
@@ -187,15 +187,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-11",
-      "open": 28.95,
-      "high": 29.2,
-      "low": 28.95,
-      "close": 29.0,
-      "adj_close": 25.38,
-      "volume": 3258429
-    },
     {
       "date": "2023-09-12",
       "open": 29.05,
@@ -6990,6 +6981,15 @@
       "close": 26.35,
       "adj_close": 26.35,
       "volume": 0
+    },
+    {
+      "date": "2026-10-27",
+      "open": 26.55,
+      "high": 26.55,
+      "low": 25.9,
+      "close": 25.9,
+      "adj_close": 25.9,
+      "volume": 14261171
     }
   ],
   "screener_analysis": {

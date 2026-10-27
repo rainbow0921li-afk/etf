@@ -22,17 +22,17 @@
         "均線極度收斂：5MA/10MA/20MA/60MA 均線糾結於 16.9 元附近，成交量處於窒息量階段。"
       ]
     },
-    "updated_at": "2026-10-26 16:17:20",
-    "total_records": 1213
+    "updated_at": "2026-10-27 16:12:12",
+    "total_records": 1212
   },
   "quote": {
-    "price": 16.95,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 17.05,
+    "change": 0.1,
+    "change_percent": 0.59,
     "prev_close": 16.95,
-    "open": 16.95,
-    "high": 16.95,
-    "low": 16.95,
+    "open": 17.05,
+    "high": 17.1,
+    "low": 16.85,
     "volume_shares": 2159027,
     "trade_value_ntd": 36647320,
     "high_52w": 20.9,
@@ -40,8 +40,8 @@
     "dividend_yield": "",
     "pe": "",
     "pb": "1.98",
-    "nav": 16.95,
-    "prev_nav": 16.95,
+    "nav": 17.05,
+    "prev_nav": 17.05,
     "discount_percent": 0.0,
     "market_cap_billion_ntd": 0,
     "market_cap_display": "--",
@@ -49,17 +49,17 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-10-22",
-    "foreign_lots": 877,
+    "date": "2026-10-27",
+    "foreign_lots": -51,
     "trust_lots": 0,
     "dealer_self_lots": 0,
-    "dealer_hedge_lots": 0,
-    "dealer_total_lots": 0,
-    "total_lots": 877,
-    "foreign_shares": 876755,
+    "dealer_hedge_lots": 13,
+    "dealer_total_lots": 13,
+    "total_lots": -38,
+    "foreign_shares": -50522,
     "trust_shares": 0,
-    "dealer_total_shares": 0,
-    "total_shares": 876755
+    "dealer_total_shares": 13000,
+    "total_shares": -37522
   },
   "margin": {
     "date": "2026-10-22",
@@ -74,12 +74,12 @@
     "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": 2.11,
-    "3M": -2.59,
-    "6M": -2.31,
-    "1Y": 6.6,
-    "3Y": -26.75,
-    "5Y": -45.39
+    "1M": 2.4,
+    "3M": -0.87,
+    "6M": -0.58,
+    "1Y": 8.6,
+    "3Y": -27.57,
+    "5Y": -45.46
   },
   "dividends": [
     {
@@ -195,15 +195,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-11",
-      "open": 23.2,
-      "high": 23.5,
-      "low": 23.15,
-      "close": 23.25,
-      "adj_close": 23.14,
-      "volume": 3101335
-    },
     {
       "date": "2023-09-12",
       "open": 23.5,
@@ -6998,6 +6989,15 @@
       "close": 16.95,
       "adj_close": 16.95,
       "volume": 0
+    },
+    {
+      "date": "2026-10-27",
+      "open": 17.05,
+      "high": 17.1,
+      "low": 16.85,
+      "close": 17.05,
+      "adj_close": 17.05,
+      "volume": 2199819
     }
   ],
   "screener_analysis": {

@@ -22,64 +22,64 @@
         "提醒：切勿落入「只看高配息、忽視淨值虧損」的陷阱，請以『含息總報酬率』與『實質填息力』為核心評估指標！"
       ]
     },
-    "updated_at": "2026-11-09 16:45:03",
-    "total_records": 986
+    "updated_at": "2026-11-10 16:29:26",
+    "total_records": 987
   },
   "quote": {
-    "price": 30.98,
-    "change": 0.84,
-    "change_percent": 2.79,
-    "prev_close": 30.14,
-    "open": 30.34,
-    "high": 31.26,
-    "low": 30.34,
-    "volume_shares": 186609140,
-    "trade_value_ntd": 5501903617,
+    "price": 30.9,
+    "change": -0.08,
+    "change_percent": -0.26,
+    "prev_close": 30.98,
+    "open": 31.27,
+    "high": 31.39,
+    "low": 30.74,
+    "volume_shares": 73442868,
+    "trade_value_ntd": 2269186229,
     "high_52w": 33.19,
     "low_52w": 21.06,
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 30.87,
-    "prev_nav": 30.12,
-    "discount_percent": 0.36,
-    "market_cap_billion_ntd": 6004.57,
-    "market_cap_display": "6,005 億",
-    "shares_units": 19451135000,
-    "creation_redemption_shares": 26000000
+    "nav": 30.83,
+    "prev_nav": 30.87,
+    "discount_percent": 0.23,
+    "market_cap_billion_ntd": 5997.71,
+    "market_cap_display": "5,998 億",
+    "shares_units": 19454135000,
+    "creation_redemption_shares": 3000000
   },
   "institutional": {
-    "date": "2026-11-09",
-    "foreign_lots": 302,
+    "date": "2026-11-10",
+    "foreign_lots": -600,
     "trust_lots": 0,
-    "dealer_self_lots": -366,
-    "dealer_hedge_lots": -20368,
-    "dealer_total_lots": -20734,
-    "total_lots": -20432,
-    "foreign_shares": 302025,
+    "dealer_self_lots": -1182,
+    "dealer_hedge_lots": -38033,
+    "dealer_total_lots": -39215,
+    "total_lots": -39816,
+    "foreign_shares": -600477,
     "trust_shares": 0,
-    "dealer_total_shares": -20733793,
-    "total_shares": -20431768
+    "dealer_total_shares": -39215288,
+    "total_shares": -39815765
   },
   "margin": {
-    "date": "2026-11-06",
-    "margin_balance": 13237,
-    "margin_change": 1384,
-    "margin_buy": 1946,
-    "margin_sell": 486,
-    "short_balance": 245,
-    "short_change": 18,
-    "short_buy": 5,
-    "short_sell": 23,
-    "short_margin_ratio": 1.85
+    "date": "2026-11-09",
+    "margin_balance": 12896,
+    "margin_change": -341,
+    "margin_buy": 385,
+    "margin_sell": 682,
+    "short_balance": 229,
+    "short_change": -16,
+    "short_buy": 17,
+    "short_sell": 1,
+    "short_margin_ratio": 1.78
   },
   "returns": {
-    "1M": -2.12,
-    "3M": 7.79,
-    "6M": 30.11,
-    "1Y": 62.88,
-    "3Y": 113.8,
-    "5Y": 208.87
+    "1M": -4.13,
+    "3M": 6.48,
+    "6M": 28.38,
+    "1Y": 63.06,
+    "3Y": 113.25,
+    "5Y": 208.08
   },
   "dividends": [
     {
@@ -217,9 +217,9 @@
       "name": "長榮",
       "sector": "航運業",
       "weight": 11.2,
-      "close": 246.5,
-      "pe": "9.77",
-      "yield": "6.49",
+      "close": 245.5,
+      "pe": "9.73",
+      "yield": "6.52",
       "pb": "0.95"
     },
     {
@@ -227,19 +227,19 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 9.5,
-      "close": 3390.0,
-      "pe": "55.99",
-      "yield": "1.58",
-      "pb": "12.76"
+      "close": 3725.0,
+      "pe": "61.52",
+      "yield": "1.44",
+      "pb": "14.02"
     },
     {
       "code": "2609",
       "name": "陽明",
       "sector": "航運業",
       "weight": 6.8,
-      "close": 57.1,
-      "pe": "12.86",
-      "yield": "3.50",
+      "close": 57.5,
+      "pe": "12.95",
+      "yield": "3.48",
       "pb": "0.61"
     },
     {
@@ -247,49 +247,49 @@
       "name": "聯詠",
       "sector": "半導體業",
       "weight": 5.9,
-      "close": 495.5,
-      "pe": "15.26",
-      "yield": "4.64",
-      "pb": "4.03"
+      "close": 486.5,
+      "pe": "14.98",
+      "yield": "4.73",
+      "pb": "3.96"
     },
     {
       "code": "2891",
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 5.4,
-      "close": 73.4,
-      "pe": "17.56",
-      "yield": "3.41",
-      "pb": "2.10"
+      "close": 75.9,
+      "pe": "18.16",
+      "yield": "3.29",
+      "pb": "2.17"
     },
     {
       "code": "2404",
       "name": "漢唐",
       "sector": "其他電子業",
       "weight": 4.8,
-      "close": 886.0,
-      "pe": "13.36",
-      "yield": "4.51",
-      "pb": "9.34"
+      "close": 930.0,
+      "pe": "14.03",
+      "yield": "4.30",
+      "pb": "9.81"
     },
     {
       "code": "2303",
       "name": "聯電",
       "sector": "半導體業",
       "weight": 4.5,
-      "close": 92.0,
-      "pe": "13.59",
-      "yield": "2.84",
-      "pb": "2.45"
+      "close": 96.7,
+      "pe": "14.28",
+      "yield": "2.70",
+      "pb": "2.58"
     },
     {
       "code": "3702",
       "name": "大聯大",
       "sector": "電子通路業",
       "weight": 4.2,
-      "close": 90.2,
-      "pe": "7.72",
-      "yield": "4.04",
+      "close": 90.4,
+      "pe": "7.74",
+      "yield": "4.03",
       "pb": "1.62"
     },
     {
@@ -297,20 +297,20 @@
       "name": "中租-KY",
       "sector": "其他業",
       "weight": 3.9,
-      "close": 102.0,
-      "pe": "9.43",
-      "yield": "5.88",
-      "pb": "1.02"
+      "close": 103.0,
+      "pe": "9.52",
+      "yield": "5.83",
+      "pb": "1.03"
     },
     {
       "code": "3044",
       "name": "健鼎",
       "sector": "電子零組件",
       "weight": 3.5,
-      "close": 413.5,
-      "pe": "17.72",
-      "yield": "3.07",
-      "pb": "3.90"
+      "close": 443.5,
+      "pe": "19.00",
+      "yield": "2.86",
+      "pb": "4.18"
     }
   ],
   "all_constituents": [
@@ -319,9 +319,9 @@
       "name": "長榮",
       "sector": "航運業",
       "weight": 11.2,
-      "close": 246.5,
-      "pe": "9.77",
-      "yield": "6.49",
+      "close": 245.5,
+      "pe": "9.73",
+      "yield": "6.52",
       "pb": "0.95"
     },
     {
@@ -329,19 +329,19 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 9.5,
-      "close": 3390.0,
-      "pe": "55.99",
-      "yield": "1.58",
-      "pb": "12.76"
+      "close": 3725.0,
+      "pe": "61.52",
+      "yield": "1.44",
+      "pb": "14.02"
     },
     {
       "code": "2609",
       "name": "陽明",
       "sector": "航運業",
       "weight": 6.8,
-      "close": 57.1,
-      "pe": "12.86",
-      "yield": "3.50",
+      "close": 57.5,
+      "pe": "12.95",
+      "yield": "3.48",
       "pb": "0.61"
     },
     {
@@ -349,49 +349,49 @@
       "name": "聯詠",
       "sector": "半導體業",
       "weight": 5.9,
-      "close": 495.5,
-      "pe": "15.26",
-      "yield": "4.64",
-      "pb": "4.03"
+      "close": 486.5,
+      "pe": "14.98",
+      "yield": "4.73",
+      "pb": "3.96"
     },
     {
       "code": "2891",
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 5.4,
-      "close": 73.4,
-      "pe": "17.56",
-      "yield": "3.41",
-      "pb": "2.10"
+      "close": 75.9,
+      "pe": "18.16",
+      "yield": "3.29",
+      "pb": "2.17"
     },
     {
       "code": "2404",
       "name": "漢唐",
       "sector": "其他電子業",
       "weight": 4.8,
-      "close": 886.0,
-      "pe": "13.36",
-      "yield": "4.51",
-      "pb": "9.34"
+      "close": 930.0,
+      "pe": "14.03",
+      "yield": "4.30",
+      "pb": "9.81"
     },
     {
       "code": "2303",
       "name": "聯電",
       "sector": "半導體業",
       "weight": 4.5,
-      "close": 92.0,
-      "pe": "13.59",
-      "yield": "2.84",
-      "pb": "2.45"
+      "close": 96.7,
+      "pe": "14.28",
+      "yield": "2.70",
+      "pb": "2.58"
     },
     {
       "code": "3702",
       "name": "大聯大",
       "sector": "電子通路業",
       "weight": 4.2,
-      "close": 90.2,
-      "pe": "7.72",
-      "yield": "4.04",
+      "close": 90.4,
+      "pe": "7.74",
+      "yield": "4.03",
       "pb": "1.62"
     },
     {
@@ -399,32 +399,23 @@
       "name": "中租-KY",
       "sector": "其他業",
       "weight": 3.9,
-      "close": 102.0,
-      "pe": "9.43",
-      "yield": "5.88",
-      "pb": "1.02"
+      "close": 103.0,
+      "pe": "9.52",
+      "yield": "5.83",
+      "pb": "1.03"
     },
     {
       "code": "3044",
       "name": "健鼎",
       "sector": "電子零組件",
       "weight": 3.5,
-      "close": 413.5,
-      "pe": "17.72",
-      "yield": "3.07",
-      "pb": "3.90"
+      "close": 443.5,
+      "pe": "19.00",
+      "yield": "2.86",
+      "pb": "4.18"
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-26",
-      "open": 20.77,
-      "high": 20.81,
-      "low": 20.58,
-      "close": 20.58,
-      "adj_close": 14.49,
-      "volume": 54272222
-    },
     {
       "date": "2023-09-27",
       "open": 20.5,
@@ -7218,7 +7209,16 @@
       "low": 30.34,
       "close": 30.98,
       "adj_close": 30.98,
-      "volume": 72974531
+      "volume": 71626337
+    },
+    {
+      "date": "2026-11-10",
+      "open": 31.27,
+      "high": 31.39,
+      "low": 30.74,
+      "close": 30.9,
+      "adj_close": 30.9,
+      "volume": 79147435
     }
   ]
 }

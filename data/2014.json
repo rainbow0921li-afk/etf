@@ -22,26 +22,26 @@
         "均線極度收斂：5MA/10MA/20MA/60MA 均線糾結於 16.9 元附近，成交量處於窒息量階段。"
       ]
     },
-    "updated_at": "2026-11-11 16:30:00",
+    "updated_at": "2026-11-12 16:33:43",
     "total_records": 1212
   },
   "quote": {
-    "price": 15.1,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 14.9,
+    "change": -0.2,
+    "change_percent": -1.32,
     "prev_close": 15.1,
     "open": 15.1,
-    "high": 15.15,
-    "low": 14.95,
-    "volume_shares": 3033165,
-    "trade_value_ntd": 45876864,
+    "high": 15.4,
+    "low": 14.9,
+    "volume_shares": 1190568,
+    "trade_value_ntd": 17905678,
     "high_52w": 20.9,
     "low_52w": 13.95,
     "dividend_yield": "",
     "pe": "",
     "pb": "1.77",
-    "nav": 15.1,
-    "prev_nav": 15.1,
+    "nav": 14.9,
+    "prev_nav": 14.9,
     "discount_percent": 0.0,
     "market_cap_billion_ntd": 0,
     "market_cap_display": "--",
@@ -49,20 +49,20 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-11-11",
-    "foreign_lots": -168,
+    "date": "2026-11-12",
+    "foreign_lots": -464,
     "trust_lots": 0,
-    "dealer_self_lots": 0,
+    "dealer_self_lots": -98,
     "dealer_hedge_lots": 0,
-    "dealer_total_lots": 0,
-    "total_lots": -168,
-    "foreign_shares": -167770,
+    "dealer_total_lots": -98,
+    "total_lots": -562,
+    "foreign_shares": -463548,
     "trust_shares": 0,
-    "dealer_total_shares": 0,
-    "total_shares": -167770
+    "dealer_total_shares": -98000,
+    "total_shares": -561548
   },
   "margin": {
-    "date": "2026-11-10",
+    "date": "2026-11-11",
     "margin_balance": 510,
     "margin_change": 0,
     "margin_buy": 0,
@@ -74,12 +74,12 @@
     "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": -10.39,
-    "3M": -14.45,
-    "6M": -15.88,
-    "1Y": -0.33,
-    "3Y": -33.74,
-    "5Y": -52.96
+    "1M": -13.37,
+    "3M": -14.61,
+    "6M": -16.99,
+    "1Y": -1.32,
+    "3Y": -33.6,
+    "5Y": -52.67
   },
   "dividends": [
     {
@@ -195,15 +195,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-27",
-      "open": 23.35,
-      "high": 23.35,
-      "low": 22.8,
-      "close": 22.9,
-      "adj_close": 22.79,
-      "volume": 11786859
-    },
     {
       "date": "2023-09-28",
       "open": 22.95,
@@ -6997,7 +6988,16 @@
       "low": 14.95,
       "close": 15.1,
       "adj_close": 15.1,
-      "volume": 1180873
+      "volume": 1184695
+    },
+    {
+      "date": "2026-11-12",
+      "open": 15.1,
+      "high": 15.4,
+      "low": 14.9,
+      "close": 14.9,
+      "adj_close": 14.9,
+      "volume": 1640324
     }
   ],
   "screener_analysis": {

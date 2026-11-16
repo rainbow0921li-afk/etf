@@ -12,26 +12,26 @@
     "dividend_frequency": "季配息 (每年 2, 5, 8, 11 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-11-12 16:33:43",
-    "total_records": 1212
+    "updated_at": "2026-11-16 18:01:37",
+    "total_records": 1213
   },
   "quote": {
-    "price": 33.0,
-    "change": 0.05,
-    "change_percent": 0.15,
-    "prev_close": 32.95,
-    "open": 33.61,
-    "high": 33.65,
-    "low": 32.94,
-    "volume_shares": 70100557,
-    "trade_value_ntd": 2317892883,
+    "price": 32.43,
+    "change": -1.17,
+    "change_percent": -3.48,
+    "prev_close": 33.6,
+    "open": 33.48,
+    "high": 33.69,
+    "low": 32.41,
+    "volume_shares": 66602238,
+    "trade_value_ntd": 2240056148,
     "high_52w": 35.75,
     "low_52w": 20.23,
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 33.0,
-    "prev_nav": 33.0,
+    "nav": 32.43,
+    "prev_nav": 32.43,
     "discount_percent": 0.0,
     "market_cap_billion_ntd": 0,
     "market_cap_display": "--",
@@ -39,37 +39,37 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-11-12",
-    "foreign_lots": -4069,
-    "trust_lots": 2000,
-    "dealer_self_lots": -82,
-    "dealer_hedge_lots": -61651,
-    "dealer_total_lots": -61733,
-    "total_lots": -63801,
-    "foreign_shares": -4068502,
-    "trust_shares": 2000000,
-    "dealer_total_shares": -61732817,
-    "total_shares": -63801319
+    "date": "2026-11-16",
+    "foreign_lots": -5558,
+    "trust_lots": 0,
+    "dealer_self_lots": 181,
+    "dealer_hedge_lots": -156122,
+    "dealer_total_lots": -155941,
+    "total_lots": -161499,
+    "foreign_shares": -5557991,
+    "trust_shares": 0,
+    "dealer_total_shares": -155940835,
+    "total_shares": -161498826
   },
   "margin": {
-    "date": "2026-11-11",
-    "margin_balance": 9367,
-    "margin_change": -382,
-    "margin_buy": 824,
-    "margin_sell": 1136,
+    "date": "2026-11-13",
+    "margin_balance": 11917,
+    "margin_change": 396,
+    "margin_buy": 1123,
+    "margin_sell": 721,
     "short_balance": 0,
-    "short_change": -3,
-    "short_buy": 3,
+    "short_change": 0,
+    "short_buy": 0,
     "short_sell": 0,
     "short_margin_ratio": 0.0
   },
   "returns": {
-    "1M": -6.62,
-    "3M": 1.63,
-    "6M": 23.87,
-    "1Y": 66.16,
-    "3Y": 110.06,
-    "5Y": 160.05
+    "1M": -8.73,
+    "3M": -1.31,
+    "6M": 22.75,
+    "1Y": 63.79,
+    "3Y": 105.77,
+    "5Y": 153.76
   },
   "dividends": [
     {
@@ -208,9 +208,9 @@
     {
       "date": "2021-11-16",
       "amount": 0.28,
-      "yield": 1.49,
-      "fill_days": 17,
-      "is_filled": true
+      "yield": 0,
+      "fill_days": null,
+      "is_filled": false
     }
   ],
   "sectors": [
@@ -237,100 +237,100 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 5.2,
-      "close": 3990.0,
-      "pe": "65.90",
-      "yield": "1.34",
-      "pb": "15.01"
+      "close": 4120.0,
+      "pe": "66.27",
+      "yield": "1.30",
+      "pb": "14.14"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 4.8,
-      "close": 298.0,
-      "pe": "12.16",
-      "yield": "5.23",
-      "pb": "3.55"
+      "close": 276.5,
+      "pe": "11.28",
+      "yield": "5.64",
+      "pb": "3.29"
     },
     {
       "code": "2357",
       "name": "華碩",
       "sector": "電腦及週邊",
       "weight": 4.5,
-      "close": 902.0,
-      "pe": "13.19",
-      "yield": "4.66",
-      "pb": "2.22"
+      "close": 882.0,
+      "pe": "10.59",
+      "yield": "4.76",
+      "pb": "1.86"
     },
     {
       "code": "3231",
       "name": "緯創",
       "sector": "電腦及週邊",
       "weight": 4.3,
-      "close": 174.5,
-      "pe": "13.86",
-      "yield": "3.15",
-      "pb": "2.86"
+      "close": 171.0,
+      "pe": "11.49",
+      "yield": "3.22",
+      "pb": "2.20"
     },
     {
       "code": "2301",
       "name": "光寶科",
       "sector": "電腦及週邊",
       "weight": 4.1,
-      "close": 239.0,
-      "pe": "24.44",
-      "yield": "2.09",
-      "pb": "5.56"
+      "close": 231.5,
+      "pe": "23.67",
+      "yield": "2.16",
+      "pb": "5.39"
     },
     {
       "code": "2881",
       "name": "富邦金",
       "sector": "金融保險業",
       "weight": 3.9,
-      "close": 159.5,
-      "pe": "14.91",
-      "yield": "2.66",
-      "pb": "1.96"
+      "close": 161.5,
+      "pe": "15.09",
+      "yield": "2.63",
+      "pb": "1.99"
     },
     {
       "code": "2882",
       "name": "國泰金",
       "sector": "金融保險業",
       "weight": 3.8,
-      "close": 113.0,
-      "pe": "13.33",
-      "yield": "3.10",
-      "pb": "1.63"
+      "close": 114.5,
+      "pe": "13.50",
+      "yield": "3.06",
+      "pb": "1.65"
     },
     {
       "code": "2886",
       "name": "兆豐金",
       "sector": "金融保險業",
       "weight": 3.7,
-      "close": 54.2,
-      "pe": "21.09",
-      "yield": "3.23",
-      "pb": "2.00"
+      "close": 55.4,
+      "pe": "21.56",
+      "yield": "3.16",
+      "pb": "2.04"
     },
     {
       "code": "2891",
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 3.6,
-      "close": 74.7,
-      "pe": "17.87",
-      "yield": "3.35",
-      "pb": "2.13"
+      "close": 78.7,
+      "pe": "18.83",
+      "yield": "3.18",
+      "pb": "2.25"
     },
     {
       "code": "2404",
       "name": "漢唐",
       "sector": "其他電子業",
       "weight": 3.5,
-      "close": 994.0,
-      "pe": "14.99",
-      "yield": "4.02",
-      "pb": "10.48"
+      "close": 998.0,
+      "pe": "13.41",
+      "yield": "4.01",
+      "pb": "8.36"
     }
   ],
   "all_constituents": [
@@ -339,130 +339,103 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 5.2,
-      "close": 3990.0,
-      "pe": "65.90",
-      "yield": "1.34",
-      "pb": "15.01"
+      "close": 4120.0,
+      "pe": "66.27",
+      "yield": "1.30",
+      "pb": "14.14"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 4.8,
-      "close": 298.0,
-      "pe": "12.16",
-      "yield": "5.23",
-      "pb": "3.55"
+      "close": 276.5,
+      "pe": "11.28",
+      "yield": "5.64",
+      "pb": "3.29"
     },
     {
       "code": "2357",
       "name": "華碩",
       "sector": "電腦及週邊",
       "weight": 4.5,
-      "close": 902.0,
-      "pe": "13.19",
-      "yield": "4.66",
-      "pb": "2.22"
+      "close": 882.0,
+      "pe": "10.59",
+      "yield": "4.76",
+      "pb": "1.86"
     },
     {
       "code": "3231",
       "name": "緯創",
       "sector": "電腦及週邊",
       "weight": 4.3,
-      "close": 174.5,
-      "pe": "13.86",
-      "yield": "3.15",
-      "pb": "2.86"
+      "close": 171.0,
+      "pe": "11.49",
+      "yield": "3.22",
+      "pb": "2.20"
     },
     {
       "code": "2301",
       "name": "光寶科",
       "sector": "電腦及週邊",
       "weight": 4.1,
-      "close": 239.0,
-      "pe": "24.44",
-      "yield": "2.09",
-      "pb": "5.56"
+      "close": 231.5,
+      "pe": "23.67",
+      "yield": "2.16",
+      "pb": "5.39"
     },
     {
       "code": "2881",
       "name": "富邦金",
       "sector": "金融保險業",
       "weight": 3.9,
-      "close": 159.5,
-      "pe": "14.91",
-      "yield": "2.66",
-      "pb": "1.96"
+      "close": 161.5,
+      "pe": "15.09",
+      "yield": "2.63",
+      "pb": "1.99"
     },
     {
       "code": "2882",
       "name": "國泰金",
       "sector": "金融保險業",
       "weight": 3.8,
-      "close": 113.0,
-      "pe": "13.33",
-      "yield": "3.10",
-      "pb": "1.63"
+      "close": 114.5,
+      "pe": "13.50",
+      "yield": "3.06",
+      "pb": "1.65"
     },
     {
       "code": "2886",
       "name": "兆豐金",
       "sector": "金融保險業",
       "weight": 3.7,
-      "close": 54.2,
-      "pe": "21.09",
-      "yield": "3.23",
-      "pb": "2.00"
+      "close": 55.4,
+      "pe": "21.56",
+      "yield": "3.16",
+      "pb": "2.04"
     },
     {
       "code": "2891",
       "name": "中信金",
       "sector": "金融保險業",
       "weight": 3.6,
-      "close": 74.7,
-      "pe": "17.87",
-      "yield": "3.35",
-      "pb": "2.13"
+      "close": 78.7,
+      "pe": "18.83",
+      "yield": "3.18",
+      "pb": "2.25"
     },
     {
       "code": "2404",
       "name": "漢唐",
       "sector": "其他電子業",
       "weight": 3.5,
-      "close": 994.0,
-      "pe": "14.99",
-      "yield": "4.02",
-      "pb": "10.48"
+      "close": 998.0,
+      "pe": "13.41",
+      "yield": "4.01",
+      "pb": "8.36"
     }
   ],
   "prices": [
-    {
-      "date": "2023-09-28",
-      "open": 20.38,
-      "high": 20.56,
-      "low": 20.31,
-      "close": 20.38,
-      "adj_close": 15.71,
-      "volume": 27606023
-    },
-    {
-      "date": "2023-10-02",
-      "open": 20.5,
-      "high": 20.85,
-      "low": 20.5,
-      "close": 20.76,
-      "adj_close": 16.0,
-      "volume": 55667084
-    },
-    {
-      "date": "2023-10-03",
-      "open": 20.77,
-      "high": 20.8,
-      "low": 20.62,
-      "close": 20.63,
-      "adj_close": 15.9,
-      "volume": 40283454
-    },
     {
       "date": "2023-10-04",
       "open": 20.42,
@@ -7232,13 +7205,40 @@
       "volume": 74967135
     },
     {
+      "date": "2026-11-11",
+      "open": 33.21,
+      "high": 33.5,
+      "low": 32.7,
+      "close": 33.5,
+      "adj_close": 33.5,
+      "volume": 68123475
+    },
+    {
       "date": "2026-11-12",
       "open": 33.61,
       "high": 33.65,
       "low": 32.94,
       "close": 33.0,
       "adj_close": 33.0,
-      "volume": 95192519
+      "volume": 91793827
+    },
+    {
+      "date": "2026-11-13",
+      "open": 33.35,
+      "high": 33.84,
+      "low": 33.34,
+      "close": 33.6,
+      "adj_close": 33.6,
+      "volume": 64987536
+    },
+    {
+      "date": "2026-11-16",
+      "open": 33.48,
+      "high": 33.69,
+      "low": 32.41,
+      "close": 32.43,
+      "adj_close": 32.43,
+      "volume": 210611168
     }
   ]
 }

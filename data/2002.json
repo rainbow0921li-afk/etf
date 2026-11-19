@@ -22,26 +22,26 @@
         "均線多頭排列：5MA > 10MA > 20MA > 60MA，均線金叉發散，突破年線與季線強支撐。"
       ]
     },
-    "updated_at": "2026-11-18 16:37:21",
+    "updated_at": "2026-11-19 16:40:16",
     "total_records": 1212
   },
   "quote": {
-    "price": 17.95,
-    "change": 0.0,
-    "change_percent": 0.0,
+    "price": 17.6,
+    "change": -0.35,
+    "change_percent": -1.95,
     "prev_close": 17.95,
-    "open": 18.1,
+    "open": 18.0,
     "high": 18.1,
-    "low": 17.9,
-    "volume_shares": 42803382,
-    "trade_value_ntd": 770795907,
+    "low": 17.6,
+    "volume_shares": 31471360,
+    "trade_value_ntd": 565969666,
     "high_52w": 21.6,
     "low_52w": 17.6,
     "dividend_yield": "0.84",
     "pe": "448.75",
     "pb": "0.91",
-    "nav": 17.95,
-    "prev_nav": 17.95,
+    "nav": 17.6,
+    "prev_nav": 17.6,
     "discount_percent": 0.0,
     "market_cap_billion_ntd": 0,
     "market_cap_display": "--",
@@ -49,37 +49,37 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-11-18",
-    "foreign_lots": -3557,
-    "trust_lots": -275,
-    "dealer_self_lots": 200,
-    "dealer_hedge_lots": -145,
-    "dealer_total_lots": 55,
-    "total_lots": -3777,
-    "foreign_shares": -3556913,
-    "trust_shares": -275000,
-    "dealer_total_shares": 55162,
-    "total_shares": -3776751
+    "date": "2026-11-19",
+    "foreign_lots": -15604,
+    "trust_lots": 222,
+    "dealer_self_lots": 141,
+    "dealer_hedge_lots": 15,
+    "dealer_total_lots": 156,
+    "total_lots": -15226,
+    "foreign_shares": -15603669,
+    "trust_shares": 222000,
+    "dealer_total_shares": 155535,
+    "total_shares": -15226134
   },
   "margin": {
-    "date": "2026-11-17",
-    "margin_balance": 40953,
-    "margin_change": 317,
-    "margin_buy": 817,
-    "margin_sell": 474,
-    "short_balance": 846,
-    "short_change": 153,
-    "short_buy": 4,
-    "short_sell": 157,
-    "short_margin_ratio": 2.07
+    "date": "2026-11-18",
+    "margin_balance": 41233,
+    "margin_change": 280,
+    "margin_buy": 698,
+    "margin_sell": 413,
+    "short_balance": 836,
+    "short_change": -10,
+    "short_buy": 18,
+    "short_sell": 8,
+    "short_margin_ratio": 2.03
   },
   "returns": {
-    "1M": -8.42,
-    "3M": -5.28,
-    "6M": -0.61,
-    "1Y": -0.06,
-    "3Y": -23.91,
-    "5Y": -34.87
+    "1M": -10.2,
+    "3M": -7.12,
+    "6M": -2.0,
+    "1Y": -2.82,
+    "3Y": -25.71,
+    "5Y": -35.44
   },
   "dividends": [
     {
@@ -221,15 +221,6 @@
     }
   ],
   "prices": [
-    {
-      "date": "2023-10-05",
-      "open": 24.3,
-      "high": 24.6,
-      "low": 24.1,
-      "close": 24.55,
-      "adj_close": 23.59,
-      "volume": 29288152
-    },
     {
       "date": "2023-10-06",
       "open": 24.5,
@@ -7023,7 +7014,16 @@
       "low": 17.9,
       "close": 17.95,
       "adj_close": 17.95,
-      "volume": 31435650
+      "volume": 31369710
+    },
+    {
+      "date": "2026-11-19",
+      "open": 18.0,
+      "high": 18.1,
+      "low": 17.6,
+      "close": 17.6,
+      "adj_close": 17.6,
+      "volume": 50709835
     }
   ],
   "screener_analysis": {

@@ -12,64 +12,64 @@
     "dividend_frequency": "季配息 (每年 1, 4, 7, 10 月)",
     "type": "etf",
     "warning": null,
-    "updated_at": "2026-11-18 16:37:21",
+    "updated_at": "2026-11-19 16:40:16",
     "total_records": 1212
   },
   "quote": {
-    "price": 49.48,
-    "change": -1.12,
-    "change_percent": -2.21,
-    "prev_close": 50.6,
-    "open": 50.6,
-    "high": 50.9,
-    "low": 48.4,
-    "volume_shares": 74262670,
-    "trade_value_ntd": 3704986705,
+    "price": 47.41,
+    "change": -2.51,
+    "change_percent": -5.03,
+    "prev_close": 49.92,
+    "open": 48.93,
+    "high": 49.18,
+    "low": 47.31,
+    "volume_shares": 93001322,
+    "trade_value_ntd": 4587079509,
     "high_52w": 59.7,
     "low_52w": 34.66,
     "dividend_yield": 0,
     "pe": null,
     "pb": null,
-    "nav": 49.22,
-    "prev_nav": 49.71,
-    "discount_percent": 0.53,
-    "market_cap_billion_ntd": 7555.53,
-    "market_cap_display": "7,556 億",
-    "shares_units": 15350534000,
-    "creation_redemption_shares": 58500000
+    "nav": 47.34,
+    "prev_nav": 49.21,
+    "discount_percent": 0.15,
+    "market_cap_billion_ntd": 7305.52,
+    "market_cap_display": "7,306 億",
+    "shares_units": 15432034000,
+    "creation_redemption_shares": 81500000
   },
   "institutional": {
-    "date": "2026-11-18",
-    "foreign_lots": 3475,
-    "trust_lots": 370,
-    "dealer_self_lots": 448,
-    "dealer_hedge_lots": -55111,
-    "dealer_total_lots": -54663,
-    "total_lots": -50818,
-    "foreign_shares": 3474904,
-    "trust_shares": 370000,
-    "dealer_total_shares": -54662914,
-    "total_shares": -50818010
+    "date": "2026-11-19",
+    "foreign_lots": -2011,
+    "trust_lots": 150,
+    "dealer_self_lots": 20,
+    "dealer_hedge_lots": -65141,
+    "dealer_total_lots": -65121,
+    "total_lots": -66983,
+    "foreign_shares": -2011329,
+    "trust_shares": 150000,
+    "dealer_total_shares": -65121224,
+    "total_shares": -66982553
   },
   "margin": {
-    "date": "2026-11-17",
-    "margin_balance": 8714,
-    "margin_change": 7,
-    "margin_buy": 293,
-    "margin_sell": 279,
-    "short_balance": 94,
-    "short_change": -5,
-    "short_buy": 15,
-    "short_sell": 10,
-    "short_margin_ratio": 1.08
+    "date": "2026-11-18",
+    "margin_balance": 9062,
+    "margin_change": 348,
+    "margin_buy": 470,
+    "margin_sell": 120,
+    "short_balance": 108,
+    "short_change": 14,
+    "short_buy": 12,
+    "short_sell": 26,
+    "short_margin_ratio": 1.19
   },
   "returns": {
-    "1M": -12.11,
-    "3M": -3.83,
-    "6M": 17.73,
-    "1Y": 48.5,
-    "3Y": 95.5,
-    "5Y": 136.86
+    "1M": -14.99,
+    "3M": -7.33,
+    "6M": 14.05,
+    "1Y": 43.02,
+    "3Y": 86.8,
+    "5Y": 127.28
   },
   "dividends": [
     {
@@ -198,100 +198,100 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 4.12,
-      "close": 3840.0,
-      "pe": "61.77",
-      "yield": "1.39",
-      "pb": "13.18"
+      "close": 3940.0,
+      "pe": "63.37",
+      "yield": "1.36",
+      "pb": "13.52"
     },
     {
       "code": "2603",
       "name": "長榮",
       "sector": "航運業",
       "weight": 3.85,
-      "close": 256.5,
-      "pe": "6.99",
-      "yield": "6.24",
-      "pb": "0.91"
+      "close": 257.5,
+      "pe": "7.01",
+      "yield": "6.21",
+      "pb": "0.92"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 3.65,
-      "close": 262.5,
-      "pe": "10.71",
-      "yield": "5.94",
-      "pb": "3.13"
+      "close": 265.0,
+      "pe": "10.81",
+      "yield": "5.89",
+      "pb": "3.16"
     },
     {
       "code": "3034",
       "name": "聯詠",
       "sector": "半導體業",
       "weight": 3.42,
-      "close": 456.0,
-      "pe": "14.04",
-      "yield": "5.04",
-      "pb": "3.71"
+      "close": 458.0,
+      "pe": "14.10",
+      "yield": "5.02",
+      "pb": "3.73"
     },
     {
       "code": "2303",
       "name": "聯電",
       "sector": "半導體業",
       "weight": 3.35,
-      "close": 92.4,
-      "pe": "13.65",
-      "yield": "2.82",
-      "pb": "2.46"
+      "close": 93.0,
+      "pe": "13.74",
+      "yield": "2.81",
+      "pb": "2.48"
     },
     {
       "code": "2379",
       "name": "瑞昱",
       "sector": "半導體業",
       "weight": 3.2,
-      "close": 717.0,
-      "pe": "24.78",
-      "yield": "3.49",
-      "pb": "6.76"
+      "close": 734.0,
+      "pe": "25.37",
+      "yield": "3.41",
+      "pb": "6.92"
     },
     {
       "code": "3231",
       "name": "緯創",
       "sector": "電腦及週邊",
       "weight": 3.15,
-      "close": 157.0,
-      "pe": "10.55",
-      "yield": "3.50",
-      "pb": "2.02"
+      "close": 162.0,
+      "pe": "10.89",
+      "yield": "3.40",
+      "pb": "2.08"
     },
     {
       "code": "4938",
       "name": "和碩",
       "sector": "電腦及週邊",
       "weight": 2.95,
-      "close": 83.8,
-      "pe": "14.65",
-      "yield": "4.79",
-      "pb": "1.01"
+      "close": 85.4,
+      "pe": "14.93",
+      "yield": "4.70",
+      "pb": "1.03"
     },
     {
       "code": "2357",
       "name": "華碩",
       "sector": "電腦及週邊",
       "weight": 2.8,
-      "close": 826.0,
-      "pe": "9.91",
-      "yield": "5.08",
-      "pb": "1.75"
+      "close": 841.0,
+      "pe": "10.09",
+      "yield": "4.99",
+      "pb": "1.78"
     },
     {
       "code": "2301",
       "name": "光寶科",
       "sector": "電腦及週邊",
       "weight": 2.75,
-      "close": 207.0,
-      "pe": "21.17",
-      "yield": "2.42",
-      "pb": "4.82"
+      "close": 208.0,
+      "pe": "21.27",
+      "yield": "2.40",
+      "pb": "4.84"
     }
   ],
   "all_constituents": [
@@ -300,112 +300,103 @@
       "name": "聯發科",
       "sector": "半導體業",
       "weight": 4.12,
-      "close": 3840.0,
-      "pe": "61.77",
-      "yield": "1.39",
-      "pb": "13.18"
+      "close": 3940.0,
+      "pe": "63.37",
+      "yield": "1.36",
+      "pb": "13.52"
     },
     {
       "code": "2603",
       "name": "長榮",
       "sector": "航運業",
       "weight": 3.85,
-      "close": 256.5,
-      "pe": "6.99",
-      "yield": "6.24",
-      "pb": "0.91"
+      "close": 257.5,
+      "pe": "7.01",
+      "yield": "6.21",
+      "pb": "0.92"
     },
     {
       "code": "2382",
       "name": "廣達",
       "sector": "電腦及週邊",
       "weight": 3.65,
-      "close": 262.5,
-      "pe": "10.71",
-      "yield": "5.94",
-      "pb": "3.13"
+      "close": 265.0,
+      "pe": "10.81",
+      "yield": "5.89",
+      "pb": "3.16"
     },
     {
       "code": "3034",
       "name": "聯詠",
       "sector": "半導體業",
       "weight": 3.42,
-      "close": 456.0,
-      "pe": "14.04",
-      "yield": "5.04",
-      "pb": "3.71"
+      "close": 458.0,
+      "pe": "14.10",
+      "yield": "5.02",
+      "pb": "3.73"
     },
     {
       "code": "2303",
       "name": "聯電",
       "sector": "半導體業",
       "weight": 3.35,
-      "close": 92.4,
-      "pe": "13.65",
-      "yield": "2.82",
-      "pb": "2.46"
+      "close": 93.0,
+      "pe": "13.74",
+      "yield": "2.81",
+      "pb": "2.48"
     },
     {
       "code": "2379",
       "name": "瑞昱",
       "sector": "半導體業",
       "weight": 3.2,
-      "close": 717.0,
-      "pe": "24.78",
-      "yield": "3.49",
-      "pb": "6.76"
+      "close": 734.0,
+      "pe": "25.37",
+      "yield": "3.41",
+      "pb": "6.92"
     },
     {
       "code": "3231",
       "name": "緯創",
       "sector": "電腦及週邊",
       "weight": 3.15,
-      "close": 157.0,
-      "pe": "10.55",
-      "yield": "3.50",
-      "pb": "2.02"
+      "close": 162.0,
+      "pe": "10.89",
+      "yield": "3.40",
+      "pb": "2.08"
     },
     {
       "code": "4938",
       "name": "和碩",
       "sector": "電腦及週邊",
       "weight": 2.95,
-      "close": 83.8,
-      "pe": "14.65",
-      "yield": "4.79",
-      "pb": "1.01"
+      "close": 85.4,
+      "pe": "14.93",
+      "yield": "4.70",
+      "pb": "1.03"
     },
     {
       "code": "2357",
       "name": "華碩",
       "sector": "電腦及週邊",
       "weight": 2.8,
-      "close": 826.0,
-      "pe": "9.91",
-      "yield": "5.08",
-      "pb": "1.75"
+      "close": 841.0,
+      "pe": "10.09",
+      "yield": "4.99",
+      "pb": "1.78"
     },
     {
       "code": "2301",
       "name": "光寶科",
       "sector": "電腦及週邊",
       "weight": 2.75,
-      "close": 207.0,
-      "pe": "21.17",
-      "yield": "2.42",
-      "pb": "4.82"
+      "close": 208.0,
+      "pe": "21.27",
+      "yield": "2.40",
+      "pb": "4.84"
     }
   ],
   "prices": [
-    {
-      "date": "2023-10-05",
-      "open": 35.58,
-      "high": 35.74,
-      "low": 35.5,
-      "close": 35.69,
-      "adj_close": 25.31,
-      "volume": 23107350
-    },
     {
       "date": "2023-10-06",
       "open": 35.73,
@@ -7193,13 +7184,22 @@
       "volume": 74144579
     },
     {
-      "date": "2026-11-18",
-      "open": 50.6,
-      "high": 50.9,
-      "low": 48.4,
-      "close": 49.48,
-      "adj_close": 49.48,
-      "volume": 92888493
+      "date": "2026-11-17",
+      "open": 50.15,
+      "high": 50.95,
+      "low": 48.85,
+      "close": 49.92,
+      "adj_close": 49.92,
+      "volume": 69734696
+    },
+    {
+      "date": "2026-11-19",
+      "open": 48.93,
+      "high": 49.18,
+      "low": 47.31,
+      "close": 47.41,
+      "adj_close": 47.41,
+      "volume": 119343828
     }
   ]
 }

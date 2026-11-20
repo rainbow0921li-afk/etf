@@ -22,8 +22,8 @@
         "均線多頭排列：5MA > 10MA > 20MA > 60MA，均線金叉發散，突破年線與季線強支撐。"
       ]
     },
-    "updated_at": "2026-11-19 16:40:16",
-    "total_records": 1212
+    "updated_at": "2026-11-21 00:17:46",
+    "total_records": 1211
   },
   "quote": {
     "price": 17.6,
@@ -33,13 +33,13 @@
     "open": 18.0,
     "high": 18.1,
     "low": 17.6,
-    "volume_shares": 31471360,
-    "trade_value_ntd": 565969666,
+    "volume_shares": 50836954,
+    "trade_value_ntd": 902840051,
     "high_52w": 21.6,
-    "low_52w": 17.6,
-    "dividend_yield": "0.84",
-    "pe": "448.75",
-    "pb": "0.91",
+    "low_52w": 17.0,
+    "dividend_yield": "0.85",
+    "pe": "440.00",
+    "pb": "0.89",
     "nav": 17.6,
     "prev_nav": 17.6,
     "discount_percent": 0.0,
@@ -49,29 +49,29 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-11-19",
-    "foreign_lots": -15604,
-    "trust_lots": 222,
-    "dealer_self_lots": 141,
-    "dealer_hedge_lots": 15,
-    "dealer_total_lots": 156,
-    "total_lots": -15226,
-    "foreign_shares": -15603669,
-    "trust_shares": 222000,
-    "dealer_total_shares": 155535,
-    "total_shares": -15226134
+    "date": "2026-11-20",
+    "foreign_lots": -21933,
+    "trust_lots": 15,
+    "dealer_self_lots": 46,
+    "dealer_hedge_lots": -393,
+    "dealer_total_lots": -347,
+    "total_lots": -22265,
+    "foreign_shares": -21932895,
+    "trust_shares": 15000,
+    "dealer_total_shares": -346624,
+    "total_shares": -22264519
   },
   "margin": {
-    "date": "2026-11-18",
-    "margin_balance": 41233,
-    "margin_change": 280,
-    "margin_buy": 698,
-    "margin_sell": 413,
-    "short_balance": 836,
-    "short_change": -10,
-    "short_buy": 18,
-    "short_sell": 8,
-    "short_margin_ratio": 2.03
+    "date": "2026-11-20",
+    "margin_balance": 38858,
+    "margin_change": -2073,
+    "margin_buy": 1716,
+    "margin_sell": 3785,
+    "short_balance": 1060,
+    "short_change": 51,
+    "short_buy": 28,
+    "short_sell": 79,
+    "short_margin_ratio": 2.73
   },
   "returns": {
     "1M": -10.2,
@@ -7023,7 +7023,7 @@
       "low": 17.6,
       "close": 17.6,
       "adj_close": 17.6,
-      "volume": 50709835
+      "volume": 50553119
     }
   ],
   "screener_analysis": {

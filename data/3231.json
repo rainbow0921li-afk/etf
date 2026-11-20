@@ -12,8 +12,8 @@
     "dividend_frequency": "年配息",
     "type": "stock",
     "warning": null,
-    "updated_at": "2026-11-19 16:40:16",
-    "total_records": 1212
+    "updated_at": "2026-11-21 00:17:46",
+    "total_records": 1211
   },
   "quote": {
     "price": 156.0,
@@ -23,13 +23,13 @@
     "open": 161.0,
     "high": 164.0,
     "low": 155.0,
-    "volume_shares": 33258387,
-    "trade_value_ntd": 5322161661,
+    "volume_shares": 23821219,
+    "trade_value_ntd": 3778614639,
     "high_52w": 206.0,
     "low_52w": 122.5,
-    "dividend_yield": "3.40",
-    "pe": "10.89",
-    "pb": "2.08",
+    "dividend_yield": "3.53",
+    "pe": "10.48",
+    "pb": "2.01",
     "nav": 156.0,
     "prev_nav": 156.0,
     "discount_percent": 0.0,
@@ -39,29 +39,29 @@
     "creation_redemption_shares": 0
   },
   "institutional": {
-    "date": "2026-11-19",
-    "foreign_lots": -2728,
-    "trust_lots": -131,
-    "dealer_self_lots": -27,
-    "dealer_hedge_lots": 817,
-    "dealer_total_lots": 790,
-    "total_lots": -2068,
-    "foreign_shares": -2727695,
-    "trust_shares": -130523,
-    "dealer_total_shares": 789859,
-    "total_shares": -2068359
+    "date": "2026-11-20",
+    "foreign_lots": 1723,
+    "trust_lots": 440,
+    "dealer_self_lots": 16,
+    "dealer_hedge_lots": 852,
+    "dealer_total_lots": 868,
+    "total_lots": 3031,
+    "foreign_shares": 1722733,
+    "trust_shares": 439573,
+    "dealer_total_shares": 868246,
+    "total_shares": 3030552
   },
   "margin": {
-    "date": "2026-11-18",
-    "margin_balance": 46493,
-    "margin_change": -276,
-    "margin_buy": 911,
-    "margin_sell": 1146,
-    "short_balance": 463,
-    "short_change": -8,
-    "short_buy": 64,
-    "short_sell": 57,
-    "short_margin_ratio": 1.0
+    "date": "2026-11-20",
+    "margin_balance": 45956,
+    "margin_change": -540,
+    "margin_buy": 1695,
+    "margin_sell": 2054,
+    "short_balance": 157,
+    "short_change": -288,
+    "short_buy": 288,
+    "short_sell": 0,
+    "short_margin_ratio": 0.34
   },
   "returns": {
     "1M": -20.0,
@@ -69,7 +69,7 @@
     "6M": 22.06,
     "1Y": 13.89,
     "3Y": 57.88,
-    "5Y": 556.57
+    "5Y": 552.17
   },
   "dividends": [
     {
@@ -7013,7 +7013,7 @@
       "low": 155.0,
       "close": 156.0,
       "adj_close": 156.0,
-      "volume": 23282177
+      "volume": 23093042
     }
   ],
   "screener_analysis": {

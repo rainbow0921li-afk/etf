@@ -1,681 +1,660 @@
 {
-  "generated_at": "2026-11-21 00:18:06",
-  "total_scanned": 398,
+  "generated_at": "2026-11-24 03:25:34",
+  "total_scanned": 424,
   "top_count": 20,
   "top_picks": [
     {
-      "code": "9933",
-      "name": "中鼎",
-      "close": 56.6,
-      "change": -0.9,
-      "change_percent": -1.57,
-      "volume_lots": 28385,
-      "institutional": {
-        "foreign_lots": 6870,
-        "trust_lots": 1,
-        "dealer_lots": -241,
-        "total_lots": 6630
-      },
-      "margin": {
-        "margin_balance": 11380,
-        "margin_change": -2069,
-        "short_balance": 11191,
-        "short_margin_ratio": 98.34
-      },
-      "valuation": {
-        "pe": 8.46,
-        "pb": 2.08,
-        "dividend_yield": 1.68
-      },
-      "score": 75.0,
-      "reasons": [
-        "投信偏多買超 (+1 張)",
-        "外資大幅回補 (+6,870 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-2,069 張，籌碼高度沉澱)",
-        "🔥 券資比高達 98.3% (具潛在軋空動能)",
-        "量能充沛 (成交量 28,385 張)",
-        "估值穩健 (PE: 8.5, PB: 2.08)"
-      ]
-    },
-    {
       "code": "3231",
       "name": "緯創",
-      "close": 156.0,
-      "change": -6.0,
-      "change_percent": -3.7,
-      "volume_lots": 23821,
+      "close": 147.0,
+      "change": -9.0,
+      "change_percent": -5.77,
+      "volume_lots": 36898,
       "institutional": {
-        "foreign_lots": 1722,
-        "trust_lots": 439,
-        "dealer_lots": 868,
-        "total_lots": 3030
+        "foreign_lots": 1336,
+        "trust_lots": 335,
+        "dealer_lots": 1018,
+        "total_lots": 2690
       },
       "margin": {
-        "margin_balance": 45956,
-        "margin_change": -540,
-        "short_balance": 157,
-        "short_margin_ratio": 0.34
-      },
-      "valuation": {
-        "pe": 10.48,
-        "pb": 2.01,
-        "dividend_yield": 3.53
-      },
-      "score": 67.0,
-      "reasons": [
-        "投信積極佈局 (+439 張)",
-        "外資波段加碼 (+1,722 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-540 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 23,821 張)",
-        "估值穩健 (PE: 10.5, PB: 2.01)"
-      ]
-    },
-    {
-      "code": "2312",
-      "name": "金寶",
-      "close": 22.3,
-      "change": -1.9,
-      "change_percent": -7.85,
-      "volume_lots": 12032,
-      "institutional": {
-        "foreign_lots": 4350,
-        "trust_lots": 54,
-        "dealer_lots": 319,
-        "total_lots": 4724
-      },
-      "margin": {
-        "margin_balance": 40898,
-        "margin_change": -4394,
-        "short_balance": 98,
-        "short_margin_ratio": 0.24
-      },
-      "valuation": {
-        "pe": 18.58,
-        "pb": 1.34,
-        "dividend_yield": 2.69
-      },
-      "score": 65.0,
-      "reasons": [
-        "投信偏多買超 (+54 張)",
-        "外資大幅回補 (+4,350 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-4,394 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 12,032 張)",
-        "估值穩健 (PE: 18.6, PB: 1.34)"
-      ]
-    },
-    {
-      "code": "6770",
-      "name": "力積電",
-      "close": 48.9,
-      "change": -3.0,
-      "change_percent": -5.78,
-      "volume_lots": 115257,
-      "institutional": {
-        "foreign_lots": 18282,
-        "trust_lots": 17,
-        "dealer_lots": 2180,
-        "total_lots": 20479
-      },
-      "margin": {
-        "margin_balance": 103230,
-        "margin_change": -12535,
-        "short_balance": 759,
-        "short_margin_ratio": 0.74
+        "margin_balance": 43218,
+        "margin_change": -2738,
+        "short_balance": 137,
+        "short_margin_ratio": 0.32
       },
       "valuation": {
         "pe": 9.88,
-        "pb": 1.72,
-        "dividend_yield": 0.0
+        "pb": 1.89,
+        "dividend_yield": 3.74
       },
-      "score": 65.0,
+      "score": 67.0,
       "reasons": [
-        "投信偏多買超 (+17 張)",
-        "外資大幅回補 (+18,282 張)",
+        "投信積極佈局 (+335 張)",
+        "外資波段加碼 (+1,336 張)",
         "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-12,535 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 115,257 張)",
-        "估值穩健 (PE: 9.9, PB: 1.72)"
+        "散戶融資大退場 (-2,738 張，籌碼高度沉澱)",
+        "量能充沛 (成交量 36,898 張)",
+        "估值穩健 (PE: 9.9, PB: 1.89)"
       ]
     },
     {
-      "code": "2880",
-      "name": "華南金",
-      "close": 48.85,
-      "change": 0.65,
-      "change_percent": 1.35,
-      "volume_lots": 17297,
-      "institutional": {
-        "foreign_lots": 27,
-        "trust_lots": 69,
-        "dealer_lots": 4347,
-        "total_lots": 4445
-      },
-      "margin": {
-        "margin_balance": 578,
-        "margin_change": -25,
-        "short_balance": 131,
-        "short_margin_ratio": 22.66
-      },
-      "valuation": {
-        "pe": 21.15,
-        "pb": 2.81,
-        "dividend_yield": 2.97
-      },
-      "score": 63.0,
-      "reasons": [
-        "投信偏多買超 (+69 張)",
-        "外資偏多買超 (+27 張)",
-        "⚡ 土洋法人同步買超",
-        "融資減少 (-25 張，浮額清洗)",
-        "券資比水位適中 (22.7%)",
-        "股價強勢收紅 (+1.35%)",
-        "量能充沛 (成交量 17,297 張)",
-        "估值穩健 (PE: 21.1, PB: 2.81)"
-      ]
-    },
-    {
-      "code": "3037",
-      "name": "欣興",
-      "close": 596.0,
-      "change": -66.0,
-      "change_percent": -9.97,
-      "volume_lots": 19591,
-      "institutional": {
-        "foreign_lots": 144,
-        "trust_lots": 1735,
-        "dealer_lots": 130,
-        "total_lots": 2010
-      },
-      "margin": {
-        "margin_balance": 33251,
-        "margin_change": -1040,
-        "short_balance": 161,
-        "short_margin_ratio": 0.48
-      },
-      "valuation": {
-        "pe": 30.85,
-        "pb": 5.51,
-        "dividend_yield": 0.33
-      },
-      "score": 63.0,
-      "reasons": [
-        "投信強勢認養加碼 (+1,735 張)",
-        "外資偏多買超 (+144 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-1,040 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 19,591 張)"
-      ]
-    },
-    {
-      "code": "3189",
-      "name": "景碩",
-      "close": 522.0,
-      "change": -57.0,
-      "change_percent": -9.84,
-      "volume_lots": 14363,
-      "institutional": {
-        "foreign_lots": 73,
-        "trust_lots": 1097,
-        "dealer_lots": 0,
-        "total_lots": 1170
-      },
-      "margin": {
-        "margin_balance": 14943,
-        "margin_change": -675,
-        "short_balance": 288,
-        "short_margin_ratio": 1.93
-      },
-      "valuation": {
-        "pe": 56.25,
-        "pb": 5.86,
-        "dividend_yield": 0.29
-      },
-      "score": 63.0,
-      "reasons": [
-        "投信強勢認養加碼 (+1,097 張)",
-        "外資偏多買超 (+73 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-675 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 14,363 張)"
-      ]
-    },
-    {
-      "code": "6505",
-      "name": "台塑化",
-      "close": 84.3,
-      "change": -5.5,
-      "change_percent": -6.12,
-      "volume_lots": 16881,
-      "institutional": {
-        "foreign_lots": 44,
-        "trust_lots": 3905,
-        "dealer_lots": -148,
-        "total_lots": 3802
-      },
-      "margin": {
-        "margin_balance": 4992,
-        "margin_change": -241,
-        "short_balance": 203,
-        "short_margin_ratio": 4.07
-      },
-      "valuation": {
-        "pe": 11.06,
-        "pb": 1.45,
-        "dividend_yield": 1.42
-      },
-      "score": 63.0,
-      "reasons": [
-        "投信強勢認養加碼 (+3,905 張)",
-        "外資偏多買超 (+44 張)",
-        "⚡ 土洋法人同步買超",
-        "融資減少 (-241 張，浮額清洗)",
-        "量能充沛 (成交量 16,881 張)",
-        "估值穩健 (PE: 11.1, PB: 1.45)"
-      ]
-    },
-    {
-      "code": "1476",
-      "name": "儒鴻",
-      "close": 384.5,
-      "change": 0.5,
-      "change_percent": 0.13,
-      "volume_lots": 5237,
-      "institutional": {
-        "foreign_lots": 73,
-        "trust_lots": 814,
-        "dealer_lots": -156,
-        "total_lots": 731
-      },
-      "margin": {
-        "margin_balance": 704,
-        "margin_change": -148,
-        "short_balance": 48,
-        "short_margin_ratio": 6.82
-      },
-      "valuation": {
-        "pe": 15.71,
-        "pb": 3.43,
-        "dividend_yield": 3.9
-      },
-      "score": 61.0,
-      "reasons": [
-        "投信積極佈局 (+814 張)",
-        "外資偏多買超 (+73 張)",
-        "⚡ 土洋法人同步買超",
-        "融資減少 (-148 張，浮額清洗)",
-        "股價強勢收紅 (+0.13%)",
-        "估值穩健 (PE: 15.7, PB: 3.43)"
-      ]
-    },
-    {
-      "code": "5522",
-      "name": "遠雄",
-      "close": 63.4,
-      "change": 1.1,
-      "change_percent": 1.77,
-      "volume_lots": 1520,
-      "institutional": {
-        "foreign_lots": 404,
-        "trust_lots": 602,
-        "dealer_lots": -13,
-        "total_lots": 993
-      },
-      "margin": {
-        "margin_balance": 985,
-        "margin_change": -72,
-        "short_balance": 7,
-        "short_margin_ratio": 0.71
-      },
-      "valuation": {
-        "pe": 6.08,
-        "pb": 1.01,
-        "dividend_yield": 8.68
-      },
-      "score": 61.0,
-      "reasons": [
-        "投信積極佈局 (+602 張)",
-        "外資偏多買超 (+404 張)",
-        "⚡ 土洋法人同步買超",
-        "融資減少 (-72 張，浮額清洗)",
-        "股價強勢收紅 (+1.77%)",
-        "估值穩健 (PE: 6.1, PB: 1.01)"
-      ]
-    },
-    {
-      "code": "2409",
-      "name": "友達",
-      "close": 25.1,
-      "change": -2.3,
-      "change_percent": -8.39,
-      "volume_lots": 220887,
-      "institutional": {
-        "foreign_lots": 28849,
-        "trust_lots": 25,
-        "dealer_lots": -1723,
-        "total_lots": 27152
-      },
-      "margin": {
-        "margin_balance": 226239,
-        "margin_change": -19662,
-        "short_balance": 14838,
-        "short_margin_ratio": 6.56
-      },
-      "valuation": {
-        "pe": 313.75,
-        "pb": 1.25,
-        "dividend_yield": 1.59
-      },
-      "score": 60.0,
-      "reasons": [
-        "投信偏多買超 (+25 張)",
-        "外資大幅回補 (+28,849 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-19,662 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 220,887 張)"
-      ]
-    },
-    {
-      "code": "2382",
-      "name": "廣達",
-      "close": 262.5,
-      "change": -2.5,
-      "change_percent": -0.94,
-      "volume_lots": 11400,
-      "institutional": {
-        "foreign_lots": 1126,
-        "trust_lots": 32,
-        "dealer_lots": 629,
-        "total_lots": 1789
-      },
-      "margin": {
-        "margin_balance": 13545,
-        "margin_change": -1170,
-        "short_balance": 230,
-        "short_margin_ratio": 1.7
-      },
-      "valuation": {
-        "pe": 10.71,
-        "pb": 3.13,
-        "dividend_yield": 5.94
-      },
-      "score": 59.0,
-      "reasons": [
-        "投信偏多買超 (+32 張)",
-        "外資波段加碼 (+1,126 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-1,170 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 11,400 張)",
-        "估值穩健 (PE: 10.7, PB: 3.13)"
-      ]
-    },
-    {
-      "code": "3006",
-      "name": "晶豪科",
-      "close": 193.0,
-      "change": -19.0,
+      "code": "2303",
+      "name": "聯電",
+      "close": 80.3,
+      "change": -7.9,
       "change_percent": -8.96,
-      "volume_lots": 10277,
+      "volume_lots": 232408,
       "institutional": {
-        "foreign_lots": 2793,
-        "trust_lots": 1,
-        "dealer_lots": 109,
-        "total_lots": 2904
+        "foreign_lots": 2433,
+        "trust_lots": 1814,
+        "dealer_lots": -386,
+        "total_lots": 3862
       },
       "margin": {
-        "margin_balance": 12240,
-        "margin_change": -2295,
-        "short_balance": 203,
-        "short_margin_ratio": 1.66
+        "margin_balance": 106103,
+        "margin_change": 4163,
+        "short_balance": 4326,
+        "short_margin_ratio": 4.08
       },
       "valuation": {
-        "pe": 2.71,
-        "pb": 1.8,
-        "dividend_yield": 0.52
+        "pe": 11.86,
+        "pb": 2.14,
+        "dividend_yield": 3.25
       },
       "score": 59.0,
       "reasons": [
-        "投信偏多買超 (+1 張)",
-        "外資波段加碼 (+2,793 張)",
+        "投信強勢認養加碼 (+1,814 張)",
+        "外資波段加碼 (+2,433 張)",
         "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-2,295 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 10,277 張)",
-        "估值穩健 (PE: 2.7, PB: 1.80)"
+        "量能充沛 (成交量 232,408 張)",
+        "估值穩健 (PE: 11.9, PB: 2.14)"
+      ]
+    },
+    {
+      "code": "2449",
+      "name": "京元電子",
+      "close": 157.5,
+      "change": -17.5,
+      "change_percent": -10.0,
+      "volume_lots": 15122,
+      "institutional": {
+        "foreign_lots": 1478,
+        "trust_lots": 30,
+        "dealer_lots": 653,
+        "total_lots": 2162
+      },
+      "margin": {
+        "margin_balance": 19993,
+        "margin_change": -782,
+        "short_balance": 236,
+        "short_margin_ratio": 1.18
+      },
+      "valuation": {
+        "pe": 20.92,
+        "pb": 3.08,
+        "dividend_yield": 0.95
+      },
+      "score": 59.0,
+      "reasons": [
+        "投信偏多買超 (+30 張)",
+        "外資波段加碼 (+1,478 張)",
+        "⚡ 土洋法人同步買超",
+        "散戶融資大退場 (-782 張，籌碼高度沉澱)",
+        "量能充沛 (成交量 15,122 張)",
+        "估值穩健 (PE: 20.9, PB: 3.08)"
+      ]
+    },
+    {
+      "code": "2886",
+      "name": "兆豐金",
+      "close": 51.8,
+      "change": -1.6,
+      "change_percent": -3.0,
+      "volume_lots": 61746,
+      "institutional": {
+        "foreign_lots": 1517,
+        "trust_lots": 17467,
+        "dealer_lots": 2227,
+        "total_lots": 21212
+      },
+      "margin": {
+        "margin_balance": 1524,
+        "margin_change": 113,
+        "short_balance": 105,
+        "short_margin_ratio": 6.89
+      },
+      "valuation": {
+        "pe": 19.4,
+        "pb": 1.88,
+        "dividend_yield": 3.38
+      },
+      "score": 59.0,
+      "reasons": [
+        "投信強勢認養加碼 (+17,467 張)",
+        "外資波段加碼 (+1,517 張)",
+        "⚡ 土洋法人同步買超",
+        "量能充沛 (成交量 61,746 張)",
+        "估值穩健 (PE: 19.4, PB: 1.88)"
+      ]
+    },
+    {
+      "code": "8112",
+      "name": "至上",
+      "close": 69.6,
+      "change": -4.1,
+      "change_percent": -5.56,
+      "volume_lots": 6867,
+      "institutional": {
+        "foreign_lots": 330,
+        "trust_lots": 1001,
+        "dealer_lots": 81,
+        "total_lots": 1412
+      },
+      "margin": {
+        "margin_balance": 15112,
+        "margin_change": -159,
+        "short_balance": 1142,
+        "short_margin_ratio": 7.56
+      },
+      "valuation": {
+        "pe": 3.73,
+        "pb": 1.39,
+        "dividend_yield": 5.46
+      },
+      "score": 58.0,
+      "reasons": [
+        "投信強勢認養加碼 (+1,001 張)",
+        "外資偏多買超 (+330 張)",
+        "⚡ 土洋法人同步買超",
+        "融資減少 (-159 張，浮額清洗)",
+        "估值穩健 (PE: 3.7, PB: 1.39)"
+      ]
+    },
+    {
+      "code": "2412",
+      "name": "中華電",
+      "close": 162.5,
+      "change": -3.5,
+      "change_percent": -2.11,
+      "volume_lots": 40371,
+      "institutional": {
+        "foreign_lots": -1492,
+        "trust_lots": 9708,
+        "dealer_lots": 279,
+        "total_lots": 8496
+      },
+      "margin": {
+        "margin_balance": 3117,
+        "margin_change": -1490,
+        "short_balance": 1057,
+        "short_margin_ratio": 33.91
+      },
+      "valuation": {
+        "pe": 29.82,
+        "pb": 3.33,
+        "dividend_yield": 3.2
+      },
+      "score": 55.0,
+      "reasons": [
+        "投信強勢認養加碼 (+9,708 張)",
+        "散戶融資大退場 (-1,490 張，籌碼高度沉澱)",
+        "🔥 券資比高達 33.9% (具潛在軋空動能)",
+        "量能充沛 (成交量 40,371 張)"
+      ]
+    },
+    {
+      "code": "2890",
+      "name": "永豐金",
+      "close": 36.0,
+      "change": -3.1,
+      "change_percent": -7.93,
+      "volume_lots": 71939,
+      "institutional": {
+        "foreign_lots": -6449,
+        "trust_lots": 18465,
+        "dealer_lots": 166,
+        "total_lots": 12182
+      },
+      "margin": {
+        "margin_balance": 3785,
+        "margin_change": -1243,
+        "short_balance": 787,
+        "short_margin_ratio": 20.79
+      },
+      "valuation": {
+        "pe": 13.58,
+        "pb": 1.97,
+        "dividend_yield": 3.61
+      },
+      "score": 55.0,
+      "reasons": [
+        "投信強勢認養加碼 (+18,465 張)",
+        "散戶融資大退場 (-1,243 張，籌碼高度沉澱)",
+        "券資比水位適中 (20.8%)",
+        "量能充沛 (成交量 71,939 張)",
+        "估值穩健 (PE: 13.6, PB: 1.97)"
       ]
     },
     {
       "code": "2351",
       "name": "順德",
-      "close": 116.5,
-      "change": -12.5,
-      "change_percent": -9.69,
-      "volume_lots": 3104,
+      "close": 105.0,
+      "change": -11.5,
+      "change_percent": -9.87,
+      "volume_lots": 2269,
       "institutional": {
-        "foreign_lots": 345,
-        "trust_lots": 522,
-        "dealer_lots": -7,
-        "total_lots": 860
+        "foreign_lots": 1415,
+        "trust_lots": 5,
+        "dealer_lots": -11,
+        "total_lots": 1410
       },
       "margin": {
-        "margin_balance": 4737,
-        "margin_change": -1248,
-        "short_balance": 15,
-        "short_margin_ratio": 0.32
+        "margin_balance": 4095,
+        "margin_change": -642,
+        "short_balance": 12,
+        "short_margin_ratio": 0.29
       },
       "valuation": {
-        "pe": 21.74,
-        "pb": 2.61,
-        "dividend_yield": 0.88
-      },
-      "score": 56.0,
-      "reasons": [
-        "投信積極佈局 (+522 張)",
-        "外資偏多買超 (+345 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-1,248 張，籌碼高度沉澱)",
-        "估值穩健 (PE: 21.7, PB: 2.61)"
-      ]
-    },
-    {
-      "code": "1795",
-      "name": "美時",
-      "close": 111.5,
-      "change": -10.0,
-      "change_percent": -8.23,
-      "volume_lots": 3334,
-      "institutional": {
-        "foreign_lots": 1142,
-        "trust_lots": 1,
-        "dealer_lots": -4,
-        "total_lots": 1139
-      },
-      "margin": {
-        "margin_balance": 5039,
-        "margin_change": -871,
-        "short_balance": 31,
-        "short_margin_ratio": 0.62
-      },
-      "valuation": {
-        "pe": 13.37,
-        "pb": 1.2,
-        "dividend_yield": 2.42
+        "pe": 19.59,
+        "pb": 2.35,
+        "dividend_yield": 0.98
       },
       "score": 54.0,
       "reasons": [
-        "投信偏多買超 (+1 張)",
-        "外資波段加碼 (+1,142 張)",
+        "投信偏多買超 (+5 張)",
+        "外資波段加碼 (+1,415 張)",
         "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-871 張，籌碼高度沉澱)",
-        "估值穩健 (PE: 13.4, PB: 1.20)"
+        "散戶融資大退場 (-642 張，籌碼高度沉澱)",
+        "估值穩健 (PE: 19.6, PB: 2.35)"
       ]
     },
     {
-      "code": "2478",
-      "name": "大毅",
-      "close": 79.7,
-      "change": -8.8,
+      "code": "2542",
+      "name": "興富發",
+      "close": 36.1,
+      "change": -1.5,
+      "change_percent": -3.99,
+      "volume_lots": 8630,
+      "institutional": {
+        "foreign_lots": 890,
+        "trust_lots": 728,
+        "dealer_lots": 67,
+        "total_lots": 1686
+      },
+      "margin": {
+        "margin_balance": 2637,
+        "margin_change": -16,
+        "short_balance": 10,
+        "short_margin_ratio": 0.38
+      },
+      "valuation": {
+        "pe": 7.25,
+        "pb": 1.46,
+        "dividend_yield": 11.08
+      },
+      "score": 51.0,
+      "reasons": [
+        "投信積極佈局 (+728 張)",
+        "外資偏多買超 (+890 張)",
+        "⚡ 土洋法人同步買超",
+        "融資減少 (-16 張，浮額清洗)",
+        "估值穩健 (PE: 7.2, PB: 1.46)"
+      ]
+    },
+    {
+      "code": "2027",
+      "name": "大成鋼",
+      "close": 42.5,
+      "change": -3.3,
+      "change_percent": -7.21,
+      "volume_lots": 36197,
+      "institutional": {
+        "foreign_lots": -8036,
+        "trust_lots": 13576,
+        "dealer_lots": 281,
+        "total_lots": 5822
+      },
+      "margin": {
+        "margin_balance": 16734,
+        "margin_change": -1027,
+        "short_balance": 139,
+        "short_margin_ratio": 0.83
+      },
+      "valuation": {
+        "pe": 7.37,
+        "pb": 1.19,
+        "dividend_yield": 3.53
+      },
+      "score": 50.0,
+      "reasons": [
+        "投信強勢認養加碼 (+13,576 張)",
+        "散戶融資大退場 (-1,027 張，籌碼高度沉澱)",
+        "量能充沛 (成交量 36,197 張)",
+        "估值穩健 (PE: 7.4, PB: 1.19)"
+      ]
+    },
+    {
+      "code": "1717",
+      "name": "長興",
+      "close": 48.0,
+      "change": -5.3,
       "change_percent": -9.94,
-      "volume_lots": 3251,
+      "volume_lots": 8552,
       "institutional": {
-        "foreign_lots": 1063,
-        "trust_lots": 94,
-        "dealer_lots": -30,
-        "total_lots": 1127
-      },
-      "margin": {
-        "margin_balance": 5656,
-        "margin_change": -1263,
-        "short_balance": 15,
-        "short_margin_ratio": 0.27
-      },
-      "valuation": {
-        "pe": 12.92,
-        "pb": 1.49,
-        "dividend_yield": 2.51
-      },
-      "score": 54.0,
-      "reasons": [
-        "投信偏多買超 (+94 張)",
-        "外資波段加碼 (+1,063 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-1,263 張，籌碼高度沉澱)",
-        "估值穩健 (PE: 12.9, PB: 1.49)"
-      ]
-    },
-    {
-      "code": "6191",
-      "name": "精成科",
-      "close": 68.4,
-      "change": -5.8,
-      "change_percent": -7.82,
-      "volume_lots": 3174,
-      "institutional": {
-        "foreign_lots": 1648,
-        "trust_lots": 1,
-        "dealer_lots": -26,
-        "total_lots": 1624
-      },
-      "margin": {
-        "margin_balance": 14561,
-        "margin_change": -1569,
-        "short_balance": 61,
-        "short_margin_ratio": 0.42
-      },
-      "valuation": {
-        "pe": 12.02,
-        "pb": 1.07,
-        "dividend_yield": 3.8
-      },
-      "score": 54.0,
-      "reasons": [
-        "投信偏多買超 (+1 張)",
-        "外資波段加碼 (+1,648 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-1,569 張，籌碼高度沉澱)",
-        "估值穩健 (PE: 12.0, PB: 1.07)"
-      ]
-    },
-    {
-      "code": "8422",
-      "name": "可寧衛*",
-      "close": 21.75,
-      "change": -0.75,
-      "change_percent": -3.33,
-      "volume_lots": 5283,
-      "institutional": {
-        "foreign_lots": 1954,
-        "trust_lots": 2,
-        "dealer_lots": 29,
-        "total_lots": 1985
-      },
-      "margin": {
-        "margin_balance": 17380,
-        "margin_change": -2249,
-        "short_balance": 112,
-        "short_margin_ratio": 0.64
-      },
-      "valuation": {
-        "pe": 18.59,
-        "pb": 2.72,
-        "dividend_yield": 5.52
-      },
-      "score": 54.0,
-      "reasons": [
-        "投信偏多買超 (+2 張)",
-        "外資波段加碼 (+1,954 張)",
-        "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-2,249 張，籌碼高度沉澱)",
-        "估值穩健 (PE: 18.6, PB: 2.72)"
-      ]
-    },
-    {
-      "code": "1210",
-      "name": "大成",
-      "close": 51.1,
-      "change": 0.1,
-      "change_percent": 0.2,
-      "volume_lots": 1780,
-      "institutional": {
-        "foreign_lots": 44,
+        "foreign_lots": 1261,
         "trust_lots": 3,
-        "dealer_lots": -71,
-        "total_lots": -23
+        "dealer_lots": 17,
+        "total_lots": 1282
       },
       "margin": {
-        "margin_balance": 498,
-        "margin_change": -12,
-        "short_balance": 1,
-        "short_margin_ratio": 0.2
+        "margin_balance": 11545,
+        "margin_change": -527,
+        "short_balance": 105,
+        "short_margin_ratio": 0.91
       },
       "valuation": {
-        "pe": 12.08,
-        "pb": 1.59,
-        "dividend_yield": 5.87
+        "pe": 25.95,
+        "pb": 1.74,
+        "dividend_yield": 2.08
       },
-      "score": 53.0,
+      "score": 49.0,
       "reasons": [
         "投信偏多買超 (+3 張)",
-        "外資偏多買超 (+44 張)",
+        "外資波段加碼 (+1,261 張)",
         "⚡ 土洋法人同步買超",
-        "融資減少 (-12 張，浮額清洗)",
-        "股價強勢收紅 (+0.20%)",
-        "估值穩健 (PE: 12.1, PB: 1.59)"
+        "散戶融資大退場 (-527 張，籌碼高度沉澱)"
       ]
     },
     {
-      "code": "1326",
-      "name": "台化",
-      "close": 62.7,
-      "change": -5.2,
-      "change_percent": -7.66,
-      "volume_lots": 24460,
+      "code": "2834",
+      "name": "臺企銀",
+      "close": 16.2,
+      "change": -0.7,
+      "change_percent": -4.14,
+      "volume_lots": 65402,
       "institutional": {
-        "foreign_lots": 449,
-        "trust_lots": 84,
-        "dealer_lots": -285,
-        "total_lots": 249
+        "foreign_lots": 3,
+        "trust_lots": 35,
+        "dealer_lots": 424,
+        "total_lots": 463
       },
       "margin": {
-        "margin_balance": 17675,
-        "margin_change": -2388,
-        "short_balance": 195,
-        "short_margin_ratio": 1.1
+        "margin_balance": 26118,
+        "margin_change": -270,
+        "short_balance": 75,
+        "short_margin_ratio": 0.29
       },
       "valuation": {
-        "pe": 21.04,
-        "pb": 0.61,
-        "dividend_yield": 0.96
+        "pe": 12.09,
+        "pb": 1.06,
+        "dividend_yield": 6.17
       },
-      "score": 53.0,
+      "score": 48.0,
       "reasons": [
-        "投信偏多買超 (+84 張)",
-        "外資偏多買超 (+449 張)",
+        "投信偏多買超 (+35 張)",
+        "外資偏多買超 (+3 張)",
         "⚡ 土洋法人同步買超",
-        "散戶融資大退場 (-2,388 張，籌碼高度沉澱)",
-        "量能充沛 (成交量 24,460 張)",
-        "估值穩健 (PE: 21.0, PB: 0.61)"
+        "融資減少 (-270 張，浮額清洗)",
+        "量能充沛 (成交量 65,402 張)",
+        "估值穩健 (PE: 12.1, PB: 1.06)"
+      ]
+    },
+    {
+      "code": "8150",
+      "name": "南茂",
+      "close": 61.0,
+      "change": -6.5,
+      "change_percent": -9.63,
+      "volume_lots": 14418,
+      "institutional": {
+        "foreign_lots": 262,
+        "trust_lots": 2,
+        "dealer_lots": -121,
+        "total_lots": 144
+      },
+      "margin": {
+        "margin_balance": 13674,
+        "margin_change": -70,
+        "short_balance": 267,
+        "short_margin_ratio": 1.95
+      },
+      "valuation": {
+        "pe": 13.26,
+        "pb": 1.63,
+        "dividend_yield": 2.02
+      },
+      "score": 48.0,
+      "reasons": [
+        "投信偏多買超 (+2 張)",
+        "外資偏多買超 (+262 張)",
+        "⚡ 土洋法人同步買超",
+        "融資減少 (-70 張，浮額清洗)",
+        "量能充沛 (成交量 14,418 張)",
+        "估值穩健 (PE: 13.3, PB: 1.63)"
+      ]
+    },
+    {
+      "code": "3030",
+      "name": "德律",
+      "close": 191.5,
+      "change": -8.0,
+      "change_percent": -4.01,
+      "volume_lots": 3110,
+      "institutional": {
+        "foreign_lots": 151,
+        "trust_lots": 545,
+        "dealer_lots": 13,
+        "total_lots": 709
+      },
+      "margin": {
+        "margin_balance": 7377,
+        "margin_change": -74,
+        "short_balance": 17,
+        "short_margin_ratio": 0.23
+      },
+      "valuation": {
+        "pe": 13.89,
+        "pb": 4.25,
+        "dividend_yield": 3.66
+      },
+      "score": 46.0,
+      "reasons": [
+        "投信積極佈局 (+545 張)",
+        "外資偏多買超 (+151 張)",
+        "⚡ 土洋法人同步買超",
+        "融資減少 (-74 張，浮額清洗)"
+      ]
+    },
+    {
+      "code": "2382",
+      "name": "廣達",
+      "close": 252.0,
+      "change": -10.5,
+      "change_percent": -4.0,
+      "volume_lots": 17472,
+      "institutional": {
+        "foreign_lots": -2324,
+        "trust_lots": 1457,
+        "dealer_lots": 731,
+        "total_lots": -135
+      },
+      "margin": {
+        "margin_balance": 13279,
+        "margin_change": -266,
+        "short_balance": 109,
+        "short_margin_ratio": 0.82
+      },
+      "valuation": {
+        "pe": 10.28,
+        "pb": 3.0,
+        "dividend_yield": 6.19
+      },
+      "score": 45.0,
+      "reasons": [
+        "投信強勢認養加碼 (+1,457 張)",
+        "融資減少 (-266 張，浮額清洗)",
+        "量能充沛 (成交量 17,472 張)",
+        "估值穩健 (PE: 10.3, PB: 3.00)"
+      ]
+    },
+    {
+      "code": "2492",
+      "name": "華新科",
+      "close": 187.5,
+      "change": -20.5,
+      "change_percent": -9.86,
+      "volume_lots": 10697,
+      "institutional": {
+        "foreign_lots": 3403,
+        "trust_lots": -3332,
+        "dealer_lots": -364,
+        "total_lots": -293
+      },
+      "margin": {
+        "margin_balance": 13071,
+        "margin_change": -588,
+        "short_balance": 420,
+        "short_margin_ratio": 3.21
+      },
+      "valuation": {
+        "pe": 16.38,
+        "pb": 1.38,
+        "dividend_yield": 1.33
+      },
+      "score": 45.0,
+      "reasons": [
+        "外資大幅回補 (+3,403 張)",
+        "散戶融資大退場 (-588 張，籌碼高度沉澱)",
+        "量能充沛 (成交量 10,697 張)",
+        "估值穩健 (PE: 16.4, PB: 1.38)"
+      ]
+    },
+    {
+      "code": "2883",
+      "name": "凱基金",
+      "close": 29.9,
+      "change": -1.95,
+      "change_percent": -6.12,
+      "volume_lots": 71743,
+      "institutional": {
+        "foreign_lots": -22668,
+        "trust_lots": 19840,
+        "dealer_lots": 3260,
+        "total_lots": 433
+      },
+      "margin": {
+        "margin_balance": 8749,
+        "margin_change": -139,
+        "short_balance": 91,
+        "short_margin_ratio": 1.04
+      },
+      "valuation": {
+        "pe": 10.45,
+        "pb": 1.18,
+        "dividend_yield": 3.34
+      },
+      "score": 45.0,
+      "reasons": [
+        "投信強勢認養加碼 (+19,840 張)",
+        "融資減少 (-139 張，浮額清洗)",
+        "量能充沛 (成交量 71,743 張)",
+        "估值穩健 (PE: 10.4, PB: 1.18)"
+      ]
+    },
+    {
+      "code": "2892",
+      "name": "第一金",
+      "close": 37.6,
+      "change": -2.55,
+      "change_percent": -6.35,
+      "volume_lots": 47657,
+      "institutional": {
+        "foreign_lots": -6586,
+        "trust_lots": 13120,
+        "dealer_lots": 1208,
+        "total_lots": 7744
+      },
+      "margin": {
+        "margin_balance": 1553,
+        "margin_change": -68,
+        "short_balance": 104,
+        "short_margin_ratio": 6.7
+      },
+      "valuation": {
+        "pe": 17.57,
+        "pb": 1.79,
+        "dividend_yield": 3.46
+      },
+      "score": 45.0,
+      "reasons": [
+        "投信強勢認養加碼 (+13,120 張)",
+        "融資減少 (-68 張，浮額清洗)",
+        "量能充沛 (成交量 47,657 張)",
+        "估值穩健 (PE: 17.6, PB: 1.79)"
+      ]
+    },
+    {
+      "code": "3045",
+      "name": "台灣大",
+      "close": 123.0,
+      "change": -4.5,
+      "change_percent": -3.53,
+      "volume_lots": 19100,
+      "institutional": {
+        "foreign_lots": -1569,
+        "trust_lots": 2378,
+        "dealer_lots": 396,
+        "total_lots": 1206
+      },
+      "margin": {
+        "margin_balance": 625,
+        "margin_change": -15,
+        "short_balance": 117,
+        "short_margin_ratio": 18.72
+      },
+      "valuation": {
+        "pe": 22.36,
+        "pb": 4.24,
+        "dividend_yield": 3.85
+      },
+      "score": 45.0,
+      "reasons": [
+        "投信強勢認養加碼 (+2,378 張)",
+        "融資減少 (-15 張，浮額清洗)",
+        "券資比水位適中 (18.7%)",
+        "量能充沛 (成交量 19,100 張)"
+      ]
+    },
+    {
+      "code": "6770",
+      "name": "力積電",
+      "close": 44.1,
+      "change": -4.8,
+      "change_percent": -9.82,
+      "volume_lots": 103428,
+      "institutional": {
+        "foreign_lots": 12947,
+        "trust_lots": 0,
+        "dealer_lots": -2682,
+        "total_lots": 10266
+      },
+      "margin": {
+        "margin_balance": 100894,
+        "margin_change": -2336,
+        "short_balance": 830,
+        "short_margin_ratio": 0.82
+      },
+      "valuation": {
+        "pe": 8.91,
+        "pb": 1.55,
+        "dividend_yield": 0.0
+      },
+      "score": 45.0,
+      "reasons": [
+        "外資大幅回補 (+12,947 張)",
+        "散戶融資大退場 (-2,336 張，籌碼高度沉澱)",
+        "量能充沛 (成交量 103,428 張)",
+        "估值穩健 (PE: 8.9, PB: 1.55)"
       ]
     }
   ]
